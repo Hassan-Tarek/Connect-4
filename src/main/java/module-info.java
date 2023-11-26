@@ -6,4 +6,6 @@ module org.connect4 {
 
     opens org.connect4 to javafx.fxml;
     exports org.connect4;
+    exports org.connect4.game;
+    opens org.connect4.game to javafx.fxml;
 }
