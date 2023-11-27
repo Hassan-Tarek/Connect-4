@@ -1,6 +1,10 @@
 package org.connect4.game;
 
+import java.util.logging.Logger;
+
 public class Player {
+    private static final Logger logger = Game.logger;
+
     private String firstName;
     private String lastName;
     private final PlayerType playerType;
@@ -48,22 +52,27 @@ public class Player {
     }
 
     public void resetScore() {
+        logger.info("Player's score has been reset.");
         this.score = 0;
     }
 
     public void incrementScore() {
+        logger.info("Player's score has been increased.");
         this.score++;
     }
 
     public void makeMove(Board board, int colIndex) {
+        logger.info("Player is making a move.");
         board.addPiece(colIndex, color);
     }
 
     public boolean isWin(Game game) {
-        if (game.hasWinner()) {
-            return game.getWinner() == this;
+        boolean isWin = game.hasWinner() && game.getWinner() == this;
+
+        if (isWin) {
+            logger.info("This player won the game.");
         }
 
-        return false;
+        return isWin;
     }
 }

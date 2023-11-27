@@ -1,6 +1,9 @@
 package org.connect4.game;
 
+import java.util.logging.Logger;
+
 public class Board {
+    private static final Logger logger = Game.logger;
     public static final int ROWS = 6;
     public static final int COLS = 7;
 
@@ -32,12 +35,23 @@ public class Board {
         for (int i = 0; i < COLS; i++) {
             currentRowIndex[i] = 0;
         }
+
+        logger.fine("Board initialized successfully.");
     }
 
     private boolean isValidMove(int col) {
-        return col >= 0 && col < COLS
+        boolean isValid  = col >= 0 && col < COLS
                 && currentRowIndex[col] >= 0
                 && currentRowIndex[col] < ROWS;
+
+        if (isValid) {
+            logger.info("Move is valid. Column: " + col);
+        }
+        else {
+            logger.warning("Move is not valid. Column: " + col);
+        }
+
+        return isValid;
     }
 
     public void addPiece(int col, Color color) {
@@ -45,6 +59,7 @@ public class Board {
             Position position = new Position(currentRowIndex[col], col);
             pieces[col][currentRowIndex[col]] = new Piece(position, color);
             currentRowIndex[col]++;
+            logger.info("Piece added to the column: " + col);
         }
     }
 }

@@ -1,11 +1,32 @@
 package org.connect4.game;
 
+import java.io.IOException;
+import java.util.logging.*;
+
 public class Game {
+    public static final Logger logger = Logger.getLogger(Game.class.getName());
     private static final int CONSECUTIVE_PIECES_FOR_WIN = 4;
 
     private final Board board;
     private final Player redPlayer;
     private final Player yellowPlayer;
+
+    static {
+        try {
+            FileHandler fileHandler = new FileHandler("game.log");
+            fileHandler.setFormatter(new SimpleFormatter());
+            fileHandler.setLevel(Level.INFO);
+
+            ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(new SimpleFormatter());
+            consoleHandler.setLevel(Level.INFO);
+
+            logger.addHandler(fileHandler);
+            logger.addHandler(consoleHandler);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public Game(Board board, Player redPlayer, Player yellowPlayer) {
         this.board = board;
@@ -26,24 +47,32 @@ public class Game {
     }
 
     public boolean hasWinner() {
+        boolean hasWinner = false;
         for (int i = 0; i < Board.ROWS; i++) {
-            if (isRowWinner(i))
-                return true;
+            if (isRowWinner(i)) {
+                hasWinner = true;
+            }
         }
 
         for (int i = 0; i < Board.COLS; i++) {
-            if (isColWinner(i))
-                return true;
+            if (isColWinner(i)) {
+                hasWinner = true;
+            }
         }
 
         for (int i = 0; i < Board.ROWS; i++) {
             for (int j = 0; j < Board.COLS; j++) {
-                if (isDiagonalWinner(i, j))
-                    return true;
+                if (isDiagonalWinner(i, j)) {
+                    hasWinner = true;
+                }
             }
         }
 
-        return false;
+        if (hasWinner) {
+            logger.info("Game has winner.");
+        }
+
+        return hasWinner;
     }
 
     private boolean isRowWinner(int rowIndex) {
@@ -79,10 +108,13 @@ public class Game {
                 int y = isRow ? j : i;
 
                 if (board.getPieces()[x][y] != null) {
+                    logger.log(Level.FINE, "Piece is not null.");
+
                     if (board.getPieces()[x][y].getColor() == lastColor) {
                         count++;
 
-                        if (count >= 4) {
+                        if (count >= CONSECUTIVE_PIECES_FOR_WIN) {
+                            logger.info("Player has won the game.");
                             return true;
                         }
                     } else {
@@ -102,23 +134,28 @@ public class Game {
     public Player getWinner() {
         for (int i = 0; i < Board.ROWS; i++) {
             if (isRowWinner(i)) {
+                logger.info("Row winner is determined at row: " + i);
                 return determineWinner(i, 0, 1, 0);
             }
         }
 
         for (int i = 0; i < Board.COLS; i++) {
             if (isColWinner(i)) {
+                logger.info("Column winner is determined at col: " + i);
                 return determineWinner(0, i, 0, 1);
             }
         }
 
         for (int i = 0; i < Board.ROWS; i++) {
             for (int j = 0; j < Board.COLS; j++) {
-                if (isDiagonalWinnerLeftToRight(i, j)) {
-                    return determineWinner(i, j, 1, 1);
-                }
-                else if (isDiagonalWinnerRightToLeft(i, j)) {
-                    return determineWinner(i, j, 1, -1);
+                if (isDiagonalWinner(i, j)) {
+                    logger.info("Diagonal winner is determined at row: " + i + " and col: " + j);
+
+                    if (isDiagonalWinnerLeftToRight(i, j)) {
+                        return determineWinner(i, j, 1, 1);
+                    } else if (isDiagonalWinnerRightToLeft(i, j)) {
+                        return determineWinner(i, j, 1, -1);
+                    }
                 }
             }
         }
@@ -135,6 +172,7 @@ public class Game {
                 for (int k = 0; k < CONSECUTIVE_PIECES_FOR_WIN; k++) {
                     int x = i + rowOffset * k;
                     int y = j + colOffset * k;
+
                     if (board.getPieces()[x][y].getColor() != color) {
                         isWinner = false;
                         break;
@@ -142,7 +180,10 @@ public class Game {
                 }
 
                 if (isWinner) {
-                    return color == Color.RED ? redPlayer : yellowPlayer;
+                    Player winner = color == Color.RED ? redPlayer : yellowPlayer;
+
+                    logger.info("Winner determined: " + winner.getFirstName() + " " + winner.getLastName());
+                    return winner;
                 }
             }
         }

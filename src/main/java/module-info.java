@@ -3,6 +3,7 @@ module org.connect4 {
     requires javafx.fxml;
 
     requires org.kordamp.bootstrapfx.core;
+    requires java.logging;
 
     opens org.connect4 to javafx.fxml;
     exports org.connect4;
