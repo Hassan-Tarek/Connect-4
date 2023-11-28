@@ -1,4 +1,4 @@
-package org.connect4.game;
+package org.connect4.game.utils;
 
 /**
  * A class represents the position of game piece.

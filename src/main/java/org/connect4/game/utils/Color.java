@@ -1,4 +1,4 @@
-package org.connect4.game;
+package org.connect4.game.utils;
 
 /**
  * Enum representing the colors of game pieces.

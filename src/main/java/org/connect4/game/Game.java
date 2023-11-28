@@ -1,5 +1,8 @@
 package org.connect4.game;
 
+import org.connect4.game.utils.Color;
+import org.connect4.game.utils.GameType;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.logging.FileHandler;
@@ -18,6 +21,7 @@ public class Game {
     private final Board board;
     private final Player redPlayer;
     private final Player yellowPlayer;
+    private final GameType gameType;
 
     // Static block for setting up logging handlers
     static {
@@ -43,10 +47,11 @@ public class Game {
      * @param redPlayer The player with red pieces.
      * @param yellowPlayer The player with yellow pieces.
      */
-    public Game(Board board, Player redPlayer, Player yellowPlayer) {
+    public Game(Board board, Player redPlayer, Player yellowPlayer, GameType gameType) {
         this.board = board;
         this.redPlayer = redPlayer;
         this.yellowPlayer = yellowPlayer;
+        this.gameType = gameType;
     }
 
     /**
@@ -71,6 +76,14 @@ public class Game {
      */
     public Player getYellowPlayer() {
         return yellowPlayer;
+    }
+
+    /**
+     * Gets the game type.
+     * @return The game type.
+     */
+    public GameType getGameType() {
+        return gameType;
     }
 
     /**

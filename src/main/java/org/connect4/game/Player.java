@@ -1,5 +1,9 @@
 package org.connect4.game;
 
+import org.connect4.game.exceptions.InvalidMoveException;
+import org.connect4.game.utils.Color;
+import org.connect4.game.utils.PlayerType;
+
 import java.util.logging.Logger;
 
 /**
@@ -116,8 +120,12 @@ public class Player {
      * @param colIndex The index of the column to add piece on.
      */
     public void makeMove(Board board, int colIndex) {
-        logger.info("Player is making a move.");
-        board.addPiece(colIndex, color);
+        try {
+            logger.info("Player is making a move.");
+            board.addPiece(colIndex, color);
+        } catch (InvalidMoveException ex) {
+            logger.warning("Invalid move. " + ex.getMessage());
+        }
     }
 
     /**

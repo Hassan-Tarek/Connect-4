@@ -1,5 +1,9 @@
 package org.connect4.game;
 
+import org.connect4.game.exceptions.InvalidMoveException;
+import org.connect4.game.utils.Color;
+import org.connect4.game.utils.Position;
+
 import java.util.logging.Logger;
 
 /**
@@ -93,12 +97,19 @@ public class Board {
      * @param col The column to add the piece.
      * @param color The color of the piece.
      */
-    public void addPiece(int col, Color color) {
+    public boolean addPiece(int col, Color color) throws InvalidMoveException {
+        boolean isAdded = false;
         if (isValidMove(col)) {
             Position position = new Position(currentRowIndex[col], col);
             pieces[col][currentRowIndex[col]] = new Piece(position, color);
             currentRowIndex[col]++;
+            isAdded = true;
             logger.info("Piece added to the column: " + col);
+        } else {
+            logger.severe("Piece cannot be added to the column: " + col);
+            throw new InvalidMoveException("Invalid move for the column: " + col);
         }
+
+        return isAdded;
     }
 }
