@@ -1,5 +1,6 @@
 package org.connect4.game;
 
+import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.Color;
 import org.connect4.game.utils.GameType;
 
@@ -21,6 +22,7 @@ public class Game {
     private final Board board;
     private final Player redPlayer;
     private final Player yellowPlayer;
+    private Player currentPlayer;
     private final GameType gameType;
 
     // Static block for setting up logging handlers
@@ -46,11 +48,13 @@ public class Game {
      * @param board The board of the game.
      * @param redPlayer The player with red pieces.
      * @param yellowPlayer The player with yellow pieces.
+     * @param gameType The type of this game.
      */
     public Game(Board board, Player redPlayer, Player yellowPlayer, GameType gameType) {
         this.board = board;
         this.redPlayer = redPlayer;
         this.yellowPlayer = yellowPlayer;
+        this.currentPlayer = redPlayer;
         this.gameType = gameType;
     }
 
@@ -76,6 +80,14 @@ public class Game {
      */
     public Player getYellowPlayer() {
         return yellowPlayer;
+    }
+
+    /**
+     * Gets the current player.
+     * @return The current player.
+     */
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     /**
@@ -209,7 +221,6 @@ public class Game {
         return false;
     }
 
-
     /**
      * Gets the winner of the game if it has one.
      * @return The winner of the game or `null` if there is no winner yet.
@@ -286,5 +297,23 @@ public class Game {
         }
 
         return null;
+    }
+
+    /**
+     * Makes a move for the current player on the specified column index and switches turns.
+     * @param colIndex The index of the column to add the piece to.
+     * @throws InvalidMoveException if the move is invalid.
+     */
+    public void performCurrentPlayerMove(int colIndex) throws InvalidMoveException {
+        currentPlayer.makeMove(board, colIndex);
+        switchTurn();
+    }
+
+    /**
+     * Switches turns between players.
+     */
+    private void switchTurn() {
+        currentPlayer = currentPlayer == redPlayer ? yellowPlayer : redPlayer;
+        logger.info("Switched turns. Current player: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
     }
 }

@@ -77,7 +77,7 @@ public class Board {
      * @param col The column for the move.
      * @return true if the move is valid, false otherwise.
      */
-    private boolean isValidMove(int col) {
+    public boolean isValidMove(int col) {
         boolean isValid  = col >= 0 && col < COLS
                 && currentRowIndex[col] >= 0
                 && currentRowIndex[col] < ROWS;
@@ -86,7 +86,7 @@ public class Board {
             logger.info("Move is valid. Column: " + col);
         }
         else {
-            logger.warning("Move is not valid. Column: " + col);
+            logger.severe("Move is not valid. Column: " + col);
         }
 
         return isValid;
@@ -96,6 +96,7 @@ public class Board {
      * Add the piece with a specific color to the board at a specific column.
      * @param col The column to add the piece.
      * @param color The color of the piece.
+     * @throws InvalidMoveException if the move is invalid.
      */
     public boolean addPiece(int col, Color color) throws InvalidMoveException {
         boolean isAdded = false;

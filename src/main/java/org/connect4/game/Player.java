@@ -118,13 +118,15 @@ public class Player {
      * Makes a move on the specified column index on the specified board.
      * @param board The board of the game.
      * @param colIndex The index of the column to add piece on.
+     * @throws InvalidMoveException if the move is invalid.
      */
-    public void makeMove(Board board, int colIndex) {
+    public void makeMove(Board board, int colIndex) throws InvalidMoveException {
         try {
             logger.info("Player is making a move.");
             board.addPiece(colIndex, color);
         } catch (InvalidMoveException ex) {
             logger.warning("Invalid move. " + ex.getMessage());
+            throw ex;
         }
     }
 
