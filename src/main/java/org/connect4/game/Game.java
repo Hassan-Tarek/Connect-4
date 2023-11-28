@@ -112,7 +112,7 @@ public class Game {
      * @return true if the row has 4 consecutive pieces with the same color, false otherwise.
      */
     private boolean isRowWinner(int rowIndex) {
-        return isLineWinner(rowIndex, Board.COLS - 1, true, false);
+        return isLineWinner(rowIndex, 0, 0, 1);
     }
 
     /**
@@ -121,7 +121,7 @@ public class Game {
      * @return true if the column has 4 consecutive pieces with the same color, false otherwise.
      */
     private boolean isColWinner(int colIndex) {
-        return isLineWinner(Board.ROWS - 1, colIndex, false, false);
+        return isLineWinner(0, colIndex, 1, 0);
     }
 
     /**
@@ -142,7 +142,7 @@ public class Game {
      * @return true if the diagonal has 4 consecutive pieces with the same color, false otherwise.
      */
     private boolean isDiagonalWinnerLeftToRight(int rowIndex, int colIndex) {
-        return isLineWinner(rowIndex, colIndex, false, true);
+        return isLineWinner(rowIndex, colIndex, 1, 1);
     }
 
     /**
@@ -152,51 +152,50 @@ public class Game {
      * @return true if the diagonal has 4 consecutive pieces with the same color, false otherwise.
      */
     private boolean isDiagonalWinnerRightToLeft(int rowIndex, int colIndex) {
-        return isLineWinner(rowIndex, colIndex, false, false);
+        return isLineWinner(rowIndex, colIndex, 1, -1);
     }
 
     /**
      * Checks whether a line has 4 consecutive pieces with the same color.
      * @param rowIndex The starting index of the row.
      * @param colIndex The starting index of the column.
-     * @param isRow true if checking a row, false for a column.
-     * @param isLeftToRight true if checking from left to right, false for right to left.
+     * @param rowOffset The offset for moving along the row.
+     * @param colOffset The offset for moving along the column.
      * @return true if the line has 4 consecutive pieces with the same color, false otherwise.
      */
-    private boolean isLineWinner(int rowIndex, int colIndex, boolean isRow, boolean isLeftToRight) {
-        final int OFFSET = isLeftToRight ? 1 : -1;
-
+    private boolean isLineWinner(int rowIndex, int colIndex, int rowOffset, int colOffset) {
         Color lastColor = null;
         int count = 0;
+        int currentRow = rowIndex;
+        int currentCol = colIndex;
 
-        for (int i = rowIndex; i < Board.ROWS; i++) {
-            for (int j = colIndex; j < Board.COLS; j += OFFSET) {
-                int x = isRow ? i : j;
-                int y = isRow ? j : i;
+        while (currentRow >= 0 && currentRow < Board.ROWS && currentCol >= 0 && currentCol < Board.COLS) {
+            if (board.getPieces()[currentRow][currentCol] != null) {
+                logger.log(Level.FINE, "Piece is not null.");
 
-                if (board.getPieces()[x][y] != null) {
-                    logger.log(Level.FINE, "Piece is not null.");
+                if (board.getPieces()[currentRow][currentCol].getColor() == lastColor) {
+                    count++;
 
-                    if (board.getPieces()[x][y].getColor() == lastColor) {
-                        count++;
-
-                        if (count >= CONSECUTIVE_PIECES_FOR_WIN) {
-                            logger.info("Player has won the game.");
-                            return true;
-                        }
-                    } else {
-                        lastColor = board.getPieces()[x][y].getColor();
-                        count = 1;
+                    if (count >= CONSECUTIVE_PIECES_FOR_WIN) {
+                        logger.info("Player has won the game.");
+                        return true;
                     }
                 } else {
-                    lastColor = null;
-                    count = 0;
+                    lastColor = board.getPieces()[currentRow][currentCol].getColor();
+                    count = 1;
                 }
+            } else {
+                lastColor = null;
+                count = 0;
             }
+
+            currentRow += rowOffset;
+            currentCol += colOffset;
         }
 
         return false;
     }
+
 
     /**
      * Gets the winner of the game if it has one.
@@ -206,14 +205,14 @@ public class Game {
         for (int i = 0; i < Board.ROWS; i++) {
             if (isRowWinner(i)) {
                 logger.info("Row winner is determined at row: " + i);
-                return determineWinner(i, 0, 1, 0);
+                return determineWinner(i, 0, 0, 1);
             }
         }
 
         for (int i = 0; i < Board.COLS; i++) {
             if (isColWinner(i)) {
                 logger.info("Column winner is determined at col: " + i);
-                return determineWinner(0, i, 0, 1);
+                return determineWinner(0, i, 1, 0);
             }
         }
 
@@ -243,30 +242,36 @@ public class Game {
      * @return The winning player or `null` if there is no winner.
      */
     private Player determineWinner(int rowIndex, int colIndex, int rowOffset, int colOffset) {
-        for (int i = rowIndex; i + CONSECUTIVE_PIECES_FOR_WIN < Board.ROWS; i += rowOffset) {
-            for (int j = colIndex; j + CONSECUTIVE_PIECES_FOR_WIN < Board.COLS; j += colOffset) {
-                Color color = board.getPieces()[i][j].getColor();
-                boolean isWinner = true;
+        int currentRow = rowIndex;
+        int currentCol = colIndex;
 
-                for (int k = 0; k < CONSECUTIVE_PIECES_FOR_WIN; k++) {
-                    int x = i + rowOffset * k;
-                    int y = j + colOffset * k;
+        while (currentRow >= 0 && currentRow + CONSECUTIVE_PIECES_FOR_WIN < Board.ROWS
+                && currentCol >= 0 && currentCol + CONSECUTIVE_PIECES_FOR_WIN < Board.COLS) {
+            Color color = board.getPieces()[currentRow][currentCol].getColor();
+            boolean isWinner = true;
 
-                    if (board.getPieces()[x][y].getColor() != color) {
-                        isWinner = false;
-                        break;
-                    }
-                }
+            for (int k = 0; k < CONSECUTIVE_PIECES_FOR_WIN; k++) {
+                int x = currentRow + rowOffset * k;
+                int y = currentCol + colOffset * k;
 
-                if (isWinner) {
-                    Player winner = color == Color.RED ? redPlayer : yellowPlayer;
-
-                    logger.info("Winner determined: " + winner.getFirstName() + " " + winner.getLastName());
-                    return winner;
+                if (board.getPieces()[x][y].getColor() != color) {
+                    System.out.println("True");
+                    isWinner = false;
+                    break;
                 }
             }
+
+            if (isWinner) {
+                Player winner = color == Color.RED ? redPlayer : yellowPlayer;
+
+                logger.info("Winner determined: " + winner.getFirstName() + " " + winner.getLastName());
+                return winner;
+            }
+
+            currentRow += rowOffset;
+            currentCol += colOffset;
         }
-        
+
         return null;
     }
 }
