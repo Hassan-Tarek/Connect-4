@@ -2,6 +2,7 @@ package org.connect4.game;
 
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.Color;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

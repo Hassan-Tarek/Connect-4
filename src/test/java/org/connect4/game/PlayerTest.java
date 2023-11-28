@@ -4,6 +4,7 @@ import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.Color;
 import org.connect4.game.utils.GameType;
 import org.connect4.game.utils.PlayerType;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ public class PlayerTest {
             Assertions.assertThrows(InvalidMoveException.class, () -> redPlayer.makeMove(board, -1));
         }
         catch (InvalidMoveException ex) {
-            ex.printStackTrace();
+            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
         }
     }
 
@@ -58,7 +59,7 @@ public class PlayerTest {
             Assertions.assertTrue(redPlayer.isWin(game));
         }
         catch (InvalidMoveException ex) {
-            ex.printStackTrace();
+            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
         }
     }
 }
