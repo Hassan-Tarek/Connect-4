@@ -1,6 +1,5 @@
 package org.connect4.ai;
 
-import org.connect4.game.Board;
 import org.connect4.game.Player;
 import org.connect4.game.utils.Color;
 import org.connect4.game.utils.PlayerType;
@@ -17,5 +16,5 @@ public abstract class AI extends Player {
         return aiType;
     }
 
-    public abstract int getNextMove(Board board, int depth);
+    public abstract int getNextMove();
 }
