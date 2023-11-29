@@ -6,5 +6,9 @@ package org.connect4.game.utils;
  */
 public enum Color {
     RED,
-    YELLOW
+    YELLOW;
+
+    public Color opposite() {
+        return this == RED ? YELLOW : RED;
+    }
 }

@@ -26,12 +26,25 @@ public class Position {
         return row;
     }
 
-
     /**
      * Gets the column coordinate of the position.
      * @return The column coordinate.
      */
     public int getColumn() {
         return column;
+    }
+
+    /**
+     * Creates and returns a copy of this Position object.
+     *
+     * @return A new Position object that is a copy of this instance.
+     */
+    @Override
+    public Position clone() {
+        try {
+            return (Position) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

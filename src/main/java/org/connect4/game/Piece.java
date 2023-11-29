@@ -7,7 +7,7 @@ import org.connect4.game.utils.Position;
  * A class represents a board piece.
  * @author Hassan
  */
-public class Piece {
+public class Piece implements Cloneable {
     private final Position position;
     private final Color color;
 
@@ -35,5 +35,16 @@ public class Piece {
      */
     public Color getColor() {
         return color;
+    }
+
+    /**
+     * Creates and returns a copy of this Piece object.
+     *
+     * @return A new Piece object that is a copy of this instance.
+     */
+    @Override
+    public Piece clone() throws CloneNotSupportedException {
+        Position clonedPosition = position.clone();
+        return new Piece(clonedPosition, color);
     }
 }

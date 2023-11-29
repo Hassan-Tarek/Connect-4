@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * The class represents the game board for Connect-4.
  * @author Hassan
  */
-public class Board {
+public class Board implements Cloneable {
     private static final Logger logger = Game.logger;
     public static final int ROWS = 6;
     public static final int COLS = 7;
@@ -112,5 +112,22 @@ public class Board {
         }
 
         return isAdded;
+    }
+
+    /**
+     * Creates and returns a copy of this Board object.
+     *
+     * @return A new Board object that is a copy of this instance.
+     */
+    @Override
+    public Board clone() {
+        try {
+            Board cloned = (Board) super.clone();
+            cloned.pieces = pieces.clone();
+            cloned.currentRowIndex = currentRowIndex.clone();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
