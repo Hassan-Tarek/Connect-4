@@ -1,6 +1,7 @@
-package org.connect4.ai;
+package org.connect4.ai.strategies;
 
-import org.connect4.game.Board;
+import org.connect4.ai.enums.AIType;
+import org.connect4.game.core.Board;
 
 public class RandomChoiceAI extends AI {
     private final Board board;

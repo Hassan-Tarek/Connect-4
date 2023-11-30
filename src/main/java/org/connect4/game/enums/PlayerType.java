@@ -1,4 +1,4 @@
-package org.connect4.game.utils;
+package org.connect4.game.enums;
 
 /**
  * Enum representing different types of the player.

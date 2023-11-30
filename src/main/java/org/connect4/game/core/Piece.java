@@ -1,7 +1,6 @@
-package org.connect4.game;
+package org.connect4.game.core;
 
-import org.connect4.game.utils.Color;
-import org.connect4.game.utils.Position;
+import org.connect4.game.enums.Color;
 
 /**
  * A class represents a board piece.

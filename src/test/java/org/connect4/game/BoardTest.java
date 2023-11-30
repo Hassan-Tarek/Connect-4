@@ -1,7 +1,8 @@
 package org.connect4.game;
 
+import org.connect4.game.core.Board;
 import org.connect4.game.exceptions.InvalidMoveException;
-import org.connect4.game.utils.Color;
+import org.connect4.game.enums.Color;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

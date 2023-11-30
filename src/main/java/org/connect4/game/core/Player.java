@@ -1,8 +1,8 @@
-package org.connect4.game;
+package org.connect4.game.core;
 
 import org.connect4.game.exceptions.InvalidMoveException;
-import org.connect4.game.utils.Color;
-import org.connect4.game.utils.PlayerType;
+import org.connect4.game.enums.Color;
+import org.connect4.game.enums.PlayerType;
 
 import java.util.logging.Logger;
 

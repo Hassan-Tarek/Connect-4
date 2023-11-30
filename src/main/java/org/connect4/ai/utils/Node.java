@@ -1,6 +1,8 @@
-package org.connect4.ai;
+package org.connect4.ai.utils;
 
-import org.connect4.game.Board;
+import org.connect4.ai.enums.NodeType;
+import org.connect4.ai.heuristics.Heuristic;
+import org.connect4.game.core.Board;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.WinnerChecker;
 

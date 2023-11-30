@@ -1,10 +1,10 @@
-package org.connect4.game.utils;
+package org.connect4.game.core;
 
 /**
  * A class represents the position of game piece.
  * @author Hassan
  */
-public class Position {
+public class Position implements Cloneable {
     private final int row;
     private final int column;
 

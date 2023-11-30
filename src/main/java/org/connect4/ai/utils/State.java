@@ -1,7 +1,7 @@
-package org.connect4.ai;
+package org.connect4.ai.utils;
 
-import org.connect4.game.Board;
-import org.connect4.game.utils.Color;
+import org.connect4.game.core.Board;
+import org.connect4.game.enums.Color;
 
 public class State implements Cloneable {
     private final Board board;

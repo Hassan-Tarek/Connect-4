@@ -1,9 +1,12 @@
 package org.connect4.game;
 
+import org.connect4.game.core.Board;
+import org.connect4.game.core.Game;
+import org.connect4.game.core.Player;
 import org.connect4.game.exceptions.InvalidMoveException;
-import org.connect4.game.utils.Color;
-import org.connect4.game.utils.GameType;
-import org.connect4.game.utils.PlayerType;
+import org.connect4.game.enums.Color;
+import org.connect4.game.enums.GameType;
+import org.connect4.game.enums.PlayerType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

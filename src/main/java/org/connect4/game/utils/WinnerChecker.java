@@ -1,7 +1,8 @@
 package org.connect4.game.utils;
 
-import org.connect4.game.Board;
-import org.connect4.game.Game;
+import org.connect4.game.core.Board;
+import org.connect4.game.core.Game;
+import org.connect4.game.enums.Color;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

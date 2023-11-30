@@ -1,8 +1,9 @@
-package org.connect4.ai;
+package org.connect4.ai.strategies;
 
-import org.connect4.game.Player;
-import org.connect4.game.utils.Color;
-import org.connect4.game.utils.PlayerType;
+import org.connect4.ai.enums.AIType;
+import org.connect4.game.core.Player;
+import org.connect4.game.enums.Color;
+import org.connect4.game.enums.PlayerType;
 
 public abstract class AI extends Player {
     private final AIType aiType;

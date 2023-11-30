@@ -1,8 +1,8 @@
-package org.connect4.game;
+package org.connect4.game.core;
 
 import org.connect4.game.exceptions.InvalidMoveException;
-import org.connect4.game.utils.Color;
-import org.connect4.game.utils.GameType;
+import org.connect4.game.enums.Color;
+import org.connect4.game.enums.GameType;
 import org.connect4.game.utils.WinnerChecker;
 
 import java.io.IOException;

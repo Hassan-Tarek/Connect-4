@@ -1,4 +1,7 @@
-package org.connect4.ai;
+package org.connect4.ai.strategies;
+
+import org.connect4.ai.enums.AIType;
+import org.connect4.ai.utils.Node;
 
 public class MinimaxWithPruningAI extends MinimaxAI {
     public MinimaxWithPruningAI(Node node, int depth) {

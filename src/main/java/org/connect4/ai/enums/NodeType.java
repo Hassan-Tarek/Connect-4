@@ -1,4 +1,4 @@
-package org.connect4.ai;
+package org.connect4.ai.enums;
 
 public enum NodeType {
     MIN,

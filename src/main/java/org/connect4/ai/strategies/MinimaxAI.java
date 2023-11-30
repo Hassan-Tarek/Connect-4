@@ -1,4 +1,7 @@
-package org.connect4.ai;
+package org.connect4.ai.strategies;
+
+import org.connect4.ai.enums.AIType;
+import org.connect4.ai.utils.Node;
 
 public abstract class MinimaxAI extends AI {
     private final Node node;
