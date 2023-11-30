@@ -30,7 +30,7 @@ public class BoardTest {
 
             added = board.addPiece(1, Color.YELLOW);
             Assertions.assertTrue(added);
-            Assertions.assertNotNull(board.getPieces()[1][0]);
+            Assertions.assertNotNull(board.getPieces()[0][1]);
 
             added = board.addPiece(-1, Color.RED);
             Assertions.assertFalse(added);

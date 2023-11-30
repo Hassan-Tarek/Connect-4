@@ -136,7 +136,7 @@ public class Player {
      * @return true if this player is the winner of the game, false otherwise.
      */
     public boolean isWin(Game game) {
-        boolean isWin = game.hasWinner() && game.getWinner() == this;
+        boolean isWin = game.getWinner() == this;
 
         if (isWin) {
             logger.info("This player won the game.");

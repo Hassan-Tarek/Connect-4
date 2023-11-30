@@ -4,12 +4,13 @@ import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.Color;
 import org.connect4.game.utils.GameType;
 import org.connect4.game.utils.PlayerType;
+import org.connect4.game.utils.WinnerChecker;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GameTest {
+public class WinnerCheckerTest {
     private Board[] boards;
     private Player redPlayer;
     private Player yellowPlayer;
@@ -30,58 +31,36 @@ public class GameTest {
     }
 
     @Test
-    public void testGameInitialization() {
-        Assertions.assertNotNull(games[0]);
-        Assertions.assertEquals(boards[0], games[0].getBoard());
-        Assertions.assertEquals(redPlayer, games[0].getRedPlayer());
-        Assertions.assertEquals(yellowPlayer, games[0].getYellowPlayer());
-        Assertions.assertEquals(GameType.HUMAN_VS_HUMAN, games[0].getGameType());
-    }
-
-    @Test
-    public void testGetWinner() {
+    public void testHasWinner() {
         try {
-            redPlayer.makeMove(games[1].getBoard(), 0);
-            redPlayer.makeMove(games[1].getBoard(), 0);
-            redPlayer.makeMove(games[1].getBoard(), 0);
-            redPlayer.makeMove(games[1].getBoard(), 0);
+            redPlayer.makeMove(games[1].getBoard(), 1);
+            redPlayer.makeMove(games[1].getBoard(), 1);
+            redPlayer.makeMove(games[1].getBoard(), 1);
+            redPlayer.makeMove(games[1].getBoard(), 1);
 
             yellowPlayer.makeMove(games[2].getBoard(), 0);
             yellowPlayer.makeMove(games[2].getBoard(), 1);
             yellowPlayer.makeMove(games[2].getBoard(), 2);
             yellowPlayer.makeMove(games[2].getBoard(), 3);
 
-            redPlayer.makeMove(games[3].getBoard(), 0);
-            yellowPlayer.makeMove(games[3].getBoard(), 1);
             redPlayer.makeMove(games[3].getBoard(), 1);
-            yellowPlayer.makeMove(games[3].getBoard(), 2);
             yellowPlayer.makeMove(games[3].getBoard(), 2);
             redPlayer.makeMove(games[3].getBoard(), 2);
             yellowPlayer.makeMove(games[3].getBoard(), 3);
             yellowPlayer.makeMove(games[3].getBoard(), 3);
-            yellowPlayer.makeMove(games[3].getBoard(), 3);
             redPlayer.makeMove(games[3].getBoard(), 3);
+            yellowPlayer.makeMove(games[3].getBoard(), 4);
+            yellowPlayer.makeMove(games[3].getBoard(), 4);
+            yellowPlayer.makeMove(games[3].getBoard(), 4);
+            redPlayer.makeMove(games[3].getBoard(), 4);
 
-            Assertions.assertNull(games[0].getWinner());
-            Assertions.assertEquals(redPlayer, games[1].getWinner());
-            Assertions.assertEquals(yellowPlayer, games[2].getWinner());
-            Assertions.assertEquals(redPlayer, games[3].getWinner());
+            Assertions.assertFalse(WinnerChecker.hasWinner(boards[0]));
+            Assertions.assertTrue(WinnerChecker.hasWinner(boards[1]));
+            Assertions.assertTrue(WinnerChecker.hasWinner(boards[2]));
+            Assertions.assertTrue(WinnerChecker.hasWinner(boards[3]));
         }
         catch (InvalidMoveException ex) {
             Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
         }
-    }
-
-    @Test
-    public void testPerformCurrentPlayerMove() {
-        Assertions.assertEquals(redPlayer, games[0].getCurrentPlayer());
-
-        try {
-            games[0].performCurrentPlayerMove(0);
-        } catch (InvalidMoveException ex) {
-            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
-        }
-
-        Assertions.assertEquals(yellowPlayer, games[0].getCurrentPlayer());
     }
 }

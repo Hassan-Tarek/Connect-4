@@ -102,7 +102,7 @@ public class Board implements Cloneable {
         boolean isAdded = false;
         if (isValidMove(col)) {
             Position position = new Position(currentRowIndex[col], col);
-            pieces[col][currentRowIndex[col]] = new Piece(position, color);
+            pieces[currentRowIndex[col]][col] = new Piece(position, color);
             currentRowIndex[col]++;
             isAdded = true;
             logger.info("Piece added to the column: " + col);
@@ -112,6 +112,23 @@ public class Board implements Cloneable {
         }
 
         return isAdded;
+    }
+
+    /**
+     * Checks whether the board is full.
+     * @return true if the board is full, false otherwise.
+     */
+    public boolean isFull() {
+        for (int i = 0; i < Board.ROWS; i++) {
+            for (int j = 0; j < Board.COLS; j++) {
+                if (pieces[i][j] == null) {
+                    return false;
+                }
+            }
+        }
+
+        logger.info("The board is full.");
+        return true;
     }
 
     /**
