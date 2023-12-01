@@ -16,6 +16,42 @@ public class MinimaxWithPruningAI extends MinimaxAI {
     }
 
     private Optional<Node> minimax(Node node, int depth, int alpha, int beta) {
-        return Optional.empty();
+        if (node.isTerminal() || depth == 0) {
+            return Optional.of(node);
+        }
+
+        Node bestNode = null;
+        if (node.isMaxNode()) {
+            for (Node child : node.getChildren()) {
+                Optional<Node> resultNode = minimax(child, depth - 1, alpha, beta);
+                int resultScore = resultNode.map(Node::getScore).orElse(Integer.MIN_VALUE);
+
+                if (resultScore > alpha) {
+                    alpha = resultScore;
+                    bestNode = resultNode.orElse(null);
+                }
+
+                if (alpha >= beta) {
+                    break;
+                }
+            }
+        }
+        else {
+            for (Node child : node.getChildren()) {
+                Optional<Node> resultNode = minimax(child, depth - 1, alpha, beta);
+                int resultScore = resultNode.map(Node::getScore).orElse(Integer.MAX_VALUE);
+
+                if (resultScore < beta) {
+                    beta = resultScore;
+                    bestNode = resultNode.orElse(null);
+                }
+
+                if (alpha >= beta) {
+                    break;
+                }
+            }
+        }
+
+        return Optional.ofNullable(bestNode);
     }
 }
