@@ -3,6 +3,8 @@ package org.connect4.ai.strategies;
 import org.connect4.ai.enums.AIType;
 import org.connect4.ai.utils.Node;
 
+import java.util.Optional;
+
 public abstract class MinimaxAI extends AI {
     private final Node node;
     private final int depth;
@@ -23,8 +25,8 @@ public abstract class MinimaxAI extends AI {
 
     @Override
     public int getNextMove() {
-        return getBestMove().getCol();
+        return getBestMove().map(Node::getCol).orElse(-1);
     }
 
-    public abstract Node getBestMove();
+    public abstract Optional<Node> getBestMove();
 }
