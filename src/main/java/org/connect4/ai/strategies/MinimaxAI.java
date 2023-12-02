@@ -25,8 +25,8 @@ public abstract class MinimaxAI extends AI {
 
     @Override
     public int getNextMove() {
-        return getBestMove().map(Node::getCol).orElse(-1);
+        return minimax(node, depth).map(Node::getCol).orElse(-1);
     }
 
-    public abstract Optional<Node> getBestMove();
+    protected abstract Optional<Node> minimax(Node node, int depth);
 }

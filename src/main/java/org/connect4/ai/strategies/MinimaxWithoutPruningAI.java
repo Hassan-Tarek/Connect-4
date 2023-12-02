@@ -11,37 +11,55 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
     }
 
     @Override
-    public Optional<Node> getBestMove() {
-        return minimax(getNode(), getDepth());
-    }
-
-    private Optional<Node> minimax(Node node, int depth) {
+    protected Optional<Node> minimax(Node node, int depth) {
         if (node.isTerminal() || depth == 0) {
             return Optional.of(node);
         }
 
-        int bestScore = node.isMaxNode() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-        Node bestNode = null;
+        Optional<Node> bestNode;
         if (node.isMaxNode()) {
-            for (Node child : node.getChildren()) {
-                Optional<Node> resultNode = minimax(child, depth - 1);
-                int resultScore = resultNode.map(Node::getScore).orElse(Integer.MIN_VALUE);
+            bestNode = maximize(node, depth);
+        } else {
+            bestNode = minimize(node, depth);
+        }
 
-                if (resultScore > bestScore) {
-                    bestScore = resultScore;
-                    bestNode = resultNode.orElse(null);
-                }
+        return bestNode;
+    }
+
+    private Optional<Node> minimize(Node node, int depth) {
+        if (node.isTerminal() || depth == 0) {
+            return Optional.of(node);
+        }
+
+        int bestScore = Integer.MAX_VALUE;
+        Node bestNode = null;
+        for (Node child : node.getChildren()) {
+            Optional<Node> resultNode = maximize(child, depth - 1);
+            int resultScore = resultNode.map(Node::getScore).orElse(Integer.MAX_VALUE);
+
+            if (resultScore < bestScore) {
+                bestScore = resultScore;
+                bestNode = resultNode.orElse(null);
             }
         }
-        else {
-            for (Node child : node.getChildren()) {
-                Optional<Node> resultNode = minimax(child, depth - 1);
-                int resultScore = resultNode.map(Node::getScore).orElse(Integer.MAX_VALUE);
 
-                if (resultScore < bestScore) {
-                    bestScore = resultScore;
-                    bestNode = resultNode.orElse(null);
-                }
+        return Optional.ofNullable(bestNode);
+    }
+
+    private Optional<Node> maximize(Node node, int depth) {
+        if (node.isTerminal() || depth == 0) {
+            return Optional.of(node);
+        }
+
+        int bestScore = Integer.MIN_VALUE;
+        Node bestNode = null;
+        for (Node child : node.getChildren()) {
+            Optional<Node> resultNode = minimize(child, depth - 1);
+            int resultScore = resultNode.map(Node::getScore).orElse(Integer.MIN_VALUE);
+
+            if (resultScore > bestScore) {
+                bestScore = resultScore;
+                bestNode = resultNode.orElse(null);
             }
         }
 
