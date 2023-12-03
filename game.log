@@ -1,0 +1,336 @@
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 3.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 4
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 4 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 4
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 4 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 4
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 4 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 4
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 4 at row 3.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker isLineWinner
+INFO: Player has won the game.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker hasWinner
+INFO: Board has a winner.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker isLineWinner
+INFO: Player has won the game.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker hasWinner
+INFO: Board has a winner.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker isLineWinner
+INFO: Player has won the game.
+Dec 02, 2023 7:47:49 PM org.connect4.game.utils.WinnerChecker hasWinner
+INFO: Board has a winner.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 4
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 5
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 6
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 3.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 4.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 5.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+SEVERE: Move is not valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+SEVERE: Move is not valid. Column: -1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+SEVERE: Move is not valid. Column: 7
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+SEVERE: Move is not valid. Column: -1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game switchTurn
+INFO: Switched turns. Current player: Jodie Albert
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 3.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 1.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 2.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 3.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game determineWinner
+INFO: Winner determined: John Hardy
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game getWinner
+INFO: Winner is determined at row: 0 and col: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game determineWinner
+INFO: Winner determined: Jodie Albert
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game getWinner
+INFO: Winner is determined at row: 0 and col: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game determineWinner
+INFO: Winner determined: John Hardy
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game getWinner
+INFO: Winner is determined at row: 0 and col: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 1 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 2
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 2 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 3
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 3 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game determineWinner
+INFO: Winner determined: John Hardy
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Game getWinner
+INFO: Winner is determined at row: 0 and col: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player isWin
+INFO: This player won the game.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+INFO: Move is valid. Column: 0
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board addPiece
+INFO: Piece added to column 0 at row 0.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+INFO: Player is making a move.
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Board isValidMove
+SEVERE: Move is not valid. Column: -1
+Dec 02, 2023 7:47:49 PM org.connect4.game.core.Player makeMove
+WARNING: Invalid move. Invalid move for the column: -1

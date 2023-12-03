@@ -148,10 +148,10 @@ public class WinnerChecker {
         int currentCol = colIndex;
 
         while (currentRow >= 0 && currentRow < Board.ROWS && currentCol >= 0 && currentCol < Board.COLS) {
-            if (board.getPieces()[currentRow][currentCol] != null) {
+            if (board.getPieceAt(currentRow, currentCol) != null) {
                 logger.log(Level.FINE, "Piece is not null.");
 
-                if (board.getPieces()[currentRow][currentCol].getColor() == lastColor) {
+                if (board.getPieceAt(currentRow, currentCol).getColor() == lastColor) {
                     count++;
 
                     if (count >= CONSECUTIVE_PIECES_FOR_WIN) {
@@ -159,7 +159,7 @@ public class WinnerChecker {
                         return true;
                     }
                 } else {
-                    lastColor = board.getPieces()[currentRow][currentCol].getColor();
+                    lastColor = board.getPieceAt(currentRow, currentCol).getColor();
                     count = 1;
                 }
             } else {

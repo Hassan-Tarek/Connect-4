@@ -3,10 +3,11 @@ package org.connect4.game.core;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
- * The class represents the game board for Connect-4.
+ * A class represents the game board for Connect-4.
  * @author Hassan
  */
 public class Board implements Cloneable {
@@ -21,8 +22,11 @@ public class Board implements Cloneable {
      * Constructs the game board and initialize its state.
      */
     public Board() {
-        initializeBoard();
-        initializeCurrentRowIndex();
+        pieces = new Piece[ROWS][COLS];
+        currentRowIndex = new int[COLS];
+        Arrays.fill(currentRowIndex, 0);
+
+        logger.fine("Board initialized successfully.");
     }
 
     /**
@@ -34,41 +38,36 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Set the pieces of the game board.
-     * @param pieces The 2D array representing the pieces on the board.
+     * Add the piece with a specific color to the board at a specific column.
+     * @param col The column to add the piece.
+     * @param color The color of the piece.
+     * @throws InvalidMoveException if the move is invalid.
      */
-    public void setPieces(Piece[][] pieces) {
-        this.pieces = pieces;
+    public void addPiece(int col, Color color) throws InvalidMoveException {
+        if (!isValidMove(col)) {
+            throw new InvalidMoveException("Invalid move for the column: " + col);
+        }
+
+        int row = currentRowIndex[col];
+        Position position = new Position(row, col);
+        pieces[row][col] = new Piece(position, color);
+        currentRowIndex[col]++;
+
+        logger.info("Piece added to column " + col + " at row " + row + ".");
     }
 
     /**
-     * Initialize the 2D array that represent the board pieces.
+     * Gets the piece at the specified position on the board.
+     * @param row The row index.
+     * @param col The column index.
+     * @return The piece at the specified position, or null if there is no piece.
      */
-    private void initializeBoard() {
-        pieces = new Piece[ROWS][COLS];
-
-        // Initialize pieces to null
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                pieces[i][j] = null;
-            }
+    public Piece getPieceAt(int row, int col) {
+        if (isValidPosition(row, col)) {
+            return pieces[row][col];
         }
 
-        logger.fine("Board initialized successfully.");
-    }
-
-    /**
-     * Initialize the array that track the current row index of each column.
-     */
-    private void initializeCurrentRowIndex() {
-        currentRowIndex = new int[COLS];
-
-        // Initialize currentRowIndex array to 0
-        for (int i = 0; i < COLS; i++) {
-            currentRowIndex[i] = 0;
-        }
-
-        logger.fine("Current row index initialized.");
+        return null;
     }
 
     /**
@@ -77,14 +76,11 @@ public class Board implements Cloneable {
      * @return true if the move is valid, false otherwise.
      */
     public boolean isValidMove(int col) {
-        boolean isValid  = col >= 0 && col < COLS
-                && currentRowIndex[col] >= 0
-                && currentRowIndex[col] < ROWS;
+        boolean isValid  = isValidColumn(col) && !isColumnFull(col);
 
         if (isValid) {
             logger.info("Move is valid. Column: " + col);
-        }
-        else {
+        } else {
             logger.severe("Move is not valid. Column: " + col);
         }
 
@@ -92,25 +88,31 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Add the piece with a specific color to the board at a specific column.
-     * @param col The column to add the piece.
-     * @param color The color of the piece.
-     * @throws InvalidMoveException if the move is invalid.
+     * Checks whether a column index is valid.
+     * @param col The column index to check.
+     * @return true if the column index is valid, false otherwise.
      */
-    public boolean addPiece(int col, Color color) throws InvalidMoveException {
-        boolean isAdded = false;
-        if (isValidMove(col)) {
-            Position position = new Position(currentRowIndex[col], col);
-            pieces[currentRowIndex[col]][col] = new Piece(position, color);
-            currentRowIndex[col]++;
-            isAdded = true;
-            logger.info("Piece added to the column: " + col);
-        } else {
-            logger.severe("Piece cannot be added to the column: " + col);
-            throw new InvalidMoveException("Invalid move for the column: " + col);
-        }
+    private boolean isValidColumn(int col) {
+        return col >= 0 && col < Board.COLS;
+    }
 
-        return isAdded;
+    /**
+     * Checks whether a column is full.
+     * @param col The column index to check.
+     * @return true if the column is full, false otherwise.
+     */
+    private boolean isColumnFull(int col) {
+        return currentRowIndex[col] >= Board.ROWS;
+    }
+
+    /**
+     * Checks whether a position on the board is valid.
+     * @param row The row index.
+     * @param col The column index.
+     * @return true if the position is valid, false otherwise.
+     */
+    private boolean isValidPosition(int row, int col) {
+        return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS;
     }
 
     /**
@@ -139,11 +141,29 @@ public class Board implements Cloneable {
     public Board clone() {
         try {
             Board cloned = (Board) super.clone();
-            cloned.pieces = pieces.clone();
+            cloned.pieces = clonePieces();
             cloned.currentRowIndex = currentRowIndex.clone();
             return cloned;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    /**
+     * Gets a deep copy of the pieces array.
+     * @return A deep copy of the pieces array.
+     * @throws CloneNotSupportedException Throw exception if the Piece class doesn't implement the Cloneable interface.
+     */
+    private Piece[][] clonePieces() throws CloneNotSupportedException {
+        Piece[][] clonedPieces = new Piece[ROWS][COLS];
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (pieces[i][j] != null) {
+                    clonedPieces[i][j] = pieces[i][j].clone();
+                }
+            }
+        }
+
+        return clonedPieces;
     }
 }

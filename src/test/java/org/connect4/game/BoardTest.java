@@ -25,24 +25,43 @@ public class BoardTest {
     @Test
     public void testAddPiece() {
         try {
-            boolean added = board.addPiece(0, Color.RED);
-            Assertions.assertTrue(added);
-            Assertions.assertNotNull(board.getPieces()[0][0]);
+            board.addPiece(0, Color.RED);
+            Assertions.assertNotNull(board.getPieceAt(0, 0));
 
-            added = board.addPiece(1, Color.YELLOW);
-            Assertions.assertTrue(added);
-            Assertions.assertNotNull(board.getPieces()[0][1]);
+            board.addPiece(1, Color.YELLOW);
+            Assertions.assertNotNull(board.getPieceAt(0, 1));
 
-            added = board.addPiece(-1, Color.RED);
-            Assertions.assertFalse(added);
+            board.addPiece(-1, Color.RED);
 
             for (int i = 0; i < Board.ROWS; i++) {
                 board.addPiece(2, Color.YELLOW);
             }
-            added = board.addPiece(2, Color.RED);
-            Assertions.assertFalse(added);
+            Assertions.assertThrows(InvalidMoveException.class, () -> board.addPiece(2, Color.RED));
         } catch (InvalidMoveException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Test
+    void testIsValidMove() {
+        Board board = new Board();
+
+        for (int col = 0; col < Board.COLS; col++) {
+            Assertions.assertTrue(board.isValidMove(col));
+        }
+
+        // Fill a column to test
+        try {
+            for (int row = 0; row < Board.ROWS; row++) {
+                board.addPiece(0, Color.RED);
+            }
+        } catch (InvalidMoveException ex) {
+            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
+        }
+
+        // Test invalid move
+        Assertions.assertFalse(board.isValidMove(0));
+        Assertions.assertFalse(board.isValidMove(-1));
+        Assertions.assertFalse(board.isValidMove(Board.COLS));
     }
 }

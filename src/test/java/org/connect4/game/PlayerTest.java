@@ -41,7 +41,7 @@ public class PlayerTest {
             redPlayer.makeMove(board, 0);
 
             // Make a valid move
-            Assertions.assertEquals(Color.RED, board.getPieces()[0][0].getColor());
+            Assertions.assertEquals(Color.RED, board.getPieceAt(0, 0).getColor());
 
             // Make an invalid move
             Assertions.assertThrows(InvalidMoveException.class, () -> redPlayer.makeMove(board, -1));

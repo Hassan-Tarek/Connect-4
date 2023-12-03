@@ -122,7 +122,7 @@ public class Game {
     public Player getWinner() {
         for (int i = 0; i < Board.ROWS; i++) {
             for (int j = 0; j < Board.COLS; j++) {
-                if (board.getPieces()[i][j] != null) {
+                if (board.getPieceAt(i, j) != null) {
                     Player rowWinner = determineWinner(i, 0, 0, 1);
                     Player colWinner = determineWinner(0, j, 1, 0);
                     Player leftDiagonalWinner = determineWinner(i, j, 1, 1);
@@ -130,7 +130,7 @@ public class Game {
 
                     if (rowWinner != null || colWinner != null || leftDiagonalWinner != null || rightDiagonalWinner != null) {
                         logger.info("Winner is determined at row: " + i + " and col: " + j);
-                        return board.getPieces()[i][j].getColor() == Color.RED ? redPlayer : yellowPlayer;
+                        return board.getPieceAt(i, j).getColor() == Color.RED ? redPlayer : yellowPlayer;
                     }
                 }
             }
@@ -155,15 +155,15 @@ public class Game {
                 && currentRow + WinnerChecker.CONSECUTIVE_PIECES_FOR_WIN * rowOffset < Board.ROWS
                 && currentCol + WinnerChecker.CONSECUTIVE_PIECES_FOR_WIN * colOffset >= 0
                 && currentCol + WinnerChecker.CONSECUTIVE_PIECES_FOR_WIN * colOffset < Board.COLS) {
-            if (board.getPieces()[currentRow][currentCol] != null) {
-                Color color = board.getPieces()[currentRow][currentCol].getColor();
+            if (board.getPieceAt(currentRow, currentCol) != null) {
+                Color color = board.getPieceAt(currentRow, currentCol).getColor();
                 boolean isWinner = true;
 
                 for (int k = 0; k < WinnerChecker.CONSECUTIVE_PIECES_FOR_WIN; k++) {
                     int x = currentRow + rowOffset * k;
                     int y = currentCol + colOffset * k;
 
-                    if (board.getPieces()[x][y] == null || board.getPieces()[x][y].getColor() != color) {
+                    if (board.getPieceAt(x, y) == null || board.getPieceAt(x, y).getColor() != color) {
                         isWinner = false;
                         break;
                     }
