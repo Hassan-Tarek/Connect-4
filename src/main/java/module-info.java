@@ -23,4 +23,6 @@ module org.connect4 {
     opens org.connect4.ai.strategies to javafx.fxml;
     exports org.connect4.ai.utils;
     opens org.connect4.ai.utils to javafx.fxml;
+    exports org.connect4.logging;
+    opens org.connect4.logging to javafx.fxml;
 }
