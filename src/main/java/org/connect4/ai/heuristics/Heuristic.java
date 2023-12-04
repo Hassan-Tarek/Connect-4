@@ -4,10 +4,14 @@ import org.connect4.ai.utils.State;
 import org.connect4.game.core.Board;
 import org.connect4.game.core.Piece;
 import org.connect4.game.enums.Color;
+import org.connect4.logging.AILogger;
 
 import java.util.function.BinaryOperator;
+import java.util.logging.Logger;
 
 public class Heuristic {
+    private static final Logger logger = AILogger.getLogger();
+
     private static final int WIN_SCORE = 1000;
     private static final int LOSE_SCORE = -1000;
     private static final int THREE_IN_ROW_SCORE = 100;
@@ -31,6 +35,7 @@ public class Heuristic {
     private static int evaluateRows(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
         for (int row = 0; row < Board.ROWS; row++) {
+            logger.info("Evaluate score of row: " + row);
             int score = evaluateRowScore(state, row);
             bestScore = operator.apply(bestScore, score);
         }
@@ -71,6 +76,7 @@ public class Heuristic {
     private static int evaluateColumns(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
         for (int col = 0; col < Board.COLS; col++) {
+            logger.info("Evaluate score of column: " + col);
             int score = evaluateColumnScore(state, col);
             bestScore = operator.apply(bestScore, score);
         }
@@ -123,6 +129,7 @@ public class Heuristic {
 
         for (int row = 0; row <= Board.ROWS - 4; row++) {
             for (int col = 0; col <= Board.COLS - 4; col++) {
+                logger.info("Evaluate score of left diagonal at row: " + row + " and col: " + col);
                 int score = evaluateDiagonalScore(state, row, col, true);
                 bestScore = operator.apply(bestScore, score);
             }
@@ -136,6 +143,7 @@ public class Heuristic {
 
         for (int row = 0; row <= Board.ROWS - 4; row++) {
             for (int col = Board.COLS - 1; col >= 3; col--) {
+                logger.info("Evaluate score of right diagonal at row: " + row + " and col: " + col);
                 int score = evaluateDiagonalScore(state, row, col, false);
                 bestScore = operator.apply(bestScore, score);
             }
@@ -198,6 +206,7 @@ public class Heuristic {
             score = offset * ONE_IN_ROW_SCORE;
         }
 
+        logger.info("Evaluated score: " + score);
         return score;
     }
 }

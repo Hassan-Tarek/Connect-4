@@ -36,7 +36,6 @@ public class Position implements Cloneable {
 
     /**
      * Creates and returns a copy of this Position object.
-     *
      * @return A new Position object that is a copy of this instance.
      */
     @Override

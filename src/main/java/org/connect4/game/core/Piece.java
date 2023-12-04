@@ -38,11 +38,10 @@ public class Piece implements Cloneable {
 
     /**
      * Creates and returns a copy of this Piece object.
-     *
      * @return A new Piece object that is a copy of this instance.
      */
     @Override
-    public Piece clone() throws CloneNotSupportedException {
+    public Piece clone() {
         Position clonedPosition = position.clone();
         return new Piece(clonedPosition, color);
     }

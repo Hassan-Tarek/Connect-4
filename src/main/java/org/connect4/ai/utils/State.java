@@ -7,9 +7,9 @@ public class State implements Cloneable {
     private final Board board;
     private final Color playerColor;
 
-    public State(Board board, Color playercolor) {
+    public State(Board board, Color playerColor) {
         this.board = board;
-        this.playerColor = playercolor;
+        this.playerColor = playerColor;
     }
 
     public Board getBoard() {
@@ -21,7 +21,7 @@ public class State implements Cloneable {
     }
 
     @Override
-    public State clone() throws CloneNotSupportedException {
+    public State clone() {
         Board clonedBoard = board.clone();
         return new State(clonedBoard, playerColor);
     }

@@ -1,19 +1,18 @@
 package org.connect4.game.utils;
 
 import org.connect4.game.core.Board;
-import org.connect4.game.core.Game;
 import org.connect4.game.enums.Color;
+import org.connect4.logging.GameLogger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The class represents the utility for checking the winner in a Connect-4 game.
- * It provides methods to check for a winning sequence along rows, columns, and diagonals on the game board.
- * @author Hassan
+ * A class represents the utility for checking the winner in a Connect-4 game.
+ * @author hassan
  */
 public class WinnerChecker {
-    public static final Logger logger = Game.logger;
+    public static final Logger logger = GameLogger.getLogger();
     public static final int CONSECUTIVE_PIECES_FOR_WIN = 4;
 
     /**

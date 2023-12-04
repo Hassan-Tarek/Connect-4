@@ -2,6 +2,7 @@ package org.connect4.game.core;
 
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
+import org.connect4.logging.GameLogger;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -11,7 +12,7 @@ import java.util.logging.Logger;
  * @author Hassan
  */
 public class Board implements Cloneable {
-    private static final Logger logger = Game.logger;
+    private static final Logger logger = GameLogger.getLogger();
     public static final int ROWS = 6;
     public static final int COLS = 7;
 

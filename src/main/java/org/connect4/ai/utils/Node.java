@@ -5,11 +5,15 @@ import org.connect4.ai.heuristics.Heuristic;
 import org.connect4.game.core.Board;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.WinnerChecker;
+import org.connect4.logging.AILogger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Node {
+    private static final Logger logger = AILogger.getLogger();
+
     private final State state;
     private final NodeType nodeType;
     private final int col;
@@ -17,7 +21,7 @@ public class Node {
     private final boolean isTerminal;
     private final List<Node> children;
 
-    public Node(State state, NodeType nodeType, int col) throws CloneNotSupportedException {
+    public Node(State state, NodeType nodeType, int col) {
         this.state = state;
         this.nodeType = nodeType;
         this.col = col;
@@ -55,10 +59,12 @@ public class Node {
     }
 
     private boolean determineTerminal() {
-        return state.getBoard().isFull() || WinnerChecker.hasWinner(state.getBoard());
+        boolean isTerminal = state.getBoard().isFull() || WinnerChecker.hasWinner(state.getBoard());
+        logger.info("Node terminal status: " + isTerminal);
+        return isTerminal;
     }
 
-    private List<Node> expand() throws CloneNotSupportedException {
+    private List<Node> expand() {
         List<Node> childrenList = new ArrayList<>();
 
         for (int i = 0; i < Board.COLS; i++) {
@@ -75,6 +81,7 @@ public class Node {
             }
         }
 
+        logger.info("This node has: " + childrenList.size() + " child nodes.");
         return childrenList;
     }
 }

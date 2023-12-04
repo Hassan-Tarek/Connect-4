@@ -4,44 +4,22 @@ import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
 import org.connect4.game.enums.GameType;
 import org.connect4.game.utils.WinnerChecker;
+import org.connect4.logging.GameLogger;
 
-import java.io.IOException;
 import java.util.logging.Logger;
-import java.util.logging.FileHandler;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 
 /**
  * A class represents Connect-4 game.
  * @author Hassan
  */
 public class Game {
-    public static final Logger logger = Logger.getLogger(Game.class.getName());
+    public static final Logger logger = GameLogger.getLogger();
 
     private final Board board;
     private final Player redPlayer;
     private final Player yellowPlayer;
     private Player currentPlayer;
     private final GameType gameType;
-
-    // Static block for setting up logging handlers
-    static {
-        try {
-            FileHandler fileHandler = new FileHandler("game.log");
-            fileHandler.setFormatter(new SimpleFormatter());
-            fileHandler.setLevel(Level.INFO);
-
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(new SimpleFormatter());
-            consoleHandler.setLevel(Level.INFO);
-
-            logger.addHandler(fileHandler);
-            logger.addHandler(consoleHandler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Constructs a new game.

@@ -3,6 +3,7 @@ package org.connect4.game.core;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
 import org.connect4.game.enums.PlayerType;
+import org.connect4.logging.GameLogger;
 
 import java.util.logging.Logger;
 
@@ -11,7 +12,7 @@ import java.util.logging.Logger;
  * @author Hassan
  */
 public class Player {
-    private static final Logger logger = Game.logger;
+    private static final Logger logger = GameLogger.getLogger();
 
     private String firstName;
     private String lastName;

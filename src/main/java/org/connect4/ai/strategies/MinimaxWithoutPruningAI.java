@@ -2,21 +2,23 @@ package org.connect4.ai.strategies;
 
 import org.connect4.ai.enums.AIType;
 import org.connect4.ai.utils.Node;
+import org.connect4.logging.AILogger;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class MinimaxWithoutPruningAI extends MinimaxAI {
+    private static final Logger logger = AILogger.getLogger();
+
     public MinimaxWithoutPruningAI(Node node, int depth) {
         super(AIType.MINIMAX_WITHOUT_PRUNING_AI, node, depth);
+        logger.info("MinimaxWithoutPruningAI player has been instantiated!");
     }
 
     @Override
     protected Optional<Node> minimax(Node node, int depth) {
-        if (node.isTerminal() || depth == 0) {
-            return Optional.of(node);
-        }
-
         Optional<Node> bestNode;
+
         if (node.isMaxNode()) {
             bestNode = maximize(node, depth);
         } else {
@@ -27,7 +29,10 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
     }
 
     private Optional<Node> minimize(Node node, int depth) {
+        logger.finest("Entered MinimaxWithoutPruningAI minimize method.");
+
         if (node.isTerminal() || depth == 0) {
+            logger.info("Reached terminal node or maximum depth in minimize method.");
             return Optional.of(node);
         }
 
@@ -43,11 +48,15 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
             }
         }
 
+        logger.finest("Exiting MinimaxWithoutPruningAI minimize method.");
         return Optional.ofNullable(bestNode);
     }
 
     private Optional<Node> maximize(Node node, int depth) {
+        logger.finest("Entered MinimaxWithoutPruningAI maximize method.");
+
         if (node.isTerminal() || depth == 0) {
+            logger.info("Reached terminal node or maximum depth in maximize method.");
             return Optional.of(node);
         }
 
@@ -63,6 +72,7 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
             }
         }
 
+        logger.finest("Exiting MinimaxWithoutPruningAI maximize method.");
         return Optional.ofNullable(bestNode);
     }
 }
