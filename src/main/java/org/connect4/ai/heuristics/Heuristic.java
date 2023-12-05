@@ -9,6 +9,10 @@ import org.connect4.logging.AILogger;
 import java.util.function.BinaryOperator;
 import java.util.logging.Logger;
 
+/**
+ * A Class evaluates the heuristic scores for Connect-4 game states.
+ * @author hassan
+ */
 public class Heuristic {
     private static final Logger logger = AILogger.getLogger();
 
@@ -19,6 +23,11 @@ public class Heuristic {
     private static final int ONE_IN_ROW_SCORE = 1;
     private static final int DEFAULT_SCORE = 0;
 
+    /**
+     * Evaluates the heuristic score for the given game state.
+     * @param state The game state to evaluate.
+     * @return The heuristic score.
+     */
     public static int evaluate(State state) {
         int maxScore;
         BinaryOperator<Integer> operator = state.getPlayerColor() == Color.RED ? Math::max : Math::min;
@@ -32,6 +41,12 @@ public class Heuristic {
         return maxScore;
     }
 
+    /**
+     * Evaluates the heuristic score for all rows in the game board.
+     * @param state The game state to evaluate.
+     * @param operator A binary operator that determines whether to calculate the maximum or minimum score;
+     * @return The heuristic score for rows.
+     */
     private static int evaluateRows(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
         for (int row = 0; row < Board.ROWS; row++) {
@@ -42,6 +57,12 @@ public class Heuristic {
         return bestScore;
     }
 
+    /**
+     * Evaluates the heuristic score for the row with the specified rowIndex.
+     * @param state The game state to evaluate.
+     * @param rowIndex The index of the row to be evaluated.
+     * @return The heuristic score for a specific row.
+     */
     private static int evaluateRowScore(State state, int rowIndex) {
         int maxPiecesCount = 0;
         boolean isValidRow = false;
@@ -73,6 +94,12 @@ public class Heuristic {
         return evaluateScore(state, maxPiecesCount, isValidRow);
     }
 
+    /**
+     * Evaluates the heuristic score for all columns in the game board.
+     * @param state The game state to evaluate.
+     * @param operator A binary operator that determines whether to calculate the maximum or minimum score;
+     * @return The heuristic score for columns.
+     */
     private static int evaluateColumns(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
         for (int col = 0; col < Board.COLS; col++) {
@@ -83,6 +110,12 @@ public class Heuristic {
         return bestScore;
     }
 
+    /**
+     * Evaluates the heuristic score for the column with the specified colIndex.
+     * @param state The game state to evaluate.
+     * @param colIndex The index of the column to be evaluated.
+     * @return The heuristic score for a specific column.
+     */
     private static int evaluateColumnScore(State state, int colIndex) {
         int maxPiecesCount = 0;
         boolean isValidCol = false;
@@ -114,6 +147,12 @@ public class Heuristic {
         return evaluateScore(state, maxPiecesCount, isValidCol);
     }
 
+    /**
+     * Evaluates the heuristic score for all diagonals in the game board.
+     * @param state The game state to evaluate.
+     * @param operator A binary operator that determines whether to calculate the maximum or minimum score;
+     * @return The heuristic score for diagonals.
+     */
     private static int evaluateDiagonals(State state, BinaryOperator<Integer> operator) {
         // Evaluate diagonals starting from top-left corner
         int bestLeftDiagonalsScore = evaluateLeftDiagonalsScore(state, operator);
@@ -124,6 +163,12 @@ public class Heuristic {
         return operator.apply(bestLeftDiagonalsScore, bestRightDiagonalsScore);
     }
 
+    /**
+     * Evaluates the heuristic score for left diagonals rows in the game board.
+     * @param state The game state to evaluate.
+     * @param operator A binary operator that determines whether to calculate the maximum or minimum score;
+     * @return The heuristic score for left diagonals.
+     */
     private static int evaluateLeftDiagonalsScore(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
 
@@ -138,6 +183,12 @@ public class Heuristic {
         return bestScore;
     }
 
+    /**
+     * Evaluates the heuristic score for all right diagonals in the game board.
+     * @param state The game state to evaluate.
+     * @param operator A binary operator that determines whether to calculate the maximum or minimum score;
+     * @return The heuristic score for right diagonals.
+     */
     private static int evaluateRightDiagonalsScore(State state, BinaryOperator<Integer> operator) {
         int bestScore = 0;
 
@@ -152,6 +203,14 @@ public class Heuristic {
         return bestScore;
     }
 
+    /**
+     * Evaluates the heuristic score for a diagonal with the specified rowIndex and colIndex.
+     * @param state The game state to evaluate.
+     * @param rowIndex The starting row index of the diagonal.
+     * @param colIndex The starting column index of the diagonal.
+     * @param isLeftDiagonal Indicates whether the diagonal is a left diagonal or a right diagonal.
+     * @return The heuristic score for a specific diagonal.
+     */
     private static int evaluateDiagonalScore(State state, int rowIndex, int colIndex, boolean isLeftDiagonal) {
         int offset = isLeftDiagonal ? 1 : -1;
         int maxPiecesCount = 0;
@@ -190,6 +249,13 @@ public class Heuristic {
         return evaluateScore(state, maxPiecesCount, isValidCol);
     }
 
+    /**
+     * Evaluates the heuristic score based on the number of pieces in a line.
+     * @param state The game state to evaluate.
+     * @param piecesCount The number of pieces in a line.
+     * @param isValidLine Indicates whether the line is valid (contains pieces of the same color).
+     * @return The heuristic score for the line.
+     */
     private static int evaluateScore(State state, int piecesCount, boolean isValidLine) {
         int offset = state.getPlayerColor() == Color.RED ? 1 : -1;
         int score = DEFAULT_SCORE;

@@ -8,6 +8,10 @@ public enum Color {
     RED,
     YELLOW;
 
+    /**
+     * Returns the opposite Color.
+     * @return The opposite Color.
+     */
     public Color opposite() {
         return this == RED ? YELLOW : RED;
     }
