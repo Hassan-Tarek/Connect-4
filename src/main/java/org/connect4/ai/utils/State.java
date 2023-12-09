@@ -8,8 +8,8 @@ import org.connect4.game.enums.Color;
  * @author hassan
  */
 public class State implements Cloneable {
-    private final Board board;
-    private final Color playerColor;
+    private Board board;
+    private Color playerColor;
 
     /**
      * Constructs a new game state with the specified board and player color.
@@ -30,6 +30,14 @@ public class State implements Cloneable {
     }
 
     /**
+     * Gets the current game board.
+     * @param board The game board.
+     */
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    /**
      * Gets the color of the player making the move.
      * @return The player's color.
      */
@@ -38,12 +46,25 @@ public class State implements Cloneable {
     }
 
     /**
+     * Sets the color of the player making the move.
+     * @param playerColor The player's color.
+     */
+    public void setPlayerColor(Color playerColor) {
+        this.playerColor = playerColor;
+    }
+
+    /**
      * Creates a deep copy of the current game state.
      * @return A clone of the game state.
      */
     @Override
     public State clone() {
-        Board clonedBoard = board.clone();
-        return new State(clonedBoard, playerColor);
+        try {
+            State clonedState = (State) super.clone();
+            this.setBoard(clonedState.board.clone());
+            return clonedState;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

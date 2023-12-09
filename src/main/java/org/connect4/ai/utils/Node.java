@@ -3,6 +3,7 @@ package org.connect4.ai.utils;
 import org.connect4.ai.enums.NodeType;
 import org.connect4.ai.heuristics.Heuristic;
 import org.connect4.game.core.Board;
+import org.connect4.game.enums.Color;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.WinnerChecker;
 import org.connect4.logging.AILogger;
@@ -23,7 +24,6 @@ public class Node {
     private final int col;
     private final int score;
     private final boolean isTerminal;
-    private final List<Node> children;
 
     /**
      * Constructs a new node with the given state, node type, and column index.
@@ -35,9 +35,8 @@ public class Node {
         this.state = state;
         this.nodeType = nodeType;
         this.col = col;
-        this.score = Heuristic.evaluate(state);
+        this.score = Heuristic.evaluate(state.getBoard());
         this.isTerminal = determineTerminal();
-        this.children = isTerminal ? new ArrayList<>() : expand();
     }
 
     /**
@@ -85,7 +84,7 @@ public class Node {
      * @return The list of child nodes.
      */
     public List<Node> getChildren() {
-        return new ArrayList<>(children);
+        return expand();
     }
 
     /**
@@ -116,9 +115,10 @@ public class Node {
         for (int i = 0; i < Board.COLS; i++) {
             if (state.getBoard().isValidMove(i)) {
                 State childState = state.clone();
+                childState.setPlayerColor(state.getPlayerColor().opposite());
                 NodeType childNodeType = nodeType.opposite();
                 try {
-                    childState.getBoard().addPiece(i, childState.getPlayerColor().opposite());
+                    childState.getBoard().addPiece(i, childState.getPlayerColor());
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }

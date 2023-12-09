@@ -77,7 +77,7 @@ public class Board implements Cloneable {
      * @return true if the move is valid, false otherwise.
      */
     public boolean isValidMove(int col) {
-        boolean isValid  = isValidColumn(col) && !isColumnFull(col);
+        boolean isValid = isValidColumn(col) && !isColumnFull(col);
 
         if (isValid) {
             logger.info("Move is valid. Column: " + col);

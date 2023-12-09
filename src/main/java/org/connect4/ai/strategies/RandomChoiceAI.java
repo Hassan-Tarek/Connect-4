@@ -34,8 +34,12 @@ public class RandomChoiceAI extends AI {
      */
     @Override
     public int getNextMove() {
-        int col;
+        if (board.isFull()) {
+            logger.warning("Board is full!");
+            return -1;
+        }
 
+        int col;
         do {
             col = random.nextInt(Board.COLS) + 1;
         } while (!board.isValidMove(col));

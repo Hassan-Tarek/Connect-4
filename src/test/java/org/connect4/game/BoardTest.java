@@ -31,7 +31,7 @@ public class BoardTest {
             board.addPiece(1, Color.YELLOW);
             Assertions.assertNotNull(board.getPieceAt(0, 1));
 
-            board.addPiece(-1, Color.RED);
+            Assertions.assertThrows(InvalidMoveException.class, () -> board.addPiece(-1, Color.RED));
 
             for (int i = 0; i < Board.ROWS; i++) {
                 board.addPiece(2, Color.YELLOW);
