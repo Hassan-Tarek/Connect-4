@@ -95,6 +95,6 @@ public class MinimaxAITest {
             throw new RuntimeException(e);
         }
         col = ai.getNextMove();
-        Assertions.assertNotEquals(3, col, "The AI should block the opponent's winning move");
+        Assertions.assertEquals(3, col, "The AI should block the opponent's winning move");
     }
 }
