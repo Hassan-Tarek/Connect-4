@@ -27,7 +27,7 @@ public class Board implements Cloneable {
         currentRowIndex = new int[COLS];
         Arrays.fill(currentRowIndex, 0);
 
-        logger.fine("Board initialized successfully.");
+        logger.finest("Board initialized successfully.");
     }
 
     /**
@@ -54,7 +54,7 @@ public class Board implements Cloneable {
         pieces[row][col] = new Piece(position, color);
         currentRowIndex[col]++;
 
-        logger.info("Piece added to column " + col + " at row " + row + ".");
+        logger.fine("Piece added to column " + col + " at row " + row + ".");
     }
 
     /**
@@ -80,9 +80,9 @@ public class Board implements Cloneable {
         boolean isValid = isValidColumn(col) && !isColumnFull(col);
 
         if (isValid) {
-            logger.info("Move is valid. Column: " + col);
+            logger.fine("Move is valid. Column: " + col);
         } else {
-            logger.severe("Move is not valid. Column: " + col);
+            logger.warning("Move is not valid. Column: " + col);
         }
 
         return isValid;

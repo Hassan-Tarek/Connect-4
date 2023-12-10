@@ -167,6 +167,6 @@ public class Game {
      */
     private void switchTurn() {
         currentPlayer = currentPlayer == redPlayer ? yellowPlayer : redPlayer;
-        logger.info("Switched turns. Current player: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
+        logger.fine("Switched turns. Current player: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
     }
 }

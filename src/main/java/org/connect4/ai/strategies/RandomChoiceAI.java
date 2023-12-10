@@ -25,7 +25,7 @@ public class RandomChoiceAI extends AI {
         super(AIType.RANDOM_CHOICE_AI);
         this.board = board;
         this.random = new Random();
-        logger.info("RandomChoiceAI player has been instantiated!");
+        logger.finest("RandomChoiceAI player has been instantiated!");
     }
 
     /**

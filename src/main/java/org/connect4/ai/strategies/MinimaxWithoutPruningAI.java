@@ -21,7 +21,7 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
      */
     public MinimaxWithoutPruningAI(Node node, int depth) {
         super(AIType.MINIMAX_WITHOUT_PRUNING_AI, node, depth);
-        logger.info("MinimaxWithoutPruningAI player has been instantiated!");
+        logger.finest("MinimaxWithoutPruningAI player has been instantiated!");
     }
 
     /**
@@ -53,7 +53,7 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
         logger.finest("Entered MinimaxWithoutPruningAI minimize method.");
 
         if (node.isTerminal() || depth == 0) {
-            logger.info("Reached terminal node or maximum depth in minimize method.");
+            logger.fine("Reached terminal node or maximum depth in minimize method.");
             return Optional.of(node);
         }
 
@@ -83,7 +83,7 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
         logger.finest("Entered MinimaxWithoutPruningAI maximize method.");
 
         if (node.isTerminal() || depth == 0) {
-            logger.info("Reached terminal node or maximum depth in maximize method.");
+            logger.fine("Reached terminal node or maximum depth in maximize method.");
             return Optional.of(node);
         }
 

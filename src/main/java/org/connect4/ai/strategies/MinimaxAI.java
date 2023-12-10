@@ -59,7 +59,7 @@ public abstract class MinimaxAI extends AI {
             logger.fine("Best move found at column: " + bestMove.getCol());
             nextMove = bestMove.getCol();
         } else {
-            logger.info("No valid move found!");
+            logger.warning("No valid move found!");
             nextMove = -1;
         }
 

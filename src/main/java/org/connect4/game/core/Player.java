@@ -103,7 +103,7 @@ public class Player {
      * Resets the score of the player to zero.
      */
     public void resetScore() {
-        logger.info("Player's score has been reset to zero.");
+        logger.fine("Player's score has been reset to zero.");
         this.score = 0;
     }
 
@@ -111,7 +111,7 @@ public class Player {
      * Increases the player's score by one.
      */
     public void incrementScore() {
-        logger.info("Player's score has been increased.");
+        logger.fine("Player's score has been increased.");
         this.score++;
     }
 
@@ -123,7 +123,7 @@ public class Player {
      */
     public void makeMove(Board board, int colIndex) throws InvalidMoveException {
         try {
-            logger.info("Player is making a move.");
+            logger.fine("Player is making a move.");
             board.addPiece(colIndex, color);
         } catch (InvalidMoveException ex) {
             logger.warning("Invalid move. " + ex.getMessage());
