@@ -32,14 +32,21 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
      */
     @Override
     protected Optional<Node> minimax(Node node, int depth) {
-        Optional<Node> bestNode;
+        logger.finest("Entered MinimaxWithoutPruningAI minimax method.");
 
+        if (node.isTerminal() || depth == 0) {
+            logger.fine("Reached terminal node or maximum depth in minimax method.");
+            return Optional.of(node);
+        }
+
+        Optional<Node> bestNode;
         if (node.isMaxNode()) {
             bestNode = maximize(node, depth);
         } else {
             bestNode = minimize(node, depth);
         }
 
+        logger.finest("Exiting MinimaxWithoutPruningAI minimax method.");
         return bestNode;
     }
 
@@ -52,20 +59,16 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
     private Optional<Node> minimize(Node node, int depth) {
         logger.finest("Entered MinimaxWithoutPruningAI minimize method.");
 
-        if (node.isTerminal() || depth == 0) {
-            logger.fine("Reached terminal node or maximum depth in minimize method.");
-            return Optional.of(node);
-        }
-
         int bestScore = Integer.MAX_VALUE;
         Node bestNode = null;
         for (Node child : node.getChildren()) {
-            Optional<Node> resultNode = maximize(child, depth - 1);
+            Optional<Node> resultNode = minimax(child, depth - 1);
             int resultScore = resultNode.map(Node::getScore).orElse(Integer.MAX_VALUE);
+            child.setScore(resultScore);
 
             if (resultScore < bestScore) {
                 bestScore = resultScore;
-                bestNode = resultNode.orElse(null);
+                bestNode = child;
             }
         }
 
@@ -82,20 +85,16 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
     private Optional<Node> maximize(Node node, int depth) {
         logger.finest("Entered MinimaxWithoutPruningAI maximize method.");
 
-        if (node.isTerminal() || depth == 0) {
-            logger.fine("Reached terminal node or maximum depth in maximize method.");
-            return Optional.of(node);
-        }
-
         int bestScore = Integer.MIN_VALUE;
         Node bestNode = null;
         for (Node child : node.getChildren()) {
-            Optional<Node> resultNode = minimize(child, depth - 1);
+            Optional<Node> resultNode = minimax(child, depth - 1);
             int resultScore = resultNode.map(Node::getScore).orElse(Integer.MIN_VALUE);
+            child.setScore(resultScore);
 
             if (resultScore > bestScore) {
                 bestScore = resultScore;
-                bestNode = resultNode.orElse(null);
+                bestNode = child;
             }
         }
 

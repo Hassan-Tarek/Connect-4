@@ -34,14 +34,25 @@ public class MinimaxWithPruningAI extends MinimaxAI {
     protected Optional<Node> minimax(Node node, int depth) {
         int alphaValue = Integer.MIN_VALUE;
         int betaValue = Integer.MAX_VALUE;
-        Optional<Node> bestNode;
+        return minimax(node, depth, alphaValue, betaValue);
+    }
 
-        if (node.isMaxNode()) {
-            bestNode = maximize(node, depth, alphaValue, betaValue);
-        } else {
-            bestNode = minimize(node, depth, alphaValue, betaValue);
+    private Optional<Node> minimax(Node node, int depth, int alpha, int beta) {
+        logger.finest("Entered MinimaxWithPruningAI minimax method.");
+
+        if (node.isTerminal() || depth == 0) {
+            logger.fine("Reached terminal node or maximum depth in minimax method.");
+            return Optional.of(node);
         }
 
+        Optional<Node> bestNode;
+        if (node.isMaxNode()) {
+            bestNode = maximize(node, depth, alpha, beta);
+        } else {
+            bestNode = minimize(node, depth, alpha, beta);
+        }
+
+        logger.finest("Exiting MinimaxWithPruningAI minimax method.");
         return bestNode;
     }
 
@@ -56,22 +67,20 @@ public class MinimaxWithPruningAI extends MinimaxAI {
     private Optional<Node> minimize(Node node, int depth, int alpha, int beta) {
         logger.finest("Entered MinimaxWithPruningAI minimize method.");
 
-        if (node.isTerminal() || depth == 0) {
-            logger.fine("Reached terminal node or maximum depth in minimize method.");
-            return Optional.of(node);
-        }
-
+        int bestScore = Integer.MAX_VALUE;
         Node bestNode = null;
         for (Node child : node.getChildren()) {
-            Optional<Node> resultNode = maximize(child, depth - 1, alpha, beta);
+            Optional<Node> resultNode = minimax(child, depth - 1, alpha, beta);
             int resultScore = resultNode.map(Node::getScore).orElse(Integer.MAX_VALUE);
+            child.setScore(resultScore);
 
-            if (resultScore < beta) {
-                beta = resultScore;
-                bestNode = resultNode.orElse(null);
+            if (resultScore < bestScore) {
+                bestScore = resultScore;
+                bestNode = child;
             }
 
-            if (alpha >= beta) {
+            beta = Math.min(beta, bestScore);
+            if (beta <= alpha) {
                 break;
             }
         }
@@ -91,21 +100,19 @@ public class MinimaxWithPruningAI extends MinimaxAI {
     private Optional<Node> maximize(Node node, int depth, int alpha, int beta) {
         logger.finest("Entered MinimaxWithPruningAI maximize method.");
 
-        if (node.isTerminal() || depth == 0) {
-            logger.fine("Reached terminal node or maximum depth in maximize method.");
-            return Optional.of(node);
-        }
-
+        int bestScore = Integer.MIN_VALUE;
         Node bestNode = null;
         for (Node child : node.getChildren()) {
-            Optional<Node> resultNode = minimize(child, depth - 1, alpha, beta);
+            Optional<Node> resultNode = minimax(child, depth - 1, alpha, beta);
             int resultScore = resultNode.map(Node::getScore).orElse(Integer.MIN_VALUE);
+            child.setScore(resultScore);
 
-            if (resultScore > alpha) {
-                alpha = resultScore;
-                bestNode = resultNode.orElse(null);
+            if (resultScore > bestScore) {
+                bestScore = resultScore;
+                bestNode = child;
             }
 
+            alpha = Math.max(alpha, bestScore);
             if (alpha >= beta) {
                 break;
             }

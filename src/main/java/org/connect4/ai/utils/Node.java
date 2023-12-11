@@ -3,7 +3,6 @@ package org.connect4.ai.utils;
 import org.connect4.ai.enums.NodeType;
 import org.connect4.ai.heuristics.Heuristic;
 import org.connect4.game.core.Board;
-import org.connect4.game.enums.Color;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.utils.WinnerChecker;
 import org.connect4.logging.AILogger;
@@ -22,7 +21,7 @@ public class Node {
     private final State state;
     private final NodeType nodeType;
     private final int col;
-    private final int score;
+    private int score;
     private final boolean isTerminal;
 
     /**
@@ -72,6 +71,14 @@ public class Node {
     }
 
     /**
+     * Sets the score of this node.
+     * @param score The score to be set.
+     */
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    /**
      * Checks if this node is a terminal node.
      * @return true if the node is terminal, false otherwise.
      */
@@ -101,7 +108,8 @@ public class Node {
      */
     private boolean determineTerminal() {
         boolean isTerminal = state.getBoard().isFull() || WinnerChecker.hasWinner(state.getBoard());
-        logger.info("Node terminal status: " + isTerminal);
+        if (isTerminal)
+            logger.info("Reach a terminal node");
         return isTerminal;
     }
 

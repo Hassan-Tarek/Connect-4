@@ -26,7 +26,7 @@ public class MinimaxAITest {
 
     @BeforeEach
     public void setup() {
-        depth = 6;
+        depth = 4;
         col = -1;
         ai = null;
     }
