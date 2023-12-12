@@ -102,6 +102,10 @@ public class Node {
         return this.nodeType == NodeType.MAX;
     }
 
+    /**
+     * Prints the tree structure starting from the current node.
+     * @param depth The depth of the tree to print.
+     */
     public void printChildrenTree(int depth) {
         NodePrinter printer = new NodePrinter(this, depth);
         printer.print();
@@ -144,6 +148,11 @@ public class Node {
         return childrenList;
     }
 
+    /**
+     * Calculates the best score for the current node.
+     * @param depth The remaining depth.
+     * @return The best score for the current node.
+     */
     private int getBestScore(int depth) {
         if (this.isTerminal() || depth < 0) {
             return this.getScore();
@@ -169,6 +178,11 @@ public class Node {
         return bestScore;
     }
 
+    /**
+     * Calculates the best scores for the children nodes of the current node.
+     * @param depth The remaining depth.
+     * @return A list of the best scores for each child node.
+     */
     private List<Integer> getChildrenBestScores(int depth) {
         List<Integer> childrenBestScores = new ArrayList<>();
         for (Node child : this.getChildren()) {
@@ -178,12 +192,27 @@ public class Node {
         return childrenBestScores;
     }
 
+    /**
+     * A class responsible for visualizing the game tree.
+     * @param root The root node of the tree to be printed.
+     * @param depth The maximum depth of the tree to be printed.
+     */
     private record NodePrinter(Node root, int depth) {
+        /**
+         * Prints the game tree.
+         */
         public void print() {
             printNode(root, "", depth, false);
         }
 
-        private void printNode(Node node, String prefix, int depth, boolean isTail) {
+        /**
+         * Prints the node along with its children in a tree structure.
+         * @param node The current node to be printed.
+         * @param prefix The prefix to be added to the node's representation.
+         * @param depth The depth of the tree to be printed.
+         * @param isLeaf Indicates whether the node is a leaf node.
+         */
+        private void printNode(Node node, String prefix, int depth, boolean isLeaf) {
             if (node == null || depth < 0) {
                 return;
             }
@@ -203,10 +232,10 @@ public class Node {
                 }
             }
             message.append("] = ").append(nodeBestScore);
-            System.out.println(prefix + (isTail ? "└─ " : "├─ ") + message);
+            System.out.println(prefix + (isLeaf ? "└─ " : "├─ ") + message);
 
             for (int i = 0; i < children.size(); i++) {
-                printNode(children.get(i), prefix + (isTail ? "   " : "│  "),
+                printNode(children.get(i), prefix + (isLeaf ? "   " : "│  "),
                         depth - 1, (i == children.size() - 1));
             }
         }
