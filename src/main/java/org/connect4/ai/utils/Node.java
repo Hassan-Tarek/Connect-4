@@ -102,6 +102,11 @@ public class Node {
         return this.nodeType == NodeType.MAX;
     }
 
+    public void printChildrenTree(int depth) {
+        NodePrinter printer = new NodePrinter(this, depth);
+        printer.print();
+    }
+
     /**
      * Determines if the current node is terminal.
      * @return true if the node is terminal, false otherwise.
@@ -137,5 +142,73 @@ public class Node {
 
         logger.info("This node has: " + childrenList.size() + " child nodes.");
         return childrenList;
+    }
+
+    private int getBestScore(int depth) {
+        if (this.isTerminal() || depth < 0) {
+            return this.getScore();
+        }
+
+        int bestScore;
+        if (this.isMaxNode()) {
+            bestScore = Integer.MIN_VALUE;
+            for (Node child : this.getChildren()) {
+                int childScore = child.getBestScore(depth - 1);
+                child.setScore(childScore); // Update child score
+                bestScore = Math.max(bestScore, childScore);
+            }
+        } else {
+            bestScore = Integer.MAX_VALUE;
+            for (Node child : this.getChildren()) {
+                int childScore = child.getBestScore(depth - 1);
+                child.setScore(childScore); // Update child score
+                bestScore = Math.min(bestScore, childScore);
+            }
+        }
+
+        return bestScore;
+    }
+
+    private List<Integer> getChildrenBestScores(int depth) {
+        List<Integer> childrenBestScores = new ArrayList<>();
+        for (Node child : this.getChildren()) {
+            int childBestScore = child.getBestScore(depth - 1);
+            childrenBestScores.add(childBestScore);
+        }
+        return childrenBestScores;
+    }
+
+    private record NodePrinter(Node root, int depth) {
+        public void print() {
+            printNode(root, "", depth, false);
+        }
+
+        private void printNode(Node node, String prefix, int depth, boolean isTail) {
+            if (node == null || depth < 0) {
+                return;
+            }
+
+            List<Node> children = node.getChildren();
+            int nodeBestScore = node.getBestScore(depth);
+            List<Integer> nodeChildrenBestScores = node.getChildrenBestScores(depth);
+            String type = node.nodeType.name().toLowerCase();
+            StringBuilder message = new StringBuilder();
+            message.append("<").append(Character.toUpperCase(type.charAt(0)))
+                    .append(type.substring(1)).append(">")
+                    .append(" => ").append("[");
+            for (int i = 0; i < nodeChildrenBestScores.size(); i++) {
+                message.append(nodeChildrenBestScores.get(i));
+                if (i < nodeChildrenBestScores.size() - 1) {
+                    message.append(", ");
+                }
+            }
+            message.append("] = ").append(nodeBestScore);
+            System.out.println(prefix + (isTail ? "└─ " : "├─ ") + message);
+
+            for (int i = 0; i < children.size(); i++) {
+                printNode(children.get(i), prefix + (isTail ? "   " : "│  "),
+                        depth - 1, (i == children.size() - 1));
+            }
+        }
     }
 }
