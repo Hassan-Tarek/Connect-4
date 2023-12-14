@@ -4,7 +4,8 @@ import org.connect4.ai.heuristics.Heuristic;
 import org.connect4.game.core.Board;
 import org.connect4.game.enums.Color;
 
-import org.connect4.game.exceptions.InvalidMoveException;
+import org.connect4.game.exceptions.FullColumnException;
+import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class HeuristicTest {
     }
 
     @Test
-    public void testEvaluate() throws InvalidMoveException {
+    public void testEvaluate() throws InvalidColumnIndexException, FullColumnException {
         testEmptyBoard();
         testRowOfRedPieces();
         testColumnOfYellowPieces();
@@ -35,14 +36,14 @@ public class HeuristicTest {
         Assertions.assertEquals(0, score);
     }
 
-    private void testRowOfRedPieces() throws InvalidMoveException {
+    private void testRowOfRedPieces() throws InvalidColumnIndexException, FullColumnException {
         boards[0].addPiece(6, Color.RED);
         boards[0].addPiece(4, Color.RED);
         score = Heuristic.evaluate(boards[0]);
         Assertions.assertEquals(16, score);
     }
 
-    private void testColumnOfYellowPieces() throws InvalidMoveException {
+    private void testColumnOfYellowPieces() throws InvalidColumnIndexException, FullColumnException {
         boards[1].addPiece(6, Color.YELLOW);
         boards[1].addPiece(6, Color.YELLOW);
         boards[1].addPiece(6, Color.YELLOW);
@@ -50,7 +51,7 @@ public class HeuristicTest {
         Assertions.assertEquals(-117, score);
     }
 
-    private void testLeftDiagonalOfRedPieces() throws InvalidMoveException {
+    private void testLeftDiagonalOfRedPieces() throws InvalidColumnIndexException, FullColumnException {
         boards[0].addPiece(0, Color.RED);
         boards[0].addPiece(1, Color.YELLOW);
         boards[0].addPiece(1, Color.RED);
@@ -65,7 +66,7 @@ public class HeuristicTest {
         Assertions.assertEquals(1034, score);
     }
 
-    private void testRightDiagonalOfYellowPieces() throws InvalidMoveException {
+    private void testRightDiagonalOfYellowPieces() throws InvalidColumnIndexException, FullColumnException {
         boards[1].addPiece(0, Color.RED);
         boards[1].addPiece(0, Color.RED);
         boards[1].addPiece(0, Color.RED);

@@ -2,7 +2,10 @@ package org.connect4.game;
 
 import org.connect4.game.core.Board;
 import org.connect4.game.core.Game;
+import org.connect4.game.core.Move;
 import org.connect4.game.core.Player;
+import org.connect4.game.exceptions.FullColumnException;
+import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
 import org.connect4.game.enums.GameType;
@@ -21,15 +24,14 @@ public class PlayerTest {
     @BeforeEach
     public void setup() {
         board = new Board();
-        redPlayer = new Player("John", "Hardy", Color.RED, PlayerType.HUMAN);
-        yellowPlayer = new Player("Jodie", "Albert", Color.YELLOW, PlayerType.HUMAN);
+        redPlayer = new Player("john", Color.RED, PlayerType.HUMAN);
+        yellowPlayer = new Player("jodie", Color.YELLOW, PlayerType.HUMAN);
         game = new Game(board, redPlayer, yellowPlayer, GameType.HUMAN_VS_HUMAN);
     }
 
     @Test
     public void testPlayerInitialization() {
-        Assertions.assertEquals("John", redPlayer.getFirstName());
-        Assertions.assertEquals("Hardy", redPlayer.getLastName());
+        Assertions.assertEquals("john", redPlayer.getUsername());
         Assertions.assertEquals(PlayerType.HUMAN, redPlayer.getPlayerType());
         Assertions.assertEquals(Color.RED, redPlayer.getColor());
         Assertions.assertEquals(0, redPlayer.getScore());
@@ -38,13 +40,13 @@ public class PlayerTest {
     @Test
     public void testMakeMove() {
         try {
-            redPlayer.makeMove(board, 0);
+            redPlayer.makeMove(new Move(board, 0));
 
             // Make a valid move
             Assertions.assertEquals(Color.RED, board.getPieceAt(0, 0).getColor());
 
             // Make an invalid move
-            Assertions.assertThrows(InvalidMoveException.class, () -> redPlayer.makeMove(board, -1));
+            Assertions.assertThrows(InvalidMoveException.class, () -> yellowPlayer.makeMove(new Move(board, -1)));
         }
         catch (InvalidMoveException ex) {
             Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
@@ -60,9 +62,8 @@ public class PlayerTest {
             board.addPiece(3, Color.RED);
 
             Assertions.assertTrue(redPlayer.isWin(game));
-        }
-        catch (InvalidMoveException ex) {
-            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
+        } catch (InvalidColumnIndexException | FullColumnException e) {
+            throw new RuntimeException(e);
         }
     }
 }

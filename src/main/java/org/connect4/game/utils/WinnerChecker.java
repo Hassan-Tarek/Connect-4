@@ -1,6 +1,7 @@
 package org.connect4.game.utils;
 
 import org.connect4.game.core.Board;
+import org.connect4.game.core.Piece;
 import org.connect4.game.enums.Color;
 import org.connect4.logging.GameLogger;
 
@@ -84,7 +85,13 @@ public class WinnerChecker {
      * @return true if the row has a winning sequence, false otherwise.
      */
     private static boolean isRowWinner(Board board, int rowIndex) {
-        return isLineWinner(board, rowIndex, 0, 0, 1);
+        for (int col = 0; col <= Board.COLS - 4; col++) {
+            if (isLineWinner(board, rowIndex, col, 0, 1)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -94,7 +101,13 @@ public class WinnerChecker {
      * @return true if the column has a winning sequence, false otherwise.
      */
     private static boolean isColWinner(Board board, int colIndex) {
-        return isLineWinner(board, 0, colIndex, 1, 0);
+        for (int row = 0; row <= Board.ROWS - 4; row++) {
+            if (isLineWinner(board, row, colIndex, 1, 0)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -117,7 +130,15 @@ public class WinnerChecker {
      * @return true if the diagonal has a winning sequence, false otherwise.
      */
     private static boolean isDiagonalWinnerLeftToRight(Board board, int rowIndex, int colIndex) {
-        return isLineWinner(board, rowIndex, colIndex, 1, 1);
+        for (int row = rowIndex; row <= Board.ROWS - 4; row++) {
+            for (int col = colIndex; col <= Board.COLS - 4; col++) {
+                if (isLineWinner(board, row, col, 1, 1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -128,7 +149,15 @@ public class WinnerChecker {
      * @return true if the diagonal has a winning sequence, false otherwise.
      */
     private static boolean isDiagonalWinnerRightToLeft(Board board, int rowIndex, int colIndex) {
-        return isLineWinner(board, rowIndex, colIndex, 1, -1);
+        for (int row = rowIndex; row <= Board.ROWS - 4; row++) {
+            for (int col = colIndex; col >= 3; col--) {
+                if (isLineWinner(board, row, col, 1, -1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -141,35 +170,30 @@ public class WinnerChecker {
      * @return true if the line has a winning sequence, false otherwise.
      */
     private static boolean isLineWinner(Board board, int rowIndex, int colIndex, int rowOffset, int colOffset) {
-        Color lastColor = null;
-        int count = 0;
-        int currentRow = rowIndex;
-        int currentCol = colIndex;
+        int redPiecesCount = 0;
+        int yellowPiecesCount = 0;
+        for (int k = 0; k < CONSECUTIVE_PIECES_FOR_WIN; k++) {
+            int row = rowIndex + k * rowOffset;
+            int col = colIndex + k * colOffset;
+            Piece piece = board.getPieceAt(row, col);
 
-        while (currentRow >= 0 && currentRow < Board.ROWS && currentCol >= 0 && currentCol < Board.COLS) {
-            if (board.getPieceAt(currentRow, currentCol) != null) {
+            if (piece != null) {
                 logger.log(Level.FINE, "Piece is not null.");
 
-                if (board.getPieceAt(currentRow, currentCol).getColor() == lastColor) {
-                    count++;
-
-                    if (count >= CONSECUTIVE_PIECES_FOR_WIN) {
-                        logger.info("Player has won the game.");
-                        return true;
-                    }
+                if (piece.getColor() == Color.RED) {
+                    redPiecesCount++;
                 } else {
-                    lastColor = board.getPieceAt(currentRow, currentCol).getColor();
-                    count = 1;
+                    yellowPiecesCount++;
                 }
-            } else {
-                lastColor = null;
-                count = 0;
             }
-
-            currentRow += rowOffset;
-            currentCol += colOffset;
         }
 
-        return false;
+        boolean hasWinner = redPiecesCount == CONSECUTIVE_PIECES_FOR_WIN
+                || yellowPiecesCount == CONSECUTIVE_PIECES_FOR_WIN;
+        if (hasWinner) {
+            logger.info("Board has a winner.");
+        }
+
+        return hasWinner;
     }
 }

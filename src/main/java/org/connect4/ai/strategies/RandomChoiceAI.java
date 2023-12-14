@@ -2,6 +2,7 @@ package org.connect4.ai.strategies;
 
 import org.connect4.ai.enums.AIType;
 import org.connect4.game.core.Board;
+import org.connect4.game.core.Move;
 import org.connect4.logging.AILogger;
 
 import java.util.Random;
@@ -30,21 +31,23 @@ public class RandomChoiceAI extends AI {
 
     /**
      * Generates a random move for the current game board.
-     * @return The generated move.
+     * @return The next move.
      */
     @Override
-    public int getNextMove() {
+    public Move getNextMove() {
+        Move move = new Move(board, -1);
         if (board.isFull()) {
             logger.warning("Board is full!");
-            return -1;
+            return move;
         }
 
-        int col;
+        int column;
         do {
-            col = random.nextInt(Board.COLS) + 1;
-        } while (!board.isValidMove(col));
+            column = random.nextInt(Board.COLS);
+            move = new Move(board, column);
+        } while (!move.isValid());
 
-        logger.info("Next move: " + col);
-        return col;
+        logger.info("Next move at column: " + column);
+        return move;
     }
 }

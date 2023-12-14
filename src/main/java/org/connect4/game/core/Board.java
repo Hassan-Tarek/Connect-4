@@ -1,7 +1,8 @@
 package org.connect4.game.core;
 
-import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
+import org.connect4.game.exceptions.FullColumnException;
+import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.connect4.logging.GameLogger;
 
 import java.util.Arrays;
@@ -40,21 +41,26 @@ public class Board implements Cloneable {
 
     /**
      * Add the piece with a specific color to the board at a specific column.
-     * @param col The column to add the piece.
+     * @param column The column to add the piece.
      * @param color The color of the piece.
-     * @throws InvalidMoveException if the move is invalid.
+     * @throws InvalidColumnIndexException if the column index is not valid.
+     * @throws FullColumnException if the column is full of pieces.
      */
-    public void addPiece(int col, Color color) throws InvalidMoveException {
-        if (!isValidMove(col)) {
-            throw new InvalidMoveException("Invalid move for the column: " + col);
+    public void addPiece(int column, Color color) throws InvalidColumnIndexException, FullColumnException {
+        if (!isValidColumn(column)) {
+            throw new InvalidColumnIndexException("Invalid column index: " + column);
         }
 
-        int row = currentRowIndex[col];
-        Position position = new Position(row, col);
-        pieces[row][col] = new Piece(position, color);
-        currentRowIndex[col]++;
+        if (isColumnFull(column)) {
+            throw new FullColumnException("Column: " + column + " is full.");
+        }
 
-        logger.fine("Piece added to column " + col + " at row " + row + ".");
+        int row = currentRowIndex[column];
+        Position position = new Position(row, column);
+        pieces[row][column] = new Piece(position, color);
+        currentRowIndex[column]++;
+
+        logger.fine("Piece added to column " + column + " at row " + row + ".");
     }
 
     /**
@@ -72,51 +78,6 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Check whether a move is valid or not.
-     * @param col The column for the move.
-     * @return true if the move is valid, false otherwise.
-     */
-    public boolean isValidMove(int col) {
-        boolean isValid = isValidColumn(col) && !isColumnFull(col);
-
-        if (isValid) {
-            logger.fine("Move is valid. Column: " + col);
-        } else {
-            logger.warning("Move is not valid. Column: " + col);
-        }
-
-        return isValid;
-    }
-
-    /**
-     * Checks whether a column index is valid.
-     * @param col The column index to check.
-     * @return true if the column index is valid, false otherwise.
-     */
-    private boolean isValidColumn(int col) {
-        return col >= 0 && col < Board.COLS;
-    }
-
-    /**
-     * Checks whether a column is full.
-     * @param col The column index to check.
-     * @return true if the column is full, false otherwise.
-     */
-    private boolean isColumnFull(int col) {
-        return currentRowIndex[col] >= Board.ROWS;
-    }
-
-    /**
-     * Checks whether a position on the board is valid.
-     * @param row The row index.
-     * @param col The column index.
-     * @return true if the position is valid, false otherwise.
-     */
-    private boolean isValidPosition(int row, int col) {
-        return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS;
-    }
-
-    /**
      * Checks whether the board is full.
      * @return true if the board is full, false otherwise.
      */
@@ -131,6 +92,34 @@ public class Board implements Cloneable {
 
         logger.info("The board is full.");
         return true;
+    }
+
+    /**
+     * Checks whether a column index is valid.
+     * @param column The column index to check.
+     * @return true if the column index is valid, false otherwise.
+     */
+    public boolean isValidColumn(int column) {
+        return column >= 0 && column < Board.COLS;
+    }
+
+    /**
+     * Checks whether a column is full.
+     * @param column The column index to check.
+     * @return true if the column is full, false otherwise.
+     */
+    public boolean isColumnFull(int column) {
+        return currentRowIndex[column] >= Board.ROWS;
+    }
+
+    /**
+     * Checks whether a position on the board is valid.
+     * @param row The row index.
+     * @param col The column index.
+     * @return true if the position is valid, false otherwise.
+     */
+    private boolean isValidPosition(int row, int col) {
+        return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS;
     }
 
     /**

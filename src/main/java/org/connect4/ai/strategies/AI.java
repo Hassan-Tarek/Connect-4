@@ -1,6 +1,7 @@
 package org.connect4.ai.strategies;
 
 import org.connect4.ai.enums.AIType;
+import org.connect4.game.core.Move;
 import org.connect4.game.core.Player;
 import org.connect4.game.enums.Color;
 import org.connect4.game.enums.PlayerType;
@@ -17,7 +18,7 @@ public abstract class AI extends Player {
      * @param aiType The type of AI.
      */
     public AI(AIType aiType) {
-        super("AI", null, Color.YELLOW, PlayerType.COMPUTER);
+        super("ai", Color.YELLOW, PlayerType.COMPUTER);
         this.aiType = aiType;
     }
 
@@ -31,7 +32,7 @@ public abstract class AI extends Player {
 
     /**
      * Abstract method to be implemented by subclasses for determining the next move.
-     * @return The column index of the next move.
+     * @return The next move.
      */
-    public abstract int getNextMove();
+    public abstract Move getNextMove();
 }

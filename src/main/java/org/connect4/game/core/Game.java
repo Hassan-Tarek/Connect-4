@@ -77,11 +77,11 @@ public class Game {
 
     /**
      * Makes a move for the current player on the specified column index and switches turns.
-     * @param colIndex The index of the column to add the piece to.
+     * @param move The move will be made.
      * @throws InvalidMoveException if the move is invalid.
      */
-    public void performCurrentPlayerMove(int colIndex) throws InvalidMoveException {
-        currentPlayer.makeMove(board, colIndex);
+    public void performCurrentPlayerMove(Move move) throws InvalidMoveException {
+        currentPlayer.makeMove(move);
         switchTurn();
     }
 
@@ -150,7 +150,7 @@ public class Game {
                 if (isWinner) {
                     Player winner = color == Color.RED ? redPlayer : yellowPlayer;
 
-                    logger.info("Winner determined: " + winner.getFirstName() + " " + winner.getLastName());
+                    logger.info("Winner determined: " + winner.getUsername());
                     return winner;
                 }
             }
@@ -167,6 +167,6 @@ public class Game {
      */
     private void switchTurn() {
         currentPlayer = currentPlayer == redPlayer ? yellowPlayer : redPlayer;
-        logger.fine("Switched turns. Current player: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
+        logger.fine("Switched turns. Current player: " + currentPlayer.getUsername());
     }
 }

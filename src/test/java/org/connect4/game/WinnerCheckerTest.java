@@ -2,6 +2,7 @@ package org.connect4.game;
 
 import org.connect4.game.core.Board;
 import org.connect4.game.core.Game;
+import org.connect4.game.core.Move;
 import org.connect4.game.core.Player;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.game.enums.Color;
@@ -25,8 +26,8 @@ public class WinnerCheckerTest {
         for (int i = 0; i < boards.length; i++) {
             boards[i] = new Board();
         }
-        redPlayer = new Player("John", "Hardy", Color.RED, PlayerType.HUMAN);
-        yellowPlayer = new Player("Jodie", "Albert", Color.YELLOW, PlayerType.HUMAN);
+        redPlayer = new Player("john", Color.RED, PlayerType.HUMAN);
+        yellowPlayer = new Player("jodie", Color.YELLOW, PlayerType.HUMAN);
         games = new Game[4];
         for (int i = 0; i < games.length; i++) {
             games[i] = new Game(boards[i], redPlayer, yellowPlayer, GameType.HUMAN_VS_HUMAN);
@@ -36,26 +37,26 @@ public class WinnerCheckerTest {
     @Test
     public void testHasWinner() {
         try {
-            redPlayer.makeMove(games[1].getBoard(), 1);
-            redPlayer.makeMove(games[1].getBoard(), 1);
-            redPlayer.makeMove(games[1].getBoard(), 1);
-            redPlayer.makeMove(games[1].getBoard(), 1);
+            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
+            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
+            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
+            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
 
-            yellowPlayer.makeMove(games[2].getBoard(), 0);
-            yellowPlayer.makeMove(games[2].getBoard(), 1);
-            yellowPlayer.makeMove(games[2].getBoard(), 2);
-            yellowPlayer.makeMove(games[2].getBoard(), 3);
+            yellowPlayer.makeMove(new Move(games[2].getBoard(), 0));
+            yellowPlayer.makeMove(new Move(games[2].getBoard(), 1));
+            yellowPlayer.makeMove(new Move(games[2].getBoard(), 2));
+            yellowPlayer.makeMove(new Move(games[2].getBoard(), 3));
 
-            redPlayer.makeMove(games[3].getBoard(), 1);
-            yellowPlayer.makeMove(games[3].getBoard(), 2);
-            redPlayer.makeMove(games[3].getBoard(), 2);
-            yellowPlayer.makeMove(games[3].getBoard(), 3);
-            yellowPlayer.makeMove(games[3].getBoard(), 3);
-            redPlayer.makeMove(games[3].getBoard(), 3);
-            yellowPlayer.makeMove(games[3].getBoard(), 4);
-            yellowPlayer.makeMove(games[3].getBoard(), 4);
-            yellowPlayer.makeMove(games[3].getBoard(), 4);
-            redPlayer.makeMove(games[3].getBoard(), 4);
+            redPlayer.makeMove(new Move(games[3].getBoard(), 1));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 2));
+            redPlayer.makeMove(new Move(games[3].getBoard(), 2));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 3));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 3));
+            redPlayer.makeMove(new Move(games[3].getBoard(), 3));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
+            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
+            redPlayer.makeMove(new Move(games[3].getBoard(), 4));
 
             Assertions.assertFalse(WinnerChecker.hasWinner(boards[0]));
             Assertions.assertTrue(WinnerChecker.hasWinner(boards[1]));

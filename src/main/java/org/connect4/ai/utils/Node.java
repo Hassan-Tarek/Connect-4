@@ -3,10 +3,14 @@ package org.connect4.ai.utils;
 import org.connect4.ai.enums.NodeType;
 import org.connect4.ai.heuristics.Heuristic;
 import org.connect4.game.core.Board;
-import org.connect4.game.exceptions.InvalidMoveException;
+import org.connect4.game.core.Move;
+import org.connect4.game.exceptions.FullColumnException;
+import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.connect4.game.utils.WinnerChecker;
 import org.connect4.logging.AILogger;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,7 +24,7 @@ public class Node {
 
     private final State state;
     private final NodeType nodeType;
-    private final int col;
+    private final Move move;
     private int score;
     private final boolean isTerminal;
 
@@ -28,12 +32,12 @@ public class Node {
      * Constructs a new node with the given state, node type, and column index.
      * @param state The state of the game board.
      * @param nodeType The type of node (MIN or MAX).
-     * @param col The column index where the move was made.
+     * @param move The move was made.
      */
-    public Node(State state, NodeType nodeType, int col) {
+    public Node(State state, NodeType nodeType, Move move) {
         this.state = state;
         this.nodeType = nodeType;
-        this.col = col;
+        this.move = move;
         this.score = Heuristic.evaluate(state.getBoard());
         this.isTerminal = determineTerminal();
     }
@@ -55,11 +59,11 @@ public class Node {
     }
 
     /**
-     * Gets the column index where the move was made in this node.
-     * @return The column index.
+     * Gets the move was made in this node.
+     * @return The move.
      */
-    public int getCol() {
-        return col;
+    public Move getMove() {
+        return move;
     }
 
     /**
@@ -105,9 +109,10 @@ public class Node {
     /**
      * Prints the tree structure starting from the current node.
      * @param depth The depth of the tree to print.
+     * @param out The output stream where the tree structure will be printed.
      */
-    public void printChildrenTree(int depth) {
-        NodePrinter printer = new NodePrinter(this, depth);
+    public void printChildrenTree(int depth, OutputStream out) {
+        NodePrinter printer = new NodePrinter(this, depth, out);
         printer.print();
     }
 
@@ -130,16 +135,17 @@ public class Node {
         List<Node> childrenList = new ArrayList<>();
 
         for (int i = 0; i < Board.COLS; i++) {
-            if (state.getBoard().isValidMove(i)) {
-                State childState = state.clone();
-                childState.setPlayerColor(state.getPlayerColor().opposite());
-                NodeType childNodeType = nodeType.opposite();
+            State childState = state.clone();
+            Move newMove = new Move(childState.getBoard(), i);
+            childState.setPlayerColor(state.getPlayerColor().opposite());
+            NodeType childNodeType = nodeType.opposite();
+            if (newMove.isValid()) {
                 try {
                     childState.getBoard().addPiece(i, childState.getPlayerColor());
-                } catch (InvalidMoveException e) {
+                } catch (InvalidColumnIndexException | FullColumnException e) {
                     throw new RuntimeException(e);
                 }
-                Node child = new Node(childState, childNodeType, i);
+                Node child = new Node(childState, childNodeType, newMove);
                 childrenList.add(child);
             }
         }
@@ -196,8 +202,9 @@ public class Node {
      * A class responsible for visualizing the game tree.
      * @param root The root node of the tree to be printed.
      * @param depth The maximum depth of the tree to be printed.
+     * @param out The output stream where the tree structure will be printed.
      */
-    private record NodePrinter(Node root, int depth) {
+    private record NodePrinter(Node root, int depth, OutputStream out) {
         /**
          * Prints the game tree.
          */
@@ -232,7 +239,11 @@ public class Node {
                 }
             }
             message.append("] = ").append(nodeBestScore);
-            System.out.println(prefix + (isLeaf ? "└─ " : "├─ ") + message);
+            try {
+                out.write((prefix + (isLeaf ? "└─ " : "├─ ") + message + '\n').getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             for (int i = 0; i < children.size(); i++) {
                 printNode(children.get(i), prefix + (isLeaf ? "   " : "│  "),

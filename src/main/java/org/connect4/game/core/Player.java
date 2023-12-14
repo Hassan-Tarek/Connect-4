@@ -14,57 +14,30 @@ import java.util.logging.Logger;
 public class Player {
     private static final Logger logger = GameLogger.getLogger();
 
-    private String firstName;
-    private String lastName;
+    private final String username;
     private final PlayerType playerType;
     private final Color color;
     private int score;
 
     /**
      * Constructs a new player with the specified parameters.
-     * @param firstName The first name of the player.
-     * @param lastName The last name of the player.
+     * @param username The username of the player.
      * @param color The color of the players' pieces.
      * @param playerType The type of the player.
      */
-    public Player(String firstName, String lastName, Color color, PlayerType playerType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Player(String username, Color color, PlayerType playerType) {
+        this.username = username;
         this.playerType = playerType;
         this.color = color;
         this.score = 0;
     }
 
     /**
-     * Gets the first name of the player.
-     * @return The first name of the player.
+     * Gets the username of the player.
+     * @return The username of the player.
      */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * Sets the first name of the player.
-     * @param firstName The first name of the player.
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * Gets the last name of the player.
-     * @return The last name of the player.
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * Sets the last name of the player.
-     * @param lastName The last name of the player.
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public String getUsername() {
+        return username;
     }
 
     /**
@@ -117,14 +90,13 @@ public class Player {
 
     /**
      * Makes a move on the specified column index on the specified board.
-     * @param board The board of the game.
-     * @param colIndex The index of the column to add piece on.
+     * @param move The move which this player will make.
      * @throws InvalidMoveException if the move is invalid.
      */
-    public void makeMove(Board board, int colIndex) throws InvalidMoveException {
+    public void makeMove(Move move) throws InvalidMoveException {
         try {
             logger.fine("Player is making a move.");
-            board.addPiece(colIndex, color);
+            move.applyMove(this);
         } catch (InvalidMoveException ex) {
             logger.warning("Invalid move. " + ex.getMessage());
             throw ex;

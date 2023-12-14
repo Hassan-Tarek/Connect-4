@@ -2,6 +2,7 @@ package org.connect4.ai.strategies;
 
 import org.connect4.ai.enums.AIType;
 import org.connect4.ai.utils.Node;
+import org.connect4.game.core.Move;
 import org.connect4.logging.AILogger;
 
 import java.util.Optional;
@@ -47,23 +48,20 @@ public abstract class MinimaxAI extends AI {
 
     /**
      * Computes and returns the next move based on the Minimax algorithm.
-     * @return The column index of the next move.
+     * @return The next move.
      */
     @Override
-    public int getNextMove() {
+    public Move getNextMove() {
         Optional<Node> result = minimax(node, depth);
-        int nextMove;
 
         if (result.isPresent()) {
-            Node bestMove = result.get();
-            logger.fine("Best move found at column: " + bestMove.getCol());
-            nextMove = bestMove.getCol();
+            Move bestMove = result.get().getMove();
+            logger.fine("Best move found at column: " + bestMove.getColumn());
+            return bestMove;
         } else {
             logger.warning("No valid move found!");
-            nextMove = -1;
+            return null;
         }
-
-        return nextMove;
     }
 
     /**
