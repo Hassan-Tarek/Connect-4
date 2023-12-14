@@ -1,7 +1,7 @@
 package org.connect4.logging;
 
 /**
- * A logger class designed for the Game logic.
+ * A class represents the logger for game logic in the Connect-4 game.
  * @author Hassan
  */
 public class GameLogger extends BaseLogger {

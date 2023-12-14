@@ -1,7 +1,7 @@
 package org.connect4.logging;
 
 /**
- * A logger class designed for the ai.
+ * A class represents the logger for AI in the Connect-4 game.
  * @author Hassan
  */
 public class AILogger extends BaseLogger {

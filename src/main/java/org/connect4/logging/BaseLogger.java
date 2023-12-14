@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * A base class for all provided loggers.
+ * A class represents the base logger for Connect-4 loggers.
  * @author Hassan
  */
 public class BaseLogger extends Logger {
