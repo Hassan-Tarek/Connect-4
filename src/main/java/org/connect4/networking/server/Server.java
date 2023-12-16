@@ -1,4 +1,4 @@
-package org.connect4.networking;
+package org.connect4.networking.server;
 
 public class Server {
     private static final int PORT = 4444;

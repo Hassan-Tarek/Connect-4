@@ -1,4 +1,4 @@
-package org.connect4.networking;
+package org.connect4.networking.server;
 
 import java.net.Socket;
 

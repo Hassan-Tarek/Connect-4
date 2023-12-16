@@ -1,4 +1,4 @@
-package org.connect4.networking;
+package org.connect4.networking.client;
 
 public class Client {
     private static final String SERVER_ADDRESS = "localhost";

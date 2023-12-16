@@ -1,4 +1,4 @@
-package org.connect4.networking;
+package org.connect4.networking.client;
 
 public class ClientManager {
     private final String serverAddress;
