@@ -1,11 +1,15 @@
 package org.connect4.networking.client;
 
+import org.connect4.networking.shared.Message;
+import org.connect4.networking.shared.MessageType;
+
 import java.util.Scanner;
 
 public class Client {
     private static final String SERVER_ADDRESS = "localhost";
     private static final int PORT = 4444;
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ClientManager clientManager = new ClientManager(SERVER_ADDRESS, PORT);
         clientManager.connectToServer();
@@ -13,7 +17,8 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
         Thread sendThread = new Thread(() -> {
             while (true) {
-                String message = scanner.nextLine();
+                String input = scanner.nextLine();
+                Message<String> message = new Message<>(MessageType.TEXT, input);
                 clientManager.sendMessage(message);
             }
         });
@@ -21,8 +26,8 @@ public class Client {
 
         Thread receiveThread = new Thread(() -> {
             while (true) {
-                String message = (String) clientManager.getReceivedMessage();
-                System.out.println("Message: " + message);
+                Message<String> message = (Message<String>) clientManager.getReceivedMessage();
+                System.out.println("Message: " + message.getPayload());
             }
         });
         receiveThread.start();

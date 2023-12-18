@@ -1,5 +1,8 @@
 package org.connect4.networking.server;
 
+import org.connect4.networking.shared.Message;
+import org.connect4.networking.shared.MessageType;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,7 +24,7 @@ public class GameSessionManager implements Runnable {
              ObjectInputStream secondClientInputStream = new ObjectInputStream(secondClientSocket.getInputStream());
              ObjectOutputStream secondClientOutputStream = new ObjectOutputStream(secondClientSocket.getOutputStream())) {
             // Inform two clients about each other
-            String message = "Opponent connected!";
+            Message<?> message = new Message<>(MessageType.TEXT, "Opponent connected!");
             firstClientOutputStream.writeObject(message);
             firstClientOutputStream.flush();
             secondClientOutputStream.writeObject(message);

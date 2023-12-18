@@ -1,5 +1,7 @@
 package org.connect4.networking.server;
 
+import org.connect4.networking.shared.Message;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,20 +19,20 @@ public class MessageRelay implements Runnable {
     @Override
     public void run() {
         while (true) {
-            Object message = getReceivedMessage();
+            Message<?> message = getReceivedMessage();
             sendMessage(message);
         }
     }
 
-    private Object getReceivedMessage() {
+    private Message<?> getReceivedMessage() {
         try {
-            return senderInputStream.readObject();
+            return (Message<?>) senderInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void sendMessage(Object message) {
+    private void sendMessage(Message<?> message) {
         try {
             receiverOutputStream.writeObject(message);
         } catch (IOException e) {

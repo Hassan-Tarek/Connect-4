@@ -1,5 +1,7 @@
 package org.connect4.networking.client;
 
+import org.connect4.networking.shared.Message;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,15 +29,15 @@ public class ClientManager {
         }
     }
 
-    public Object getReceivedMessage() {
+    public Message<?> getReceivedMessage() {
         try {
-            return in.readObject();
+            return (Message<?>) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void sendMessage(Object message) {
+    public void sendMessage(Message<?> message) {
         try {
             out.writeObject(message);
             out.flush();
