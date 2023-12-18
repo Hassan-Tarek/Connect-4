@@ -1,10 +1,13 @@
 package org.connect4.networking.server;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class GameSessionManager implements Runnable {
-    private Socket firstClientSocket;
-    private Socket secondClientSocket;
+    private final Socket firstClientSocket;
+    private final Socket secondClientSocket;
 
     public GameSessionManager(Socket firstClientSocket, Socket secondClientSocket) {
         this.firstClientSocket = firstClientSocket;
@@ -13,6 +16,28 @@ public class GameSessionManager implements Runnable {
 
     @Override
     public void run() {
+        try (ObjectInputStream firstClientInputStream = new ObjectInputStream(firstClientSocket.getInputStream());
+             ObjectOutputStream firstClientOutputStream = new ObjectOutputStream(firstClientSocket.getOutputStream());
+             ObjectInputStream secondClientInputStream = new ObjectInputStream(secondClientSocket.getInputStream());
+             ObjectOutputStream secondClientOutputStream = new ObjectOutputStream(secondClientSocket.getOutputStream())) {
+            // Inform two clients about each other
+            String message = "Opponent connected!";
+            firstClientOutputStream.writeObject(message);
+            firstClientOutputStream.flush();
+            secondClientOutputStream.writeObject(message);
+            secondClientOutputStream.flush();
 
+            // Message relay between two clients
+            Thread firstMessageRelayThread = new Thread(new MessageRelay(firstClientInputStream, secondClientOutputStream));
+            Thread secondMessageRelayThread = new Thread(new MessageRelay(secondClientInputStream, firstClientOutputStream));
+            firstMessageRelayThread.start();
+            secondMessageRelayThread.start();
+
+            // Wait for message relay threads to finish
+            firstMessageRelayThread.join();
+            secondMessageRelayThread.join();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
