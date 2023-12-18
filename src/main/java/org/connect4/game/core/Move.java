@@ -5,6 +5,8 @@ import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.connect4.game.exceptions.InvalidMoveException;
 import org.connect4.logging.GameLogger;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +14,9 @@ import java.util.logging.Logger;
  * A class represents the game move.
  * @author Hassan
  */
-public class Move {
+public class Move implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = GameLogger.getLogger();
 
     private final int column;

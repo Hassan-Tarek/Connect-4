@@ -2,11 +2,17 @@ package org.connect4.game.core;
 
 import org.connect4.game.enums.Color;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * A class represents a board piece.
  * @author Hassan
  */
-public class Piece implements Cloneable {
+public class Piece implements Cloneable, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final Position position;
     private final Color color;
 

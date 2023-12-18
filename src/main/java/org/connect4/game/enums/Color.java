@@ -1,10 +1,12 @@
 package org.connect4.game.enums;
 
+import java.io.Serializable;
+
 /**
  * Enum representing the colors of game pieces.
  * @author Hassan
  */
-public enum Color {
+public enum Color implements Serializable {
     RED,
     YELLOW;
 

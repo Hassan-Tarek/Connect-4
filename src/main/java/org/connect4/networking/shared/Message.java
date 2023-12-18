@@ -1,6 +1,12 @@
 package org.connect4.networking.shared;
 
-public class Message<T> {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Message<T> implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final MessageType type;
     private final T payload;
 

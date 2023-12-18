@@ -5,6 +5,8 @@ import org.connect4.game.exceptions.FullColumnException;
 import org.connect4.game.exceptions.InvalidColumnIndexException;
 import org.connect4.logging.GameLogger;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -12,7 +14,9 @@ import java.util.logging.Logger;
  * A class represents the game board for Connect-4.
  * @author Hassan
  */
-public class Board implements Cloneable {
+public class Board implements Cloneable, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = GameLogger.getLogger();
     public static final int ROWS = 6;
     public static final int COLS = 7;

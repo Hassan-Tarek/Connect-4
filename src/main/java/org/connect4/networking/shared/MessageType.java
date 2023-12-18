@@ -1,6 +1,8 @@
 package org.connect4.networking.shared;
 
-public enum MessageType {
+import java.io.Serializable;
+
+public enum MessageType implements Serializable {
     MOVE,
     TEXT
 }
