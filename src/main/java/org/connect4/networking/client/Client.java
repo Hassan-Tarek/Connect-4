@@ -27,7 +27,7 @@ public class Client {
         Thread receiveThread = new Thread(() -> {
             while (true) {
                 Message<String> message = (Message<String>) clientManager.getReceivedMessage();
-                System.out.println("Message: " + message.getPayload());
+                MessageHandler.handleMessage(message);
             }
         });
         receiveThread.start();
