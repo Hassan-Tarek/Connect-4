@@ -1,4 +1,4 @@
-package org.connect4.networking.server;
+package org.connect4.networking.server.core;
 
 import org.connect4.networking.shared.Message;
 import org.connect4.networking.shared.MessageType;

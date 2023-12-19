@@ -1,4 +1,4 @@
-package org.connect4.networking.client;
+package org.connect4.networking.client.core;
 
 import org.connect4.game.core.Move;
 import org.connect4.networking.shared.Message;
