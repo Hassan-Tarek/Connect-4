@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerManager implements Runnable {
     private final ServerSocket serverSocket;
     private final List<Socket> waitingSockets;
     private final List<GameSession> gameSessions;
     private final ExecutorService executorService;
+    private final AtomicBoolean running;
 
     public ServerManager(int port) throws ServerStartFailureException {
         try {
@@ -22,6 +24,7 @@ public class ServerManager implements Runnable {
             this.waitingSockets = new ArrayList<>();
             this.gameSessions = new ArrayList<>();
             this.executorService = Executors.newCachedThreadPool();
+            this.running = new AtomicBoolean(false);
         } catch (IOException e) {
             throw new ServerStartFailureException("Failed to bind the server to port %d: ".formatted(port) + e.getMessage());
         }
@@ -40,7 +43,7 @@ public class ServerManager implements Runnable {
         try {
             System.out.println("Server started...");
 
-            while (!Thread.currentThread().isInterrupted()) {
+            while (running.get()) {
                 Socket acceptedClientSocket = serverSocket.accept();
                 waitingSockets.add(acceptedClientSocket);
                 System.out.println("New client accepted!");
@@ -60,30 +63,37 @@ public class ServerManager implements Runnable {
             if (!serverSocket.isClosed()) {
                 System.err.println("Server can't accept connection anymore: " + e.getMessage());
             }
-        } finally {
-            shutdown();
+        }
+    }
+
+    public void start() {
+        if (running.compareAndSet(false, true)) {
+            Thread serverThread = new Thread(this);
+            serverThread.start();
         }
     }
 
     public void shutdown() {
-        try {
-            System.out.println("Server stopped...");
-            executorService.shutdownNow();
-            serverSocket.close();
+        if (running.compareAndSet(true, false)) {
+            try {
+                System.out.println("Server stopped...");
+                executorService.shutdownNow();
+                serverSocket.close();
 
-            for (Socket socket : waitingSockets) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    System.err.println("Failed to close waiting client socket: " + e.getMessage());
+                for (Socket socket : waitingSockets) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        System.err.println("Failed to close waiting client socket: " + e.getMessage());
+                    }
                 }
-            }
 
-            for (GameSession session : gameSessions) {
-                session.shutdown();
+                for (GameSession session : gameSessions) {
+                    session.shutdown();
+                }
+            } catch (IOException e) {
+                System.err.println("Failed to close server: " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.err.println("Failed to close server: " + e.getMessage());
         }
     }
 }
