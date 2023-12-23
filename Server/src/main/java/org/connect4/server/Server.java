@@ -9,7 +9,8 @@ public class Server {
     public static void main(String[] args) {
         try {
             ServerManager serverManager = new ServerManager(PORT);
-            serverManager.start();
+            Thread thread = new Thread(serverManager);
+            thread.start();
         } catch (ServerStartFailureException e) {
             System.err.println(e.getMessage());
         }

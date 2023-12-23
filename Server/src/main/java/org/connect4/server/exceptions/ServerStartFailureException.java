@@ -1,6 +1,8 @@
 package org.connect4.server.exceptions;
 
-public class ServerStartFailureException extends Exception {
+import java.io.IOException;
+
+public class ServerStartFailureException extends IOException {
     public ServerStartFailureException(String message) {
         super(message);
     }
