@@ -38,7 +38,12 @@ public class ServerController {
     }
 
     public void showStatisticsWindow(ActionEvent event) {
+        StatisticsView statisticsView = StatisticsView.getInstance();
+        StatisticsController statisticsController = new StatisticsController(serverManager, statisticsView);
+        statisticsView.setController(statisticsController);
 
+        statisticsController.showView();
+        statisticsController.control();
     }
 
     public void closeView(WindowEvent event) {
