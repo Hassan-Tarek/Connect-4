@@ -11,6 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * A class that represent the server for Connect-4 Game.
+ * @author Hassan
+ */
 public class ServerManager implements Runnable {
     private final ServerSocket serverSocket;
     private final List<Socket> waitingSockets;
@@ -18,6 +22,11 @@ public class ServerManager implements Runnable {
     private final ExecutorService executorService;
     private final AtomicBoolean running;
 
+    /**
+     * Constructs a new ServerManger with the specified port number.
+     * @param port The port number to bind the server to.
+     * @throws ServerStartFailureException If it fails to start the server.
+     */
     public ServerManager(int port) throws ServerStartFailureException {
         try {
             this.serverSocket = new ServerSocket(port);
@@ -30,14 +39,25 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Gets the list of game sessions.
+     * @return The list of game sessions.
+     */
     public List<GameSession> getGameSessions() {
         return gameSessions;
     }
 
+    /**
+     * Gets the list of waiting client sockets.
+     * @return The list of waiting client sockets.
+     */
     public List<Socket> getWaitingSockets() {
         return waitingSockets;
     }
 
+    /**
+     * Starts running the server.
+     */
     @Override
     public void run() {
         try {
@@ -66,6 +86,9 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Starts the server.
+     */
     public void start() {
         if (running.compareAndSet(false, true)) {
             Thread serverThread = new Thread(this);
@@ -73,6 +96,9 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Stops the server.
+     */
     public void shutdown() {
         if (running.compareAndSet(true, false)) {
             try {

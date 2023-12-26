@@ -9,6 +9,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * A view class shows statistics about the server.
+ * @author Hassan
+ */
 public class StatisticsView {
     private static final int VIEW_WIDTH = 400;
     private static final int VIEW_HEIGHT = 300;
@@ -23,6 +27,9 @@ public class StatisticsView {
 
     private static StatisticsView view;
 
+    /**
+     * Constructs a new StatisticsView.
+     */
     private StatisticsView() {
         this.stage = new Stage();
         this.layout = new VBox();
@@ -33,24 +40,42 @@ public class StatisticsView {
         initialize();
     }
 
+    /**
+     * Gets a singleton instance of the StatisticsView.
+     * @return The singleton instance of the StatisticsView.
+     */
     public static StatisticsView getInstance() {
         if (view == null)
             view = new StatisticsView();
         return view;
     }
 
+    /**
+     * Gets the list of PieChart data.
+     * @return The observable list of PieChart data.
+     */
     public ObservableList<PieChart.Data> getPieChartData() {
         return pieChartData;
     }
 
+    /**
+     * Sets the controller for this view.
+     * @param controller The controller to be set.
+     */
     public void setController(StatisticsController controller) {
         this.controller = controller;
     }
 
+    /**
+     * Shows the view.
+     */
     public void show() {
         stage.show();
     }
 
+    /**
+     * Initializes the view components and layout.
+     */
     private void initialize() {
         pieChart.setData(pieChartData);
         pieChart.setTitle("Server Statistics");

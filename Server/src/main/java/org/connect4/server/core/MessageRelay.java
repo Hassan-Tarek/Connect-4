@@ -11,20 +11,35 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * A class that manages the relay of messages between two clients.
+ * @author Hassan
+ */
 public class MessageRelay implements Runnable {
     private final Socket senderSocket;
     private final Socket receiverSocket;
 
+    /**
+     * Constructs a new MessageRelay between the specified sender and receiver sockets.
+     * @param senderSocket The socket from which the messages are sent.
+     * @param receiverSocket The socket to which the message are received.
+     */
     public MessageRelay(Socket senderSocket, Socket receiverSocket) {
         this.senderSocket = senderSocket;
         this.receiverSocket = receiverSocket;
     }
 
+    /**
+     * Start relaying messages between the sender and receiver.
+     */
     @Override
     public void run() {
         relayMessages();
     }
 
+    /**
+     * Relays messages between the sender and receiver.
+     */
     private void relayMessages() {
         ObjectInputStream input = null;
         ObjectOutputStream output = null;
@@ -55,6 +70,12 @@ public class MessageRelay implements Runnable {
         }
     }
 
+    /**
+     * Receives a message from sender's input stream.
+     * @param input The input stream to read message from.
+     * @return The received message.
+     * @throws ReceiveMessageFailureException If failed to receive message.
+     */
     private Message<?> getReceiveMessage(ObjectInputStream input) throws ReceiveMessageFailureException {
         try {
             return (Message<?>) input.readObject();
@@ -65,6 +86,12 @@ public class MessageRelay implements Runnable {
         }
     }
 
+    /**
+     * Sends a message to the receiver's output stream.
+     * @param output The output stream to write message to.
+     * @param message The message to be sent.
+     * @throws SendMessageFailureException If failed to send message.
+     */
     private void sendMessage(ObjectOutputStream output, Message<?> message) throws SendMessageFailureException {
         try {
             output.writeObject(message);
@@ -74,6 +101,10 @@ public class MessageRelay implements Runnable {
         }
     }
 
+    /**
+     * Closes the streams
+     * @param streams The streams to be closed.
+     */
     private void closeStreams(Closeable... streams) {
         for (Closeable stream : streams) {
             if (stream != null) {
@@ -86,6 +117,10 @@ public class MessageRelay implements Runnable {
         }
     }
 
+    /**
+     * Closes a socket.
+     * @param socket The socket to be closed.
+     */
     private void closeSocket(Socket socket) {
         try {
             if (socket != null && !socket.isClosed()) {

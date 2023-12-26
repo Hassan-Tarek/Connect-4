@@ -9,6 +9,10 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * A view class for the server.
+ * @author Hassan
+ */
 public class ServerView {
     private static final int VIEW_WIDTH = 350;
     private static final int VIEW_HEIGHT = 300;
@@ -26,6 +30,10 @@ public class ServerView {
 
     private static ServerView view;
 
+    /**
+     * Constructs a new ServerView with the specified stage.
+     * @param stage The stage.
+     */
     private ServerView(Stage stage) {
         this.stage = stage;
         this.layout = new VBox(LAYOUT_SPACING);
@@ -38,6 +46,11 @@ public class ServerView {
         initialize();
     }
 
+    /**
+     * Gets a singleton instance of the ServerView.
+     * @param stage The stage.
+     * @return The ServerView instance.
+     */
     public static ServerView getInstance(Stage stage) {
         if (view == null) {
             view = new ServerView(stage);
@@ -45,22 +58,41 @@ public class ServerView {
         return view;
     }
 
+    /**
+     * Gets the start button.
+     * @return The start button.
+     */
     public Button getStartButton() {
         return startButton;
     }
 
+    /**
+     * Gets the stop button.
+     * @return The stop button.
+     */
     public Button getStopButton() {
         return stopButton;
     }
 
+    /**
+     * Gets the show statistics button.
+     * @return The show statistics button.
+     */
     public Button getShowStatisticsButton() {
         return showStatisticsButton;
     }
 
+    /**
+     * Sets the controller for this view.
+     * @param controller The controller to be set.
+     */
     public void setController(ServerController controller) {
         this.controller = controller;
     }
 
+    /**
+     * Sets the event handlers for this view buttons.
+     */
     public void setEventHandlers() {
         if (controller != null) {
             startButton.setOnAction(controller::startServer);
@@ -70,10 +102,16 @@ public class ServerView {
         }
     }
 
+    /**
+     * Shows the server view.
+     */
     public void show() {
         stage.show();
     }
 
+    /**
+     * Initializes the server view components and layout.
+     */
     private void initialize() {
         // Buttons setup
         startButton.setId("startServerButton");

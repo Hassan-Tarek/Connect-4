@@ -8,21 +8,36 @@ import javafx.scene.chart.PieChart;
 import javafx.util.Duration;
 import org.connect4.server.core.ServerManager;
 
+/**
+ * A controller class for the statistics view.
+ * @author Hassan
+ */
 public class StatisticsController {
     private final ServerManager serverManager;
     private final StatisticsView statisticsView;
     private final Timeline timeline;
 
+    /**
+     * Constructs a new StatisticsController with the specified server manager and statistics view.
+     * @param serverManager The server manager.
+     * @param statisticsView The statistics view.
+     */
     public StatisticsController(ServerManager serverManager, StatisticsView statisticsView) {
         this.serverManager = serverManager;
         this.statisticsView = statisticsView;
         this.timeline = new Timeline();
     }
 
+    /**
+     * Shows the statistics view.
+     */
     public void showView() {
         statisticsView.show();
     }
 
+    /**
+     * Controls the statistics view by updating it every second.
+     */
     public void control() {
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), updateStatisticsView());
         timeline.getKeyFrames().add(keyFrame);
@@ -30,6 +45,10 @@ public class StatisticsController {
         timeline.play();
     }
 
+    /**
+     * Updates the statistics view.
+     * @return An event handler that update the statistics view.
+     */
     private EventHandler<ActionEvent> updateStatisticsView() {
         return event -> {
             int currentGameSessionsSize = serverManager.getGameSessions().size();
