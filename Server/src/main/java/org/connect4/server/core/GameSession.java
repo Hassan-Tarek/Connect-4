@@ -1,6 +1,5 @@
 package org.connect4.server.core;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,29 +9,33 @@ import java.util.concurrent.Executors;
  * @author Hassan
  */
 public class GameSession implements Runnable {
+    private final ServerManager serverManager;
     private final Socket firstClientSocket;
     private final Socket secondClientSocket;
     private final ExecutorService relayExecutor;
 
     /**
      * Construct a game session between two clients.
+     * @param serverManager The server manager.
      * @param firstClientSocket The first client socket.
      * @param secondClientSocket The second client socket.
      */
-    public GameSession(Socket firstClientSocket, Socket secondClientSocket) {
+    public GameSession(ServerManager serverManager, Socket firstClientSocket, Socket secondClientSocket) {
+        this.serverManager = serverManager;
         this.firstClientSocket = firstClientSocket;
         this.secondClientSocket = secondClientSocket;
         this.relayExecutor = Executors.newFixedThreadPool(2);
     }
 
     /**
-     * Starts the game session by setting up the message relays between two client.
+     * Starts the game session by setting up the message relays between two clients.
      */
     @Override
     public void run() {
         try {
-            relayExecutor.submit(new MessageRelay(firstClientSocket, secondClientSocket));
-            relayExecutor.submit(new MessageRelay(secondClientSocket, firstClientSocket));
+            // Start message relays
+            relayExecutor.submit(new MessageRelay(serverManager, firstClientSocket, secondClientSocket));
+            relayExecutor.submit(new MessageRelay(serverManager, secondClientSocket, firstClientSocket));
         } catch (Exception e) {
             System.err.println("ERROR: Failed to start message relay: " + e.getMessage());
         } finally {
@@ -45,21 +48,7 @@ public class GameSession implements Runnable {
      */
     public void shutdown() {
         relayExecutor.shutdownNow();
-        closeSocket(firstClientSocket);
-        closeSocket(secondClientSocket);
-    }
-
-    /**
-     * Closes a socket.
-     * @param socket The socket to be closed.
-     */
-    private void closeSocket(Socket socket) {
-        try {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            System.err.println("ERROR: Failed to close client socket: " + e.getMessage());
-        }
+        serverManager.closeSocket(firstClientSocket);
+        serverManager.closeSocket(secondClientSocket);
     }
 }
