@@ -21,7 +21,7 @@ public class MoveTest {
     @BeforeEach
     public void setup() {
         board = new Board();
-        player = new Player("john", Color.RED, PlayerType.HUMAN);
+        player = new Player(Color.RED, PlayerType.HUMAN);
         move = new Move(board, 0);
     }
 

@@ -150,7 +150,7 @@ public class Game {
                 if (isWinner) {
                     Player winner = color == Color.RED ? redPlayer : yellowPlayer;
 
-                    logger.info("Winner determined: " + winner.getUsername());
+                    logger.info("Winner determined: " + winner.getColor() + " Player.");
                     return winner;
                 }
             }
@@ -167,6 +167,7 @@ public class Game {
      */
     private void switchTurn() {
         currentPlayer = currentPlayer == redPlayer ? yellowPlayer : redPlayer;
-        logger.fine("Switched turns. Current player: " + currentPlayer.getUsername());
+        logger.fine("Switched turns.");
+        logger.fine("Current player: " + currentPlayer.getColor() + " Player.");
     }
 }

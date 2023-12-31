@@ -18,7 +18,7 @@ public abstract class AI extends Player {
      * @param aiType The type of AI.
      */
     public AI(AIType aiType) {
-        super("ai", Color.YELLOW, PlayerType.COMPUTER);
+        super(Color.YELLOW, PlayerType.COMPUTER);
         this.aiType = aiType;
     }
 

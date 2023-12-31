@@ -24,14 +24,13 @@ public class PlayerTest {
     @BeforeEach
     public void setup() {
         board = new Board();
-        redPlayer = new Player("john", Color.RED, PlayerType.HUMAN);
-        yellowPlayer = new Player("jodie", Color.YELLOW, PlayerType.HUMAN);
+        redPlayer = new Player(Color.RED, PlayerType.HUMAN);
+        yellowPlayer = new Player(Color.YELLOW, PlayerType.HUMAN);
         game = new Game(board, redPlayer, yellowPlayer, GameType.HUMAN_VS_HUMAN);
     }
 
     @Test
     public void testPlayerInitialization() {
-        Assertions.assertEquals("john", redPlayer.getUsername());
         Assertions.assertEquals(PlayerType.HUMAN, redPlayer.getPlayerType());
         Assertions.assertEquals(Color.RED, redPlayer.getColor());
         Assertions.assertEquals(0, redPlayer.getScore());

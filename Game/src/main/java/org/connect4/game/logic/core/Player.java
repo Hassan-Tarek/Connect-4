@@ -14,38 +14,19 @@ import java.util.logging.Logger;
 public class Player {
     private static final Logger logger = GameLogger.getLogger();
 
-    private final String username;
-    private final PlayerType playerType;
     private final Color color;
+    private final PlayerType playerType;
     private int score;
 
     /**
      * Constructs a new player with the specified parameters.
-     * @param username The username of the player.
      * @param color The color of the players' pieces.
      * @param playerType The type of the player.
      */
-    public Player(String username, Color color, PlayerType playerType) {
-        this.username = username;
-        this.playerType = playerType;
+    public Player(Color color, PlayerType playerType) {
         this.color = color;
+        this.playerType = playerType;
         this.score = 0;
-    }
-
-    /**
-     * Gets the username of the player.
-     * @return The username of the player.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets the player's type.
-     * @return The type of the player.
-     */
-    public PlayerType getPlayerType() {
-        return playerType;
     }
 
     /**
@@ -54,6 +35,14 @@ public class Player {
      */
     public Color getColor() {
         return color;
+    }
+
+    /**
+     * Gets the player's type.
+     * @return The type of the player.
+     */
+    public PlayerType getPlayerType() {
+        return playerType;
     }
 
     /**

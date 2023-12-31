@@ -1,4 +1,4 @@
-package org.connet4.game.ai;
+package org.connect4.game.ai;
 
 import org.connect4.game.ai.heuristics.Heuristic;
 import org.connect4.game.logic.core.Board;

@@ -26,8 +26,8 @@ public class WinnerCheckerTest {
         for (int i = 0; i < boards.length; i++) {
             boards[i] = new Board();
         }
-        redPlayer = new Player("john", Color.RED, PlayerType.HUMAN);
-        yellowPlayer = new Player("jodie", Color.YELLOW, PlayerType.HUMAN);
+        redPlayer = new Player(Color.RED, PlayerType.HUMAN);
+        yellowPlayer = new Player(Color.YELLOW, PlayerType.HUMAN);
         games = new Game[4];
         for (int i = 0; i < games.length; i++) {
             games[i] = new Game(boards[i], redPlayer, yellowPlayer, GameType.HUMAN_VS_HUMAN);
