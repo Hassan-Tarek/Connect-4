@@ -93,10 +93,18 @@ public class Game {
         return board.isFull() || WinnerChecker.hasWinner(board);
     }
 
+    /**
+     * Checks if the game has winner.
+     * @return true if the game has winner, false otherwise.
+     */
     public boolean hasWinner() {
         return WinnerChecker.hasWinner(board);
     }
 
+    /**
+     * Checks if the game is a draw.
+     * @return true if the game is a draw, false otherwise.
+     */
     public boolean isDraw() {
         return !WinnerChecker.hasWinner(board) && board.isFull();
     }
