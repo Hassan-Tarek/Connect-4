@@ -45,26 +45,26 @@ public class GameTest {
     @Test
     public void testGetWinner() {
         try {
-            redPlayer.makeMove(new Move(boards[1], 0));
-            redPlayer.makeMove(new Move(boards[1], 0));
-            redPlayer.makeMove(new Move(boards[1], 0));
-            redPlayer.makeMove(new Move(boards[1], 0));
+            redPlayer.makeMove(new Move(0), boards[1]);
+            redPlayer.makeMove(new Move(0), boards[1]);
+            redPlayer.makeMove(new Move(0), boards[1]);
+            redPlayer.makeMove(new Move(0), boards[1]);
 
-            yellowPlayer.makeMove(new Move(boards[2], 0));
-            yellowPlayer.makeMove(new Move(boards[2], 1));
-            yellowPlayer.makeMove(new Move(boards[2], 2));
-            yellowPlayer.makeMove(new Move(boards[2], 3));
+            yellowPlayer.makeMove(new Move(0), boards[2]);
+            yellowPlayer.makeMove(new Move(1), boards[2]);
+            yellowPlayer.makeMove(new Move(2), boards[2]);
+            yellowPlayer.makeMove(new Move(3), boards[2]);
 
-            redPlayer.makeMove(new Move(boards[3], 0));
-            yellowPlayer.makeMove(new Move(boards[3], 1));
-            redPlayer.makeMove(new Move(boards[3], 1));
-            yellowPlayer.makeMove(new Move(boards[3], 2));
-            yellowPlayer.makeMove(new Move(boards[3], 2));
-            redPlayer.makeMove(new Move(boards[3], 2));
-            yellowPlayer.makeMove(new Move(boards[3], 3));
-            yellowPlayer.makeMove(new Move(boards[3], 3));
-            yellowPlayer.makeMove(new Move(boards[3], 3));
-            redPlayer.makeMove(new Move(boards[3], 3));
+            redPlayer.makeMove(new Move(0), boards[3]);
+            yellowPlayer.makeMove(new Move(1), boards[3]);
+            redPlayer.makeMove(new Move(1), boards[3]);
+            yellowPlayer.makeMove(new Move(2), boards[3]);
+            yellowPlayer.makeMove(new Move(2), boards[3]);
+            redPlayer.makeMove(new Move(2), boards[3]);
+            yellowPlayer.makeMove(new Move(3), boards[3]);
+            yellowPlayer.makeMove(new Move(3), boards[3]);
+            yellowPlayer.makeMove(new Move(3), boards[3]);
+            redPlayer.makeMove(new Move(3), boards[3]);
 
             Assertions.assertNull(games[0].getWinner());
             Assertions.assertEquals(redPlayer, games[1].getWinner());
@@ -81,7 +81,7 @@ public class GameTest {
         Assertions.assertEquals(redPlayer, games[0].getCurrentPlayer());
 
         try {
-            games[0].performCurrentPlayerMove(new Move(games[0].getBoard(), 0));
+            games[0].performCurrentPlayerMove(new Move(0));
         } catch (InvalidMoveException ex) {
             Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
         }

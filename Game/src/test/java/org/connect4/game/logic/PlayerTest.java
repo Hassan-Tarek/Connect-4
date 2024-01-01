@@ -39,13 +39,13 @@ public class PlayerTest {
     @Test
     public void testMakeMove() {
         try {
-            redPlayer.makeMove(new Move(board, 0));
+            redPlayer.makeMove(new Move(0), board);
 
             // Make a valid move
             Assertions.assertEquals(Color.RED, board.getPieceAt(0, 0).getColor());
 
             // Make an invalid move
-            Assertions.assertThrows(InvalidMoveException.class, () -> yellowPlayer.makeMove(new Move(board, -1)));
+            Assertions.assertThrows(InvalidMoveException.class, () -> yellowPlayer.makeMove(new Move(-1), board));
         }
         catch (InvalidMoveException ex) {
             Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
@@ -60,7 +60,7 @@ public class PlayerTest {
             board.addPiece(2, Color.RED);
             board.addPiece(3, Color.RED);
 
-            Assertions.assertTrue(redPlayer.isWin(game));
+            Assertions.assertTrue(redPlayer.isWinner(game));
         } catch (InvalidColumnIndexException | FullColumnException e) {
             throw new RuntimeException(e);
         }

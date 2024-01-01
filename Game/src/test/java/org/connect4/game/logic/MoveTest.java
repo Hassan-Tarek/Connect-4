@@ -22,13 +22,13 @@ public class MoveTest {
     public void setup() {
         board = new Board();
         player = new Player(Color.RED, PlayerType.HUMAN);
-        move = new Move(board, 0);
+        move = new Move(0);
     }
 
     @Test
     public void testApplyMove() {
         try {
-            move.applyMove(player);
+            move.applyMove(player, board);
         } catch (InvalidMoveException e) {
             Assertions.fail("Invalid Move");
         }
@@ -39,8 +39,8 @@ public class MoveTest {
     @Test
     public void testIsValid() {
         for (int column = 0; column < Board.COLS; column++) {
-            move = new Move(board, column);
-            Assertions.assertTrue(move.isValid());
+            move = new Move(column);
+            Assertions.assertTrue(move.isValid(board));
         }
 
         // Fill a column to test
@@ -51,13 +51,13 @@ public class MoveTest {
         } catch (InvalidColumnIndexException | FullColumnException e) {
             throw new RuntimeException(e);
         }
-        move = new Move(board, 0);
-        Assertions.assertFalse(move.isValid());
+        move = new Move(0);
+        Assertions.assertFalse(move.isValid(board));
 
         // Test invalid move
-        move = new Move(board, -1);
-        Assertions.assertFalse(move.isValid());
-        move = new Move(board, Board.COLS);
-        Assertions.assertFalse(move.isValid());
+        move = new Move(-1);
+        Assertions.assertFalse(move.isValid(board));
+        move = new Move(Board.COLS);
+        Assertions.assertFalse(move.isValid(board));
     }
 }

@@ -57,7 +57,8 @@ public class MinimaxAITest {
     }
 
     private void testEmptyBoard(Class<? extends MinimaxAI> aiClass) {
-        State state = new State(new Board(), Color.RED);
+        Board board = new Board();
+        State state = new State(board, Color.RED);
         Node node = new Node(state, NodeType.MAX, null);
         try {
             ai = aiClass.getConstructor(Node.class, int.class).newInstance(node, depth);
@@ -65,7 +66,7 @@ public class MinimaxAITest {
             throw new RuntimeException(e);
         }
         Move move = ai.getNextMove();
-        Assertions.assertTrue(move.isValid(), "The column index should be within the bounds of the board");
+        Assertions.assertTrue(move.isValid(board), "The column index should be within the bounds of the board");
     }
 
     private void testWinningMove(Class<? extends MinimaxAI> aiClass) throws InvalidColumnIndexException, FullColumnException {

@@ -20,25 +20,23 @@ public class Move implements Serializable {
     private static final Logger logger = GameLogger.getLogger();
 
     private final int column;
-    private final Board board;
 
     /**
      * Constructs a move with the specified board and column index.
-     * @param board The board on which the move is made.
      * @param column The column index where the move is made.
      */
-    public Move(Board board, int column) {
-        this.board = board;
+    public Move(int column) {
         this.column = column;
     }
 
     /**
      * Applies the move on the board.
      * @param player The player who will make the move.
+     * @param board The board in which the move will be performed.
      * @throws InvalidMoveException if the move is not valid.
      */
-    public void applyMove(Player player) throws InvalidMoveException {
-        if (!isValid()) {
+    public void applyMove(Player player, Board board) throws InvalidMoveException {
+        if (!isValid(board)) {
             throw new InvalidMoveException("Invalid move.");
         }
 
@@ -51,14 +49,6 @@ public class Move implements Serializable {
     }
 
     /**
-     * Gets the board on which the move is made.
-     * @return The board.
-     */
-    public Board getBoard() {
-        return board;
-    }
-
-    /**
      * Gets the column index of the move.
      * @return The column index.
      */
@@ -68,9 +58,10 @@ public class Move implements Serializable {
 
     /**
      * Check whether a move is valid or not.
+     * @param board The board.
      * @return true if the move is valid, false otherwise.
      */
-    public boolean isValid() {
+    public boolean isValid(Board board) {
         boolean isValid = board.isValidColumn(column) && !board.isColumnFull(column);
 
         if (isValid) {

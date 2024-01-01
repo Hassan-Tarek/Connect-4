@@ -34,7 +34,7 @@ public class RandomChoiceAITest {
 
     private void testEmptyBoard() {
         nextMove = ai.getNextMove();
-        Assertions.assertTrue(nextMove.isValid(), "The column index should be within the bounds of the board");
+        Assertions.assertTrue(nextMove.isValid(board), "The column index should be within the bounds of the board");
     }
 
     private void testFullBoard() throws InvalidColumnIndexException, FullColumnException {

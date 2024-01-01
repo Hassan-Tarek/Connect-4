@@ -136,10 +136,10 @@ public class Node {
 
         for (int i = 0; i < Board.COLS; i++) {
             State childState = state.clone();
-            Move newMove = new Move(childState.getBoard(), i);
+            Move newMove = new Move(i);
             childState.setPlayerColor(state.getPlayerColor().opposite());
             NodeType childNodeType = nodeType.opposite();
-            if (newMove.isValid()) {
+            if (newMove.isValid(childState.getBoard())) {
                 try {
                     childState.getBoard().addPiece(i, childState.getPlayerColor());
                 } catch (InvalidColumnIndexException | FullColumnException e) {

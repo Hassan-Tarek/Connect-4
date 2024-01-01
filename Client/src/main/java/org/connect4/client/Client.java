@@ -24,7 +24,7 @@ public class Client {
             Thread sendThread = new Thread(() -> {
                 while (true) {
                     int column = scanner.nextInt();
-                    Move move = new Move(null, column);
+                    Move move = new Move(column);
                     Message<Move> message = new Message<>(MessageType.MOVE, move);
                     try {
                         clientManager.sendMessage(message);

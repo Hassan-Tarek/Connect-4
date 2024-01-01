@@ -82,10 +82,10 @@ public class Player {
      * @param move The move which this player will make.
      * @throws InvalidMoveException if the move is invalid.
      */
-    public void makeMove(Move move) throws InvalidMoveException {
+    public void makeMove(Move move, Board board) throws InvalidMoveException {
         try {
             logger.fine("Player is making a move.");
-            move.applyMove(this);
+            move.applyMove(this, board);
         } catch (InvalidMoveException ex) {
             logger.warning("Invalid move. " + ex.getMessage());
             throw ex;
@@ -97,7 +97,7 @@ public class Player {
      * @param game The game to determine if its winner is this player or not.
      * @return true if this player is the winner of the game, false otherwise.
      */
-    public boolean isWin(Game game) {
+    public boolean isWinner(Game game) {
         boolean isWin = game.getWinner() == this;
 
         if (isWin) {

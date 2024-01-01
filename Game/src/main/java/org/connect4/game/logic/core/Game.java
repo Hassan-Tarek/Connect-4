@@ -81,7 +81,7 @@ public class Game {
      * @throws InvalidMoveException if the move is invalid.
      */
     public void performCurrentPlayerMove(Move move) throws InvalidMoveException {
-        currentPlayer.makeMove(move);
+        currentPlayer.makeMove(move, board);
         switchTurn();
     }
 
@@ -91,6 +91,14 @@ public class Game {
      */
     public boolean isGameOver() {
         return board.isFull() || WinnerChecker.hasWinner(board);
+    }
+
+    public boolean hasWinner() {
+        return WinnerChecker.hasWinner(board);
+    }
+
+    public boolean isDraw() {
+        return !WinnerChecker.hasWinner(board) && board.isFull();
     }
 
     /**

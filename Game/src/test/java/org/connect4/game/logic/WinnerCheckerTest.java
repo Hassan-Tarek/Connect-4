@@ -37,26 +37,26 @@ public class WinnerCheckerTest {
     @Test
     public void testHasWinner() {
         try {
-            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
-            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
-            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
-            redPlayer.makeMove(new Move(games[1].getBoard(), 1));
+            redPlayer.makeMove(new Move(1), games[1].getBoard());
+            redPlayer.makeMove(new Move(1), games[1].getBoard());
+            redPlayer.makeMove(new Move(1), games[1].getBoard());
+            redPlayer.makeMove(new Move(1), games[1].getBoard());
 
-            yellowPlayer.makeMove(new Move(games[2].getBoard(), 0));
-            yellowPlayer.makeMove(new Move(games[2].getBoard(), 1));
-            yellowPlayer.makeMove(new Move(games[2].getBoard(), 2));
-            yellowPlayer.makeMove(new Move(games[2].getBoard(), 3));
+            yellowPlayer.makeMove(new Move(0), games[2].getBoard());
+            yellowPlayer.makeMove(new Move(1), games[2].getBoard());
+            yellowPlayer.makeMove(new Move(2), games[2].getBoard());
+            yellowPlayer.makeMove(new Move(3), games[2].getBoard());
 
-            redPlayer.makeMove(new Move(games[3].getBoard(), 1));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 2));
-            redPlayer.makeMove(new Move(games[3].getBoard(), 2));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 3));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 3));
-            redPlayer.makeMove(new Move(games[3].getBoard(), 3));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
-            yellowPlayer.makeMove(new Move(games[3].getBoard(), 4));
-            redPlayer.makeMove(new Move(games[3].getBoard(), 4));
+            redPlayer.makeMove(new Move(1), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(2), games[3].getBoard());
+            redPlayer.makeMove(new Move(2), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(3), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(3), games[3].getBoard());
+            redPlayer.makeMove(new Move(3), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
+            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
+            redPlayer.makeMove(new Move(4), games[3].getBoard());
 
             Assertions.assertFalse(WinnerChecker.hasWinner(boards[0]));
             Assertions.assertTrue(WinnerChecker.hasWinner(boards[1]));
