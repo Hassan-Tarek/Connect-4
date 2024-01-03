@@ -2,6 +2,7 @@ package org.connect4.server.core;
 
 import javafx.util.Pair;
 import org.connect4.game.networking.Message;
+import org.connect4.game.networking.MessageType;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
 import org.connect4.server.exceptions.ServerStartFailureException;
@@ -196,6 +197,7 @@ public class ServerManager implements Runnable {
         if (running.compareAndSet(true, false)) {
             try {
                 for (Socket socket : allAvailableSockets) {
+                    sendMessage(socket, new Message<>(MessageType.SERVER_STOPPED, null));
                     closeStreams(socket);
                     closeSocket(socket);
                 }
