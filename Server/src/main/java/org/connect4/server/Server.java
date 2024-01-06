@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import org.connect4.server.core.ServerManager;
-import org.connect4.server.exceptions.ServerStartFailureException;
 import org.connect4.server.gui.ServerController;
 import org.connect4.server.gui.ServerView;
 
@@ -18,11 +17,9 @@ public class Server extends Application {
     /**
      * Start the connect-4 server application.
      * @param stage The primary stage for ths application.
-     * @throws ServerStartFailureException If it fails to start the server.
      */
-    @SuppressWarnings("ClassEscapesDefinedScope")
     @Override
-    public void start(Stage stage) throws ServerStartFailureException {
+    public void start(Stage stage) {
         ServerManager serverManager = new ServerManager(PORT);
         ServerView serverView = ServerView.getInstance(stage);
         ServerController serverController = new ServerController(serverManager, serverView);

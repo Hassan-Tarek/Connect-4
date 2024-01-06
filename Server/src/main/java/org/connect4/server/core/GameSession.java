@@ -1,5 +1,6 @@
 package org.connect4.server.core;
 
+import org.connect4.server.logging.ServerLogger;
 import org.connect4.game.logic.core.Board;
 import org.connect4.game.logic.core.Game;
 import org.connect4.game.logic.core.Move;
@@ -11,8 +12,8 @@ import org.connect4.game.networking.Message;
 
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -20,6 +21,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Hassan
  */
 public class GameSession implements Runnable {
+    private static final ServerLogger logger = ServerLogger.getLogger();
+
     private final ServerManager serverManager;
     private final Socket firstClientSocket;
     private final Socket secondClientSocket;
@@ -60,7 +63,7 @@ public class GameSession implements Runnable {
             // Start game relay
             gameExecutor.submit(new GameHandler(serverManager, game, moveMessageQueue, firstClientSocket, secondClientSocket));
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to start message relay: " + e.getMessage());
+            logger.severe("Failed to start message relay: " + e.getMessage());
         } finally {
             relayExecutor.shutdown();
         }

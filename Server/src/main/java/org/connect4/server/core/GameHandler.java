@@ -1,5 +1,6 @@
 package org.connect4.server.core;
 
+import org.connect4.server.logging.ServerLogger;
 import org.connect4.game.logic.core.Game;
 import org.connect4.game.logic.core.Move;
 import org.connect4.game.logic.enums.Color;
@@ -16,6 +17,8 @@ import java.util.concurrent.BlockingQueue;
  * @author Hassan.
  */
 public class GameHandler implements Runnable {
+    private static final ServerLogger logger = ServerLogger.getLogger();
+
     private final ServerManager serverManager;
     private final Game game;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
@@ -30,7 +33,8 @@ public class GameHandler implements Runnable {
      * @param redPlayerSocket The red player socket.
      * @param yellowPlayerSocket The yellow player socket.
      */
-    public GameHandler(ServerManager serverManager, Game game, BlockingQueue<Message<Move>> moveMessageQueue, Socket redPlayerSocket, Socket yellowPlayerSocket) {
+    public GameHandler(ServerManager serverManager, Game game, BlockingQueue<Message<Move>> moveMessageQueue,
+                       Socket redPlayerSocket, Socket yellowPlayerSocket) {
         this.serverManager = serverManager;
         this.game = game;
         this.moveMessageQueue = moveMessageQueue;
@@ -74,10 +78,13 @@ public class GameHandler implements Runnable {
                 sendGameOverMessage(Color.NONE);
             }
 
-        } catch (InterruptedException | SendMessageFailureException | InvalidMoveException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            logger.severe("Failed to retrieve a move message from move message queue: " + e.getMessage());
+        } catch (SendMessageFailureException e) {
+            logger.severe("Failed to send message: " + e.getMessage());
+        } catch (InvalidMoveException e) {
+            logger.severe("Invalid move: " + e.getMessage());
         }
-
     }
 
     /**
@@ -89,7 +96,7 @@ public class GameHandler implements Runnable {
             serverManager.sendMessage(redPlayerSocket, startGameMessage);
             serverManager.sendMessage(yellowPlayerSocket, startGameMessage);
         } catch (SendMessageFailureException e) {
-            System.err.println("Failed to start the game: " + e.getMessage());
+            logger.severe("Failed to send start game messages: " + e.getMessage());
         }
     }
 
@@ -101,7 +108,7 @@ public class GameHandler implements Runnable {
             serverManager.sendMessage(redPlayerSocket, new Message<>(MessageType.COLOR, Color.RED));
             serverManager.sendMessage(yellowPlayerSocket, new Message<>(MessageType.COLOR, Color.YELLOW));
         } catch (SendMessageFailureException e) {
-            System.err.println("Failed to send player colors: " + e.getMessage());
+            logger.severe("Failed to send player colors: " + e.getMessage());
         }
     }
 
@@ -115,7 +122,7 @@ public class GameHandler implements Runnable {
             serverManager.sendMessage(redPlayerSocket, gameOverMessage);
             serverManager.sendMessage(yellowPlayerSocket, gameOverMessage);
         } catch (SendMessageFailureException e) {
-            System.err.println("Failed to send game over message: " + e.getMessage());
+            logger.severe("Failed to send game over message: " + e.getMessage());
         }
     }
 }

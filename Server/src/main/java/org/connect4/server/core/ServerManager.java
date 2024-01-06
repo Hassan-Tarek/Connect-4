@@ -1,6 +1,7 @@
 package org.connect4.server.core;
 
 import javafx.util.Pair;
+import org.connect4.server.logging.ServerLogger;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
@@ -26,6 +27,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Hassan
  */
 public class ServerManager implements Runnable {
+    private static final ServerLogger logger = ServerLogger.getLogger();
+
     private final int port;
     private final List<Socket> waitingSockets;
     private final List<Socket> allAvailableSockets;
@@ -81,7 +84,7 @@ public class ServerManager implements Runnable {
         try {
             this.serverSocket = new ServerSocket(port);
             this.executorService = Executors.newCachedThreadPool();
-            System.out.println("Server started...");
+            logger.finest("Server started!");
 
             while (running.get()) {
                 acceptNewClient();
@@ -91,7 +94,9 @@ public class ServerManager implements Runnable {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(new ServerStartFailureException("Failed to bind the server to port %d: ".formatted(port) + e.getMessage()));
+            String message = "Failed to bind the server to port %d: ".formatted(port) + e.getMessage();
+            logger.severe(message);
+            throw new RuntimeException(new ServerStartFailureException(message));
         } finally {
             shutdown();
         }
@@ -110,10 +115,10 @@ public class ServerManager implements Runnable {
                             new ObjectOutputStream(acceptedClientSocket.getOutputStream()),
                             new ObjectInputStream(acceptedClientSocket.getInputStream())));
 
-            System.out.println("New client accepted!");
+            logger.fine("New client accepted!");
         } catch (IOException e) {
             if (!serverSocket.isClosed()) {
-                System.err.println("Server can't accept connection anymore: " + e.getMessage());
+                logger.severe("Server can't accept connection anymore: " + e.getMessage());
             }
         }
     }
@@ -130,7 +135,7 @@ public class ServerManager implements Runnable {
         gameSessions.add(gameSession);
         executorService.submit(gameSession);
 
-        System.out.println("New GameSession started!");
+        logger.fine("New GameSession started!");
     }
 
     /**
@@ -155,7 +160,9 @@ public class ServerManager implements Runnable {
             out.writeObject(message);
             out.flush();
         } catch (IOException e) {
-            throw new SendMessageFailureException("Failed to send message to a client: " + e.getMessage());
+            String errorMessage = "Failed to send message to a client: " + e.getMessage();
+            logger.severe(errorMessage);
+            throw new SendMessageFailureException(errorMessage);
         }
     }
 
@@ -172,7 +179,9 @@ public class ServerManager implements Runnable {
         } catch (EOFException e) {
             return null;
         } catch (ClassNotFoundException | IOException e) {
-            throw new ReceiveMessageFailureException("Failed to receive message from a client: " + e.getMessage());
+            String errorMessage = "Failed to receive message from a client: " + e.getMessage();
+            logger.severe(errorMessage);
+            throw new ReceiveMessageFailureException(errorMessage);
         }
     }
 
@@ -186,7 +195,7 @@ public class ServerManager implements Runnable {
                 socket.close();
             }
         } catch (IOException e) {
-            System.err.println("Failed to close client socket: " + e.getMessage());
+            logger.severe("Failed to close client socket: " + e.getMessage());
         }
     }
 
@@ -211,9 +220,9 @@ public class ServerManager implements Runnable {
                     serverSocket.close();
                 }
 
-                System.out.println("Server stopped...");
+                logger.fine("Server stopped!");
             } catch (IOException e) {
-                System.err.println("Failed to close server: " + e.getMessage());
+                logger.severe("Failed to close server: " + e.getMessage());
             } finally {
                 cleanup();
             }
@@ -231,7 +240,7 @@ public class ServerManager implements Runnable {
             out.close();
             in.close();
         } catch (IOException e) {
-            System.err.println("ERROR: Failed to close streams: " + e.getMessage());
+            logger.severe("Failed to close streams: " + e.getMessage());
         }
     }
 

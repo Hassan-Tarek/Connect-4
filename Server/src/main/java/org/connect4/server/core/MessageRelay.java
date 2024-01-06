@@ -1,5 +1,6 @@
 package org.connect4.server.core;
 
+import org.connect4.server.logging.ServerLogger;
 import org.connect4.game.logic.core.Move;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
@@ -14,6 +15,8 @@ import java.util.concurrent.BlockingQueue;
  * @author Hassan
  */
 public class MessageRelay implements Runnable {
+    private static final ServerLogger logger = ServerLogger.getLogger();
+
     private final ServerManager serverManager;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
     private final Socket senderSocket;
@@ -26,7 +29,8 @@ public class MessageRelay implements Runnable {
      * @param senderSocket The socket from which the messages are sent.
      * @param receiverSocket The socket to which the message are received.
      */
-    public MessageRelay(ServerManager serverManager, BlockingQueue<Message<Move>> moveMessageQueue, Socket senderSocket, Socket receiverSocket) {
+    public MessageRelay(ServerManager serverManager, BlockingQueue<Message<Move>> moveMessageQueue,
+                        Socket senderSocket, Socket receiverSocket) {
         this.serverManager = serverManager;
         this.moveMessageQueue = moveMessageQueue;
         this.senderSocket = senderSocket;
