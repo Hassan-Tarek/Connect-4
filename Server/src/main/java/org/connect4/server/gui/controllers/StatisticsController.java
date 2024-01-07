@@ -1,4 +1,4 @@
-package org.connect4.server.gui;
+package org.connect4.server.gui.controllers;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -6,7 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.chart.PieChart;
 import javafx.util.Duration;
+
 import org.connect4.server.core.ServerManager;
+import org.connect4.server.gui.views.StatisticsView;
 
 /**
  * A controller class for the statistics view.

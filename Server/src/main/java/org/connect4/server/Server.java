@@ -4,8 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import org.connect4.server.core.ServerManager;
-import org.connect4.server.gui.ServerController;
-import org.connect4.server.gui.ServerView;
+import org.connect4.server.gui.controllers.ServerController;
+import org.connect4.server.gui.views.ServerView;
 
 /**
  * The Main class for the Connect-4 server application.

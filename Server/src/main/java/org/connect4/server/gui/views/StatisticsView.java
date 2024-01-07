@@ -1,4 +1,4 @@
-package org.connect4.server.gui;
+package org.connect4.server.gui.views;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,6 +8,8 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import org.connect4.server.gui.controllers.StatisticsController;
 
 /**
  * A view class shows statistics about the server.

@@ -1,10 +1,12 @@
-package org.connect4.server.gui;
+package org.connect4.server.gui.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.stage.WindowEvent;
 
 import org.connect4.server.core.ServerManager;
+import org.connect4.server.gui.views.ServerView;
+import org.connect4.server.gui.views.StatisticsView;
 
 /**
  * A controller class for the server view.

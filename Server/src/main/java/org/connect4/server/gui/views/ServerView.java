@@ -1,4 +1,4 @@
-package org.connect4.server.gui;
+package org.connect4.server.gui.views;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -6,6 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import org.connect4.server.gui.controllers.ServerController;
 
 import java.util.Objects;
 
