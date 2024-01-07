@@ -129,7 +129,7 @@ public class ServerView {
         layout.getChildren().addAll(label, startButton, stopButton, showStatisticsButton);
 
         // Scene setup
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/style.css")).toExternalForm());
 
         // Stage setup
         stage.setTitle("Connect-4 Server");
