@@ -60,7 +60,7 @@ public class MessageRelay implements Runnable {
                     serverManager.sendMessage(receiverSocket, message);
                 }
             } catch (SendMessageFailureException | ReceiveMessageFailureException e) {
-                throw new RuntimeException(e);
+                logger.severe("Failed to send or receive message: " + e.getMessage());
             }
         }
     }

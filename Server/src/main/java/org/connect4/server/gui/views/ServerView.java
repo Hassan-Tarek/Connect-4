@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.connect4.server.gui.controllers.ServerController;
+import org.connect4.server.utils.Constants;
 
 import java.util.Objects;
 
@@ -16,10 +17,6 @@ import java.util.Objects;
  * @author Hassan
  */
 public class ServerView {
-    private static final int VIEW_WIDTH = 350;
-    private static final int VIEW_HEIGHT = 300;
-    private static final double LAYOUT_SPACING = 20.0;
-
     private final Stage stage;
     private final Scene scene;
     private final VBox layout;
@@ -38,8 +35,8 @@ public class ServerView {
      */
     private ServerView(Stage stage) {
         this.stage = stage;
-        this.layout = new VBox(LAYOUT_SPACING);
-        this.scene = new Scene(layout, VIEW_WIDTH, VIEW_HEIGHT);
+        this.layout = new VBox(Constants.LAYOUT_SPACING);
+        this.scene = new Scene(layout, Constants.SERVER_VIEW_WIDTH, Constants.SERVER_VIEW_HEIGHT);
         this.label = new Label("Connect-4 Server");
         this.startButton = new Button("Start Server");
         this.stopButton = new Button("Stop Server");

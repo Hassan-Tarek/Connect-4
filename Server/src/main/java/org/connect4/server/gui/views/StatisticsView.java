@@ -10,15 +10,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import org.connect4.server.gui.controllers.StatisticsController;
+import org.connect4.server.utils.Constants;
 
 /**
  * A view class shows statistics about the server.
  * @author Hassan
  */
 public class StatisticsView {
-    private static final int VIEW_WIDTH = 400;
-    private static final int VIEW_HEIGHT = 300;
-
     private final Stage stage;
     private final Scene scene;
     private final VBox layout;
@@ -35,7 +33,7 @@ public class StatisticsView {
     private StatisticsView() {
         this.stage = new Stage();
         this.layout = new VBox();
-        this.scene = new Scene(layout, VIEW_WIDTH, VIEW_HEIGHT);
+        this.scene = new Scene(layout, Constants.STATISTICS_VIEW_WIDTH, Constants.STATISTICS_VIEW_HEIGHT);
         this.pieChartData = FXCollections.observableArrayList();
         this.pieChart = new PieChart(pieChartData);
 
