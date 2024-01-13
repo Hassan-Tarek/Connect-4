@@ -18,6 +18,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * A class that manages a multi-player game session between two human players.
+ * @author Hassan
+ */
 public class MultiPlayerGameSession extends GameSession {
     private final Socket redPlayerSocket;
     private final Socket yellowPlayerSocket;

@@ -106,6 +106,7 @@ public abstract class GameSession implements Runnable {
      * @param playerSocket The player's socket from which the move will be received.
      * @return The received move.
      */
+    @SuppressWarnings("unchecked")
     public Move getMove(Socket playerSocket) {
         try {
             Message<Move> moveMessage = (Message<Move>) serverManager.receiveMessage(playerSocket);

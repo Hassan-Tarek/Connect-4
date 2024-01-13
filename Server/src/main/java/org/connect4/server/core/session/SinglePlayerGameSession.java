@@ -14,6 +14,10 @@ import org.connect4.server.core.handler.SinglePlayerGameHandler;
 
 import java.net.Socket;
 
+/**
+ * A class that manages a single-player game session between a human player and an AI playr.
+ * @author Hassan
+ */
 public class SinglePlayerGameSession extends GameSession {
     private final Socket humanPlayerSocket;
     private final AIType aiType;

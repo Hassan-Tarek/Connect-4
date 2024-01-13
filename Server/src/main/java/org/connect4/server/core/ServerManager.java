@@ -132,6 +132,10 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Handles the multi-player game session by matching the client with another waiting client.
+     * @param clientSocket The client socket request multi-player game session.
+     */
     private void handleMultiPlayerGameSession(Socket clientSocket) {
         if (!waitingSockets.isEmpty()) {
             Socket oppositeClientSocket = waitingSockets.remove(0);
@@ -141,6 +145,10 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Handles the single-player game session by receiving an AI type and starts a game session with that AI.
+     * @param clientSocket The client socket request single-player game session.
+     */
     @SuppressWarnings("unchecked")
     private void handleSinglePlayerGameSession(Socket clientSocket) {
         try {
@@ -152,18 +160,33 @@ public class ServerManager implements Runnable {
         }
     }
 
+    /**
+     * Starts a multi-player game session with the two given client sockets.
+     * @param firstClientSocket  The socket of the first client.
+     * @param secondClientSocket The socket of the second client.
+     */
     private void startMultiPlayerGameSession(Socket firstClientSocket, Socket secondClientSocket) {
         // Start a new game session
         GameSession gameSession = new MultiPlayerGameSession(this, firstClientSocket, secondClientSocket);
         addGameSession(gameSession);
     }
 
+    /**
+     * Starts a single-player game session with the given client and AI type.
+     * @param clientSocket The socket of the client.
+     * @param aiType The type of AI the client will play against.
+     */
     private void startSinglePlayerGameSession(Socket clientSocket, AIType aiType) {
         // Start a new game session
         GameSession gameSession = new SinglePlayerGameSession(this, clientSocket, aiType);
         addGameSession(gameSession);
     }
 
+
+    /**
+     * Adds the given game session to the list of sessions and submits it to the executor service for execution.
+     * @param gameSession The game session to be added and executed.
+     */
     private void addGameSession(GameSession gameSession) {
         gameSessions.add(gameSession);
         executorService.submit(gameSession);
