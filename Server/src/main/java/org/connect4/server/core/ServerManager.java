@@ -1,12 +1,17 @@
 package org.connect4.server.core;
 
 import javafx.util.Pair;
-import org.connect4.server.logging.ServerLogger;
+import org.connect4.game.ai.enums.AIType;
+import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
+import org.connect4.server.core.session.GameSession;
+import org.connect4.server.core.session.MultiPlayerGameSession;
+import org.connect4.server.core.session.SinglePlayerGameSession;
 import org.connect4.server.exceptions.ServerStartFailureException;
+import org.connect4.server.logging.ServerLogger;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -79,6 +84,7 @@ public class ServerManager implements Runnable {
     /**
      * Starts running the server.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         try {
@@ -87,10 +93,23 @@ public class ServerManager implements Runnable {
             logger.finest("Server started!");
 
             while (running.get()) {
-                acceptNewClient();
+                try {
+                    Socket acceptedClientSocket = serverSocket.accept();
+                    allAvailableSockets.add(acceptedClientSocket);
+                    socketStreamsMap.put(acceptedClientSocket,
+                            new Pair<>(
+                                    new ObjectOutputStream(acceptedClientSocket.getOutputStream()),
+                                    new ObjectInputStream(acceptedClientSocket.getInputStream())));
+                    logger.fine("New client accepted!");
 
-                if (waitingSockets.size() >= 2) {
-                    startNewGameSession();
+                    Message<GameType> gameTypeMessage = (Message<GameType>) receiveMessage(acceptedClientSocket);
+                    GameType gameType = gameTypeMessage.getPayload();
+
+                    handleClientRequest(acceptedClientSocket, gameType);
+                } catch (IOException e) {
+                    if (!serverSocket.isClosed()) {
+                        logger.severe("Server can't accept connection anymore: " + e.getMessage());
+                    }
                 }
             }
         } catch (IOException e) {
@@ -103,35 +122,49 @@ public class ServerManager implements Runnable {
     }
 
     /**
-     * Accepts new client.
+     * Handles the client request.
      */
-    private void acceptNewClient() {
-        try {
-            Socket acceptedClientSocket = serverSocket.accept();
-            waitingSockets.add(acceptedClientSocket);
-            allAvailableSockets.add(acceptedClientSocket);
-            socketStreamsMap.put(acceptedClientSocket,
-                    new Pair<>(
-                            new ObjectOutputStream(acceptedClientSocket.getOutputStream()),
-                            new ObjectInputStream(acceptedClientSocket.getInputStream())));
-
-            logger.fine("New client accepted!");
-        } catch (IOException e) {
-            if (!serverSocket.isClosed()) {
-                logger.severe("Server can't accept connection anymore: " + e.getMessage());
-            }
+    private void handleClientRequest(Socket clientSocket, GameType gameType) {
+        switch (gameType) {
+            case HUMAN_VS_HUMAN -> handleMultiPlayerGameSession(clientSocket);
+            case HUMAN_VS_COMPUTER -> handleSinglePlayerGameSession(clientSocket);
+            default -> logger.warning("Unknown game type received from client: " + clientSocket.getRemoteSocketAddress());
         }
     }
 
-    /**
-     * Starts new game session.
-     */
-    private void startNewGameSession() {
-        Socket firstClientSocket = waitingSockets.remove(0);
-        Socket secondClientSocket = waitingSockets.remove(0);
+    private void handleMultiPlayerGameSession(Socket clientSocket) {
+        if (!waitingSockets.isEmpty()) {
+            Socket oppositeClientSocket = waitingSockets.remove(0);
+            startMultiPlayerGameSession(clientSocket, oppositeClientSocket);
+        } else {
+            waitingSockets.add(clientSocket);
+        }
+    }
 
-        // Start a new game session for these two clients
-        GameSession gameSession = new GameSession(this, firstClientSocket, secondClientSocket);
+    @SuppressWarnings("unchecked")
+    private void handleSinglePlayerGameSession(Socket clientSocket) {
+        try {
+            Message<AIType> aiTypeMessage = (Message<AIType>) receiveMessage(clientSocket);
+            AIType aiType = aiTypeMessage.getPayload();
+            startSinglePlayerGameSession(clientSocket, aiType);
+        } catch (ReceiveMessageFailureException e) {
+            logger.severe("Failed to receive ai type message: " + e.getMessage());
+        }
+    }
+
+    private void startMultiPlayerGameSession(Socket firstClientSocket, Socket secondClientSocket) {
+        // Start a new game session
+        GameSession gameSession = new MultiPlayerGameSession(this, firstClientSocket, secondClientSocket);
+        addGameSession(gameSession);
+    }
+
+    private void startSinglePlayerGameSession(Socket clientSocket, AIType aiType) {
+        // Start a new game session
+        GameSession gameSession = new SinglePlayerGameSession(this, clientSocket, aiType);
+        addGameSession(gameSession);
+    }
+
+    private void addGameSession(GameSession gameSession) {
         gameSessions.add(gameSession);
         executorService.submit(gameSession);
 

@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public enum MessageType implements Serializable {
     START_GAME,
+    GAME_TYPE,
+    AI_TYPE,
     COLOR,
     MOVE,
     TEXT,
