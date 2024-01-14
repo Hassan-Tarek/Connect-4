@@ -19,10 +19,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,11 +51,11 @@ public class ServerManager implements Runnable {
      */
     public ServerManager(int port) {
         this.port = port;
-        this.waitingSockets = new ArrayList<>();
-        this.allAvailableSockets = new ArrayList<>();
-        this.multiPlayerGameSessions = new ArrayList<>();
-        this.singlePlayerGameSessions = new ArrayList<>();
-        this.socketStreamsMap = new HashMap<>();
+        this.waitingSockets = new CopyOnWriteArrayList<>();
+        this.allAvailableSockets = new CopyOnWriteArrayList<>();
+        this.multiPlayerGameSessions = new CopyOnWriteArrayList<>();
+        this.singlePlayerGameSessions = new CopyOnWriteArrayList<>();
+        this.socketStreamsMap = new ConcurrentHashMap<>();
         this.running = new AtomicBoolean(false);
     }
 
