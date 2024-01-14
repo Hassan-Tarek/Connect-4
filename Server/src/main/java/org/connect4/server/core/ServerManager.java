@@ -94,7 +94,6 @@ public class ServerManager implements Runnable {
     /**
      * Starts running the server.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         try {
@@ -112,10 +111,7 @@ public class ServerManager implements Runnable {
                                     new ObjectInputStream(acceptedClientSocket.getInputStream())));
                     logger.fine("New client accepted!");
 
-                    Message<GameType> gameTypeMessage = (Message<GameType>) receiveMessage(acceptedClientSocket);
-                    GameType gameType = gameTypeMessage.getPayload();
-
-                    handleClientRequest(acceptedClientSocket, gameType);
+                    executorService.submit(() -> handleClientRequest(acceptedClientSocket));
                 } catch (IOException e) {
                     if (!serverSocket.isClosed()) {
                         logger.severe("Server can't accept connection anymore: " + e.getMessage());
@@ -134,11 +130,19 @@ public class ServerManager implements Runnable {
     /**
      * Handles the client request.
      */
-    private void handleClientRequest(Socket clientSocket, GameType gameType) {
-        switch (gameType) {
-            case HUMAN_VS_HUMAN -> handleMultiPlayerGameSession(clientSocket);
-            case HUMAN_VS_COMPUTER -> handleSinglePlayerGameSession(clientSocket);
-            default -> logger.warning("Unknown game type received from client: " + clientSocket.getRemoteSocketAddress());
+    @SuppressWarnings("unchecked")
+    private void handleClientRequest(Socket clientSocket) {
+        try {
+            Message<GameType> gameTypeMessage = (Message<GameType>) receiveMessage(clientSocket);
+            GameType gameType = gameTypeMessage.getPayload();
+
+            switch (gameType) {
+                case HUMAN_VS_HUMAN -> handleMultiPlayerGameSession(clientSocket);
+                case HUMAN_VS_COMPUTER -> handleSinglePlayerGameSession(clientSocket);
+                default -> logger.warning("Unknown game type received from client: " + clientSocket.getRemoteSocketAddress());
+            }
+        } catch (ReceiveMessageFailureException e) {
+            logger.severe("Failed to receive game type message: " + e.getMessage());
         }
     }
 
