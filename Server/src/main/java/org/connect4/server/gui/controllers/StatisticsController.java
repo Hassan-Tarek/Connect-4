@@ -53,18 +53,25 @@ public class StatisticsController {
      */
     private EventHandler<ActionEvent> updateStatisticsView() {
         return event -> {
-            int currentGameSessionsSize = serverManager.getGameSessions().size();
+            int currentMultiPlayerGameSessionsSize = serverManager.getMultiPlayerGameSessions().size();
+            int currentSinglePlayerGameSessionsSize = serverManager.getSinglePlayerGameSessions().size();
             int currentWaitingSocketsSize = serverManager.getWaitingSockets().size();
 
             if (statisticsView.getPieChartData().isEmpty()) {
-                statisticsView.getPieChartData().add(new PieChart.Data("Game Sessions", currentGameSessionsSize));
+                statisticsView.getPieChartData().add(new PieChart.Data("Multi-Player Game Sessions", currentMultiPlayerGameSessionsSize));
+                statisticsView.getPieChartData().add(new PieChart.Data("Single-Player Game Sessions", currentSinglePlayerGameSessionsSize));
                 statisticsView.getPieChartData().add(new PieChart.Data("Waiting Clients", currentWaitingSocketsSize));
             } else {
-                PieChart.Data gameSessionsData = statisticsView.getPieChartData().get(0);
-                PieChart.Data waitingClientsData = statisticsView.getPieChartData().get(1);
+                PieChart.Data multiPlayerGameSessionsData = statisticsView.getPieChartData().get(0);
+                PieChart.Data singlePlayerGameSessionsData = statisticsView.getPieChartData().get(1);
+                PieChart.Data waitingClientsData = statisticsView.getPieChartData().get(2);
 
-                if (gameSessionsData.getPieValue() != currentGameSessionsSize) {
-                    gameSessionsData.setPieValue(currentGameSessionsSize);
+                if (multiPlayerGameSessionsData.getPieValue() != currentMultiPlayerGameSessionsSize) {
+                    multiPlayerGameSessionsData.setPieValue(currentMultiPlayerGameSessionsSize);
+                }
+
+                if (singlePlayerGameSessionsData.getPieValue() != currentSinglePlayerGameSessionsSize) {
+                    singlePlayerGameSessionsData.setPieValue(currentSinglePlayerGameSessionsSize);
                 }
 
                 if (waitingClientsData.getPieValue() != currentWaitingSocketsSize) {

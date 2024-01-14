@@ -37,7 +37,8 @@ public class ServerManager implements Runnable {
     private final int port;
     private final List<Socket> waitingSockets;
     private final List<Socket> allAvailableSockets;
-    private final List<GameSession> gameSessions;
+    private final List<GameSession> multiPlayerGameSessions;
+    private final List<GameSession> singlePlayerGameSessions;
     private final Map<Socket, Pair<ObjectOutputStream, ObjectInputStream>> socketStreamsMap;
     private final AtomicBoolean running;
 
@@ -52,17 +53,26 @@ public class ServerManager implements Runnable {
         this.port = port;
         this.waitingSockets = new ArrayList<>();
         this.allAvailableSockets = new ArrayList<>();
-        this.gameSessions = new ArrayList<>();
+        this.multiPlayerGameSessions = new ArrayList<>();
+        this.singlePlayerGameSessions = new ArrayList<>();
         this.socketStreamsMap = new HashMap<>();
         this.running = new AtomicBoolean(false);
     }
 
     /**
-     * Gets the list of game sessions.
-     * @return The list of game sessions.
+     * Gets the list of multi-player game sessions.
+     * @return The list of multi-player game sessions.
      */
-    public List<GameSession> getGameSessions() {
-        return gameSessions;
+    public List<GameSession> getMultiPlayerGameSessions() {
+        return multiPlayerGameSessions;
+    }
+
+    /**
+     * Gets the list of single-player game sessions.
+     * @return The list of single-player game sessions.
+     */
+    public List<GameSession> getSinglePlayerGameSessions() {
+        return singlePlayerGameSessions;
     }
 
     /**
@@ -188,7 +198,11 @@ public class ServerManager implements Runnable {
      * @param gameSession The game session to be added and executed.
      */
     private void addGameSession(GameSession gameSession) {
-        gameSessions.add(gameSession);
+        if (gameSession instanceof MultiPlayerGameSession) {
+            multiPlayerGameSessions.add(gameSession);
+        } else if (gameSession instanceof SinglePlayerGameSession) {
+            singlePlayerGameSessions.add(gameSession);
+        }
         executorService.submit(gameSession);
 
         logger.fine("New GameSession started!");
@@ -267,7 +281,11 @@ public class ServerManager implements Runnable {
                     closeSocket(socket);
                 }
 
-                for (GameSession session : gameSessions) {
+                for (GameSession session : multiPlayerGameSessions) {
+                    session.shutdown();
+                }
+
+                for (GameSession session : singlePlayerGameSessions) {
                     session.shutdown();
                 }
 
@@ -306,7 +324,8 @@ public class ServerManager implements Runnable {
     private void cleanup() {
         waitingSockets.clear();
         allAvailableSockets.clear();
-        gameSessions.clear();
+        multiPlayerGameSessions.clear();
+        singlePlayerGameSessions.clear();
         socketStreamsMap.clear();
     }
 }
