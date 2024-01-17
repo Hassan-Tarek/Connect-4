@@ -6,13 +6,11 @@ import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
-import org.connect4.server.core.ServerManager;
+import org.connect4.server.core.ClientConnection;
 import org.connect4.server.logging.ServerLogger;
 
-import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A class that manages a game session.
@@ -21,15 +19,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class GameSession implements Runnable {
     protected static final ServerLogger logger = ServerLogger.getLogger();
 
-    protected final ServerManager serverManager;
     protected final ExecutorService gameExecutor;
 
     /**
-     * Construct a game session.
-     * @param serverManager The server manager.
+     * Constructs a game session.
      */
-    public GameSession(ServerManager serverManager) {
-        this.serverManager = serverManager;
+    public GameSession() {
         this.gameExecutor = Executors.newSingleThreadExecutor();
     }
 
@@ -48,12 +43,12 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Sends the start game message to the specified player's socket.
-     * @param playerSocket The player's socket to which the message will be sent.
+     * @param playerConnection The player connection to which the message will be sent.
      */
-    public void sendStartGameMessage(Socket playerSocket) {
+    public void sendStartGameMessage(ClientConnection playerConnection) {
         try {
             Message<Void> startGameMessage = new Message<>(MessageType.START_GAME, null);
-            serverManager.sendMessage(playerSocket, startGameMessage);
+            playerConnection.sendMessage(startGameMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send start game messages: " + e.getMessage());
         }
@@ -61,13 +56,13 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Sends the color message to the specified player's socket.
-     * @param playerSocket The player's socket to which the color message will be sent.
+     * @param playerConnection The player connection to which the color message will be sent.
      * @param color The color to be sent.
      */
-    public void sendColorMessage(Socket playerSocket, Color color) {
+    public void sendColorMessage(ClientConnection playerConnection, Color color) {
         try {
             Message<Color> colorMessage = new Message<>(MessageType.COLOR, color);
-            serverManager.sendMessage(playerSocket, colorMessage);
+            playerConnection.sendMessage(colorMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send color message: " + e.getMessage());
         }
@@ -75,13 +70,13 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Sends the game-over message to the specified player's socket.
-     * @param playerSocket The player's socket to which the winnerColor will be sent.
+     * @param playerConnection The player's socket to which the winnerColor will be sent.
      * @param winnerColor The color of the winner.
      */
-    public void sendGameOverMessage(Socket playerSocket, Color winnerColor) {
+    public void sendGameOverMessage(ClientConnection playerConnection, Color winnerColor) {
         try {
             Message<Color> gameOverMessage = new Message<>(MessageType.GAME_OVER, winnerColor);
-            serverManager.sendMessage(playerSocket, gameOverMessage);
+            playerConnection.sendMessage(gameOverMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send game over message: " + e.getMessage());
         }
@@ -89,13 +84,13 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Sends the move message to the specified player's socket.
-     * @param playerSocket The player's socket to which the move will be sent.
+     * @param playerConnection The player connection to which the move will be sent.
      * @param move The move to be sent.
      */
-    public void sendMoveMessage(Socket playerSocket, Move move) {
+    public void sendMoveMessage(ClientConnection playerConnection, Move move) {
         try {
             Message<Move> moveMessage = new Message<>(MessageType.MOVE, move);
-            serverManager.sendMessage(playerSocket, moveMessage);
+            playerConnection.sendMessage(moveMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send move message: " + e.getMessage());
         }
@@ -103,13 +98,13 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Gets the move from the specified player's socket.
-     * @param playerSocket The player's socket from which the move will be received.
+     * @param playerConnection The player connection from which the move will be received.
      * @return The received move.
      */
     @SuppressWarnings("unchecked")
-    public Move getMove(Socket playerSocket) {
+    public Move getMove(ClientConnection playerConnection) {
         try {
-            Message<Move> moveMessage = (Message<Move>) serverManager.receiveMessage(playerSocket);
+            Message<Move> moveMessage = (Message<Move>) playerConnection.receiveMessage();
             return moveMessage.getPayload();
         } catch (ReceiveMessageFailureException e) {
             logger.severe("Failed to receive move message from player: " + e.getMessage());

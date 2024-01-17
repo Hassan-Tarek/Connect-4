@@ -4,10 +4,8 @@ import org.connect4.server.logging.ServerLogger;
 import org.connect4.game.logic.core.Move;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
-import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
 
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -17,24 +15,21 @@ import java.util.concurrent.BlockingQueue;
 public class MessageRelay implements Runnable {
     private static final ServerLogger logger = ServerLogger.getLogger();
 
-    private final ServerManager serverManager;
+    private final ClientConnection senderConnection;
+    private final ClientConnection receiverConnection;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
-    private final Socket senderSocket;
-    private final Socket receiverSocket;
 
     /**
      * Constructs a new MessageRelay between the specified sender and receiver sockets.
-     * @param serverManager The server manager.
+     * @param senderConnection The sender connection from which the messages are sent.
+     * @param receiverConnection The receiver connection to which the message are received.
      * @param moveMessageQueue The move message queue.
-     * @param senderSocket The socket from which the messages are sent.
-     * @param receiverSocket The socket to which the message are received.
      */
-    public MessageRelay(ServerManager serverManager, BlockingQueue<Message<Move>> moveMessageQueue,
-                        Socket senderSocket, Socket receiverSocket) {
-        this.serverManager = serverManager;
+    public MessageRelay(ClientConnection senderConnection, ClientConnection receiverConnection,
+                        BlockingQueue<Message<Move>> moveMessageQueue) {
+        this.senderConnection = senderConnection;
+        this.receiverConnection = receiverConnection;
         this.moveMessageQueue = moveMessageQueue;
-        this.senderSocket = senderSocket;
-        this.receiverSocket = receiverSocket;
     }
 
     /**
@@ -50,17 +45,19 @@ public class MessageRelay implements Runnable {
      */
     @SuppressWarnings("unchecked")
     private void relayMessages() {
-        while (serverManager.isRunning()) {
+        while (senderConnection.isConnected() && receiverConnection.isConnected()) {
             try {
-                Message<?> message = serverManager.receiveMessage(senderSocket);
+                Message<?> message = senderConnection.getMessageQueue().take();
 
-                if (message != null && message.getType() == MessageType.MOVE) {
+                if (message.getType() == MessageType.MOVE) {
                     moveMessageQueue.add((Message<Move>) message);
                 } else {
-                    serverManager.sendMessage(receiverSocket, message);
+                    receiverConnection.sendMessage(message);
                 }
-            } catch (SendMessageFailureException | ReceiveMessageFailureException e) {
-                logger.severe("Failed to send or receive message: " + e.getMessage());
+            } catch (SendMessageFailureException e) {
+                logger.severe("Failed to send message to the receiver: " + e.getMessage());
+            } catch (InterruptedException e) {
+                logger.severe("Failed to get message from the sender: " + e.getMessage());
             }
         }
     }

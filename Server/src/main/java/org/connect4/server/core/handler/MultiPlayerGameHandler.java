@@ -9,9 +9,9 @@ import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.logic.exceptions.InvalidMoveException;
 import org.connect4.game.networking.Message;
+import org.connect4.server.core.ClientConnection;
 import org.connect4.server.core.session.GameSession;
 
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -19,23 +19,25 @@ import java.util.concurrent.BlockingQueue;
  * @author Hassan.
  */
 public class MultiPlayerGameHandler extends GameHandler {
-    private final Socket redPlayerSocket;
-    private final Socket yellowPlayerSocket;
+    private final ClientConnection redPlayerConnection;
+    private final ClientConnection yellowPlayerConnection;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
     private final Game game;
 
     /**
      * Constructs a multi-player game handler between two human players.
      * @param gameSession The game session.
-     * @param redPlayerSocket The red player socket.
-     * @param yellowPlayerSocket The yellow player socket.
+     * @param redPlayerConnection The red player connection.
+     * @param yellowPlayerConnection The yellow player connection.
      * @param moveMessageQueue The move message queue.
      */
-    public MultiPlayerGameHandler(GameSession gameSession, Socket redPlayerSocket, Socket yellowPlayerSocket,
+    public MultiPlayerGameHandler(GameSession gameSession,
+                                  ClientConnection redPlayerConnection,
+                                  ClientConnection yellowPlayerConnection,
                                   BlockingQueue<Message<Move>> moveMessageQueue) {
         super(gameSession);
-        this.redPlayerSocket = redPlayerSocket;
-        this.yellowPlayerSocket = yellowPlayerSocket;
+        this.redPlayerConnection = redPlayerConnection;
+        this.yellowPlayerConnection = yellowPlayerConnection;
         this.moveMessageQueue = moveMessageQueue;
         this.game = new Game(new Board(),
                 new Player(Color.RED, PlayerType.HUMAN),
@@ -55,8 +57,8 @@ public class MultiPlayerGameHandler extends GameHandler {
 
                 if (move.isValid(game.getBoard())) {
                     // Sends the move to both players
-                    gameSession.sendMoveMessage(redPlayerSocket, move);
-                    gameSession.sendMoveMessage(yellowPlayerSocket, move);
+                    gameSession.sendMoveMessage(redPlayerConnection, move);
+                    gameSession.sendMoveMessage(yellowPlayerConnection, move);
 
                     game.performCurrentPlayerMove(move);
                 }
@@ -70,8 +72,8 @@ public class MultiPlayerGameHandler extends GameHandler {
                     winnerColor = Color.NONE;
                 }
 
-                gameSession.sendGameOverMessage(redPlayerSocket, winnerColor);
-                gameSession.sendGameOverMessage(yellowPlayerSocket, winnerColor);
+                gameSession.sendGameOverMessage(redPlayerConnection, winnerColor);
+                gameSession.sendGameOverMessage(yellowPlayerConnection, winnerColor);
             }
         } catch (InterruptedException e) {
             logger.severe("Failed to retrieve a move message from move message queue: " + e.getMessage());

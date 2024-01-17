@@ -1,27 +1,21 @@
 package org.connect4.server.core;
 
-import javafx.util.Pair;
 import org.connect4.game.ai.enums.AIType;
-import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
-import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
-import org.connect4.game.networking.exceptions.SendMessageFailureException;
 import org.connect4.server.core.session.GameSession;
 import org.connect4.server.core.session.MultiPlayerGameSession;
 import org.connect4.server.core.session.SinglePlayerGameSession;
 import org.connect4.server.exceptions.ServerStartFailureException;
 import org.connect4.server.logging.ServerLogger;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,11 +29,10 @@ public class ServerManager implements Runnable {
     private static final ServerLogger logger = ServerLogger.getLogger();
 
     private final int port;
-    private final List<Socket> waitingSockets;
-    private final List<Socket> allAvailableSockets;
+    private final Set<ClientConnection> waitingClientConnections;
+    private final Set<ClientConnection> allAvailableClientConnections;
     private final List<GameSession> multiPlayerGameSessions;
     private final List<GameSession> singlePlayerGameSessions;
-    private final Map<Socket, Pair<ObjectOutputStream, ObjectInputStream>> socketStreamsMap;
     private final AtomicBoolean running;
 
     private ServerSocket serverSocket;
@@ -51,12 +44,19 @@ public class ServerManager implements Runnable {
      */
     public ServerManager(int port) {
         this.port = port;
-        this.waitingSockets = new CopyOnWriteArrayList<>();
-        this.allAvailableSockets = new CopyOnWriteArrayList<>();
+        this.waitingClientConnections = new ConcurrentSkipListSet<>();
+        this.allAvailableClientConnections = new ConcurrentSkipListSet<>();
         this.multiPlayerGameSessions = new CopyOnWriteArrayList<>();
         this.singlePlayerGameSessions = new CopyOnWriteArrayList<>();
-        this.socketStreamsMap = new ConcurrentHashMap<>();
         this.running = new AtomicBoolean(false);
+    }
+
+    /**
+     * Gets the list of waiting client connections.
+     * @return The list of waiting client connections.
+     */
+    public Set<ClientConnection> getWaitingClientConnections() {
+        return waitingClientConnections;
     }
 
     /**
@@ -76,22 +76,6 @@ public class ServerManager implements Runnable {
     }
 
     /**
-     * Gets the list of waiting client sockets.
-     * @return The list of waiting client sockets.
-     */
-    public List<Socket> getWaitingSockets() {
-        return waitingSockets;
-    }
-
-    /**
-     * Checks whether the server is running or not.
-     * @return true if the server is running, false otherwise.
-     */
-    public boolean isRunning() {
-        return running.get();
-    }
-
-    /**
      * Starts running the server.
      */
     @Override
@@ -99,19 +83,18 @@ public class ServerManager implements Runnable {
         try {
             this.serverSocket = new ServerSocket(port);
             this.executorService = Executors.newCachedThreadPool();
-            logger.finest("Server started!");
+            logger.info("Listening for client requests...");
 
             while (running.get()) {
                 try {
                     Socket acceptedClientSocket = serverSocket.accept();
-                    allAvailableSockets.add(acceptedClientSocket);
-                    socketStreamsMap.put(acceptedClientSocket,
-                            new Pair<>(
-                                    new ObjectOutputStream(acceptedClientSocket.getOutputStream()),
-                                    new ObjectInputStream(acceptedClientSocket.getInputStream())));
-                    logger.fine("New client accepted!");
+                    logger.info("client has been accepted!");
 
-                    executorService.submit(() -> handleClientRequest(acceptedClientSocket));
+                    ClientConnection clientConnection = new ClientConnection(acceptedClientSocket);
+                    clientConnection.startListening(this);
+
+                    allAvailableClientConnections.add(clientConnection);
+                    logger.fine("New client with address: %s has been accepted.".formatted(acceptedClientSocket.getRemoteSocketAddress()));
                 } catch (IOException e) {
                     if (!serverSocket.isClosed()) {
                         logger.severe("Server can't accept connection anymore: " + e.getMessage());
@@ -128,74 +111,48 @@ public class ServerManager implements Runnable {
     }
 
     /**
-     * Handles the client request.
-     */
-    @SuppressWarnings("unchecked")
-    private void handleClientRequest(Socket clientSocket) {
-        try {
-            Message<GameType> gameTypeMessage = (Message<GameType>) receiveMessage(clientSocket);
-            GameType gameType = gameTypeMessage.getPayload();
-
-            switch (gameType) {
-                case HUMAN_VS_HUMAN -> handleMultiPlayerGameSession(clientSocket);
-                case HUMAN_VS_COMPUTER -> handleSinglePlayerGameSession(clientSocket);
-                default -> logger.warning("Unknown game type received from client: " + clientSocket.getRemoteSocketAddress());
-            }
-        } catch (ReceiveMessageFailureException e) {
-            logger.severe("Failed to receive game type message: " + e.getMessage());
-        }
-    }
-
-    /**
      * Handles the multi-player game session by matching the client with another waiting client.
-     * @param clientSocket The client socket request multi-player game session.
+     * @param clientConnection The client that request multi-player game session.
      */
-    private void handleMultiPlayerGameSession(Socket clientSocket) {
-        if (!waitingSockets.isEmpty()) {
-            Socket oppositeClientSocket = waitingSockets.remove(0);
-            startMultiPlayerGameSession(clientSocket, oppositeClientSocket);
+    public void handleMultiPlayerGameSession(ClientConnection clientConnection) {
+        Iterator<ClientConnection> clientConnectionIterator = waitingClientConnections.iterator();
+
+        if (clientConnectionIterator.hasNext()) {
+            // Retrieve the opponent connection and remove it from the set
+            ClientConnection opponentClientConnection = clientConnectionIterator.next();
+            clientConnectionIterator.remove();
+
+            if (clientConnection != opponentClientConnection) {
+                // Start a new game session
+                GameSession gameSession = new MultiPlayerGameSession(clientConnection, opponentClientConnection);
+                addGameSession(gameSession);
+            }
         } else {
-            waitingSockets.add(clientSocket);
+            waitingClientConnections.add(clientConnection);
         }
     }
 
     /**
      * Handles the single-player game session by receiving an AI type and starts a game session with that AI.
-     * @param clientSocket The client socket request single-player game session.
+     * @param clientConnection The client that request single-player game session.
+     * @param aiType The selected AI type.
      */
-    @SuppressWarnings("unchecked")
-    private void handleSinglePlayerGameSession(Socket clientSocket) {
-        try {
-            Message<AIType> aiTypeMessage = (Message<AIType>) receiveMessage(clientSocket);
-            AIType aiType = aiTypeMessage.getPayload();
-            startSinglePlayerGameSession(clientSocket, aiType);
-        } catch (ReceiveMessageFailureException e) {
-            logger.severe("Failed to receive ai type message: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Starts a multi-player game session with the two given client sockets.
-     * @param firstClientSocket  The socket of the first client.
-     * @param secondClientSocket The socket of the second client.
-     */
-    private void startMultiPlayerGameSession(Socket firstClientSocket, Socket secondClientSocket) {
+    public void handleSinglePlayerGameSession(ClientConnection clientConnection, AIType aiType) {
         // Start a new game session
-        GameSession gameSession = new MultiPlayerGameSession(this, firstClientSocket, secondClientSocket);
+        GameSession gameSession = new SinglePlayerGameSession(clientConnection, aiType);
         addGameSession(gameSession);
     }
 
     /**
-     * Starts a single-player game session with the given client and AI type.
-     * @param clientSocket The socket of the client.
-     * @param aiType The type of AI the client will play against.
+     * Handles the client disconnection request.
+     * @param clientConnection The client connection
      */
-    private void startSinglePlayerGameSession(Socket clientSocket, AIType aiType) {
-        // Start a new game session
-        GameSession gameSession = new SinglePlayerGameSession(this, clientSocket, aiType);
-        addGameSession(gameSession);
+    public void handleClientDisconnection(ClientConnection clientConnection) {
+        clientConnection.disconnect();
+        allAvailableClientConnections.remove(clientConnection);
+        waitingClientConnections.remove(clientConnection);
+        logger.info("Client with address: %s has been disconnected.".formatted(clientConnection.getClientSocket().getRemoteSocketAddress()));
     }
-
 
     /**
      * Adds the given game session to the list of sessions and submits it to the executor service for execution.
@@ -209,7 +166,7 @@ public class ServerManager implements Runnable {
         }
         executorService.submit(gameSession);
 
-        logger.fine("New GameSession started!");
+        logger.info("New GameSession started.");
     }
 
     /**
@@ -219,57 +176,7 @@ public class ServerManager implements Runnable {
         if (running.compareAndSet(false, true)) {
             Thread serverThread = new Thread(this);
             serverThread.start();
-        }
-    }
-
-    /**
-     * Sends a message to the receiver's output stream.
-     * @param socket The socket to which the message will be sent.
-     * @param message The message to be sent.
-     * @throws SendMessageFailureException If failed to send the message.
-     */
-    public void sendMessage(Socket socket, Message<?> message) throws SendMessageFailureException {
-        try {
-            ObjectOutputStream out = socketStreamsMap.get(socket).getKey();
-            out.writeObject(message);
-            out.flush();
-        } catch (IOException e) {
-            String errorMessage = "Failed to send message to a client: " + e.getMessage();
-            logger.severe(errorMessage);
-            throw new SendMessageFailureException(errorMessage);
-        }
-    }
-
-    /**
-     * Receives a message from sender's input stream.
-     * @param socket The socket from which the message will be received.
-     * @return The received message.
-     * @throws ReceiveMessageFailureException If failed to receive the message.
-     */
-    public Message<?> receiveMessage(Socket socket) throws ReceiveMessageFailureException {
-        try {
-            ObjectInputStream in = socketStreamsMap.get(socket).getValue();
-            return (Message<?>) in.readObject();
-        } catch (EOFException e) {
-            return null;
-        } catch (ClassNotFoundException | IOException e) {
-            String errorMessage = "Failed to receive message from a client: " + e.getMessage();
-            logger.severe(errorMessage);
-            throw new ReceiveMessageFailureException(errorMessage);
-        }
-    }
-
-    /**
-     * Closes a socket.
-     * @param socket The socket to be closed.
-     */
-    public void closeSocket(Socket socket) {
-        try {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            logger.severe("Failed to close client socket: " + e.getMessage());
+            logger.info("Server started...");
         }
     }
 
@@ -279,10 +186,9 @@ public class ServerManager implements Runnable {
     public void shutdown() {
         if (running.compareAndSet(true, false)) {
             try {
-                for (Socket socket : allAvailableSockets) {
-                    sendMessage(socket, new Message<>(MessageType.SERVER_STOPPED, null));
-                    closeStreams(socket);
-                    closeSocket(socket);
+                for (ClientConnection clientConnection : allAvailableClientConnections) {
+                    clientConnection.sendMessage(new Message<>(MessageType.SERVER_STOPPED, null));
+                    clientConnection.disconnect();
                 }
 
                 for (GameSession session : multiPlayerGameSessions) {
@@ -298,7 +204,7 @@ public class ServerManager implements Runnable {
                     serverSocket.close();
                 }
 
-                logger.fine("Server stopped!");
+                logger.info("Server stopped...");
             } catch (IOException e) {
                 logger.severe("Failed to close server: " + e.getMessage());
             } finally {
@@ -308,28 +214,12 @@ public class ServerManager implements Runnable {
     }
 
     /**
-     * Closes output/input streams of a specific socket.
-     * @param socket The socket whose output/input streams will be closed.
-     */
-    private void closeStreams(Socket socket) {
-        ObjectOutputStream out = socketStreamsMap.get(socket).getKey();
-        ObjectInputStream in = socketStreamsMap.get(socket).getValue();
-        try {
-            out.close();
-            in.close();
-        } catch (IOException e) {
-            logger.severe("Failed to close streams: " + e.getMessage());
-        }
-    }
-
-    /**
      * Cleans up the resources.
      */
     private void cleanup() {
-        waitingSockets.clear();
-        allAvailableSockets.clear();
+        waitingClientConnections.clear();
+        allAvailableClientConnections.clear();
         multiPlayerGameSessions.clear();
         singlePlayerGameSessions.clear();
-        socketStreamsMap.clear();
     }
 }

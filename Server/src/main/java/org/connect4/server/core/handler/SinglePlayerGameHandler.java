@@ -11,27 +11,26 @@ import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.logic.exceptions.InvalidMoveException;
+import org.connect4.server.core.ClientConnection;
 import org.connect4.server.core.session.GameSession;
-
-import java.net.Socket;
 
 /**
  * A class that handle the game between a human player and an AI player.
  * @author Hassan.
  */
 public class SinglePlayerGameHandler extends GameHandler {
-    private final Socket humanPlayerSocket;
+    private final ClientConnection humanPlayerConnection;
     private final Game game;
 
     /**
      * Constructs a single-player game handler between a human player and an AI player.
      * @param gameSession The game session.
-     * @param humanPlayerSocket The human player socket.
+     * @param humanPlayerConnection The human player connection.
      * @param aiType The AI type.
      */
-    public SinglePlayerGameHandler(GameSession gameSession, Socket humanPlayerSocket, AIType aiType) {
+    public SinglePlayerGameHandler(GameSession gameSession, ClientConnection humanPlayerConnection, AIType aiType) {
         super(gameSession);
-        this.humanPlayerSocket = humanPlayerSocket;
+        this.humanPlayerConnection = humanPlayerConnection;
 
         // Initializes the game
         Board board = new Board();
@@ -49,7 +48,7 @@ public class SinglePlayerGameHandler extends GameHandler {
             while (!game.isOver()) {
                 Move move = null;
                 if (game.getCurrentPlayer().getPlayerType() == PlayerType.HUMAN) {
-                    move = gameSession.getMove(humanPlayerSocket);
+                    move = gameSession.getMove(humanPlayerConnection);
                 } else if (game.getCurrentPlayer().getPlayerType() == PlayerType.COMPUTER) {
                     move = ((AI) game.getYellowPlayer()).getNextMove();
                 }
@@ -57,7 +56,7 @@ public class SinglePlayerGameHandler extends GameHandler {
                 assert move != null;
                 if (move.isValid(game.getBoard())) {
                     // Sends the move to human player
-                    gameSession.sendMoveMessage(humanPlayerSocket, move);
+                    gameSession.sendMoveMessage(humanPlayerConnection, move);
 
                     game.performCurrentPlayerMove(move);
                 }
@@ -70,7 +69,7 @@ public class SinglePlayerGameHandler extends GameHandler {
                         winnerColor = Color.NONE;
                     }
 
-                    gameSession.sendGameOverMessage(humanPlayerSocket, winnerColor);
+                    gameSession.sendGameOverMessage(humanPlayerConnection, winnerColor);
                 }
             }
         } catch (InvalidMoveException e) {

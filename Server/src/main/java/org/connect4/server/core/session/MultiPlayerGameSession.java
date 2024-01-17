@@ -1,18 +1,12 @@
 package org.connect4.server.core.session;
 
-import org.connect4.game.logic.core.Board;
-import org.connect4.game.logic.core.Game;
 import org.connect4.game.logic.core.Move;
-import org.connect4.game.logic.core.Player;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.game.logic.enums.GameType;
-import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.networking.Message;
+import org.connect4.server.core.ClientConnection;
 import org.connect4.server.core.MessageRelay;
-import org.connect4.server.core.ServerManager;
 import org.connect4.server.core.handler.MultiPlayerGameHandler;
 
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,15 +17,20 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Hassan
  */
 public class MultiPlayerGameSession extends GameSession {
-    private final Socket redPlayerSocket;
-    private final Socket yellowPlayerSocket;
+    private final ClientConnection redPlayerConnection;
+    private final ClientConnection yellowPlayerConnection;
     private final ExecutorService relayExecutor;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
 
-    public MultiPlayerGameSession(ServerManager serverManager, Socket redPlayerSocket, Socket yellowPlayerSocket) {
-        super(serverManager);
-        this.redPlayerSocket = redPlayerSocket;
-        this.yellowPlayerSocket = yellowPlayerSocket;
+    /**
+     * Constructs a multi-player game session.
+     * @param redPlayerConnection The red player connection.
+     * @param yellowPlayerConnection The yellow player connection.
+     */
+    public MultiPlayerGameSession(ClientConnection redPlayerConnection, ClientConnection yellowPlayerConnection) {
+        super();
+        this.redPlayerConnection = redPlayerConnection;
+        this.yellowPlayerConnection = yellowPlayerConnection;
         this.relayExecutor = Executors.newFixedThreadPool(2);
         this.moveMessageQueue = new LinkedBlockingQueue<>();
     }
@@ -41,27 +40,20 @@ public class MultiPlayerGameSession extends GameSession {
      */
     @Override
     public void startGameSession() {
-        try {
-            // Sends start game message to both players
-            sendStartGameMessage(redPlayerSocket);
-            sendStartGameMessage(yellowPlayerSocket);
+        // Sends start game message to both players
+        sendStartGameMessage(redPlayerConnection);
+        sendStartGameMessage(yellowPlayerConnection);
 
-            // Sends color to both players
-            sendColorMessage(redPlayerSocket, Color.RED);
-            sendColorMessage(yellowPlayerSocket, Color.YELLOW);
+        // Sends color to both players
+        sendColorMessage(redPlayerConnection, Color.RED);
+        sendColorMessage(yellowPlayerConnection, Color.YELLOW);
 
-            // Start message relays
-            relayExecutor.submit(new MessageRelay(serverManager, moveMessageQueue, redPlayerSocket, yellowPlayerSocket));
-            relayExecutor.submit(new MessageRelay(serverManager, moveMessageQueue, yellowPlayerSocket, redPlayerSocket));
+        // Start message relays
+        relayExecutor.submit(new MessageRelay(redPlayerConnection, yellowPlayerConnection, moveMessageQueue));
+        relayExecutor.submit(new MessageRelay(yellowPlayerConnection, redPlayerConnection, moveMessageQueue));
 
-            // Start game relay
-            gameExecutor.submit(new MultiPlayerGameHandler(this, redPlayerSocket, yellowPlayerSocket, moveMessageQueue));
-        } catch (Exception e) {
-            logger.severe("Failed to start message relay: " + e.getMessage());
-        } finally {
-            relayExecutor.shutdown();
-            gameExecutor.shutdown();
-        }
+        // Start game relay
+        gameExecutor.submit(new MultiPlayerGameHandler(this, redPlayerConnection, yellowPlayerConnection, moveMessageQueue));
     }
 
     /**
@@ -74,8 +66,8 @@ public class MultiPlayerGameSession extends GameSession {
             if (!relayExecutor.isShutdown()) {
                 relayExecutor.shutdownNow();
             }
-            serverManager.closeSocket(redPlayerSocket);
-            serverManager.closeSocket(yellowPlayerSocket);
+            redPlayerConnection.disconnect();
+            yellowPlayerConnection.disconnect();
         } catch (Exception e) {
             logger.severe("Error during shutdown: " + e.getMessage());
         }
