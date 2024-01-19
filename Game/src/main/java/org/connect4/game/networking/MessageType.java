@@ -10,10 +10,13 @@ public enum MessageType implements Serializable {
     START_GAME,
     MULTI_PLAYER_GAME,
     SINGLE_PLAYER_GAME,
+    PLAY_AGAIN,
     COLOR,
     MOVE,
     TEXT,
+    PLAYER_TURN,
     GAME_OVER,
+    GAME_STOPPED,
     SERVER_STOPPED,
     CLIENT_DISCONNECTED
 }

@@ -90,7 +90,7 @@ public class Game {
      * @return true if the game is over, false otherwise.
      */
     public boolean isOver() {
-        return board.isFull() || WinnerChecker.hasWinner(board);
+        return WinnerChecker.hasWinner(board) || isDraw();
     }
 
     /**

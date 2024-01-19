@@ -47,21 +47,25 @@ public class SinglePlayerGameHandler extends GameHandler {
         try {
             while (!game.isOver()) {
                 Move move = null;
-                if (game.getCurrentPlayer().getPlayerType() == PlayerType.HUMAN) {
-                    move = gameSession.getMove(humanPlayerConnection);
-                } else if (game.getCurrentPlayer().getPlayerType() == PlayerType.COMPUTER) {
-                    move = ((AI) game.getYellowPlayer()).getNextMove();
+                while (move == null) {
+                    if (game.getCurrentPlayer().getPlayerType() == PlayerType.HUMAN) {
+                        move = gameSession.getMove(humanPlayerConnection);
+                    } else if (game.getCurrentPlayer().getPlayerType() == PlayerType.COMPUTER) {
+                        move = ((AI) game.getYellowPlayer()).getNextMove();
+                    }
                 }
 
-                assert move != null;
                 if (move.isValid(game.getBoard())) {
                     // Sends the move to human player
                     gameSession.sendMoveMessage(humanPlayerConnection, move);
 
                     game.performCurrentPlayerMove(move);
+
+                    // Sends the color of the current player
+                    gameSession.sendPlayerTurnMessage(humanPlayerConnection, game.getCurrentPlayer().getColor());
                 }
 
-                if (game.hasWinner() || game.isDraw()) {
+                if (game.isOver()) {
                     Color winnerColor = null;
                     if (game.hasWinner()) {
                         winnerColor = game.getWinner().getColor();
@@ -69,7 +73,11 @@ public class SinglePlayerGameHandler extends GameHandler {
                         winnerColor = Color.NONE;
                     }
 
+                    // Sends the color of the winner to the human player connection
                     gameSession.sendGameOverMessage(humanPlayerConnection, winnerColor);
+
+                    // Sends play again message to the human player connection
+                    gameSession.sendPlayAgainMessage(humanPlayerConnection);
                 }
             }
         } catch (InvalidMoveException e) {

@@ -1,5 +1,6 @@
 package org.connect4.server.core;
 
+import org.connect4.game.logic.core.Move;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
@@ -22,7 +23,8 @@ public class ClientConnection implements Comparable<ClientConnection> {
     private static final ServerLogger logger = ServerLogger.getLogger();
 
     private final Socket clientSocket;
-    private final BlockingQueue<Message<?>> messageQueue;
+    private final BlockingQueue<Message<Move>> moveMessageQueue;
+    private final BlockingQueue<Message<String>> textMessageQueue;
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
 
@@ -33,7 +35,8 @@ public class ClientConnection implements Comparable<ClientConnection> {
      */
     public ClientConnection(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
-        this.messageQueue = new LinkedBlockingQueue<>();
+        this.moveMessageQueue = new LinkedBlockingQueue<>();
+        this.textMessageQueue = new LinkedBlockingQueue<>();
         this.in = new ObjectInputStream(clientSocket.getInputStream());
         this.out = new ObjectOutputStream(clientSocket.getOutputStream());
     }
@@ -47,11 +50,19 @@ public class ClientConnection implements Comparable<ClientConnection> {
     }
 
     /**
-     * Gets the message queue of this client connection.
-     * @return The message queue.
+     * Gets the move message queue of this client connection.
+     * @return The move message queue.
      */
-    public BlockingQueue<Message<?>> getMessageQueue() {
-        return messageQueue;
+    public BlockingQueue<Message<Move>> getMoveMessageQueue() {
+        return moveMessageQueue;
+    }
+
+    /**
+     * Gets the text message queue of this client connection.
+     * @return The text message queue.
+     */
+    public BlockingQueue<Message<String>> getTextMessageQueue() {
+        return textMessageQueue;
     }
 
     /**
@@ -141,7 +152,27 @@ public class ClientConnection implements Comparable<ClientConnection> {
     public int compareTo(ClientConnection otherClient) {
         InetSocketAddress thisClientAddress = (InetSocketAddress) this.clientSocket.getRemoteSocketAddress();
         InetSocketAddress otherClientAddress = (InetSocketAddress) otherClient.clientSocket.getRemoteSocketAddress();
-
         return thisClientAddress.toString().compareTo(otherClientAddress.toString());
+    }
+
+    /**
+     * Compares this client connection with another object for equality.
+     * @param obj The object to compare with.
+     * @return true if this client connection is equal to the other object, false otherwise.
+     */
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ClientConnection that = (ClientConnection) obj;
+        return clientSocket.equals(that.clientSocket);
+    }
+
+    /**
+     * Gets a hash code for this client connection.
+     * @return A hash code for this client connection.
+     */
+    @Override
+    public int hashCode() {
+        return clientSocket.hashCode();
     }
 }

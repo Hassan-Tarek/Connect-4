@@ -5,6 +5,8 @@ import org.connect4.game.logic.enums.Color;
 import org.connect4.server.core.ClientConnection;
 import org.connect4.server.core.handler.SinglePlayerGameHandler;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * A class that manages a single-player game session between a human player and an AI player.
  * @author Hassan
@@ -22,6 +24,23 @@ public class SinglePlayerGameSession extends GameSession {
         super();
         this.humanPlayerConnection = humanPlayerConnection;
         this.aiType = aiType;
+        this.countDownLatch = new CountDownLatch(1);
+    }
+
+    /**
+     * Gets the human player connection.
+     * @return The human player connection.
+     */
+    public ClientConnection getHumanPlayerConnection() {
+        return humanPlayerConnection;
+    }
+
+    /**
+     * Gets the AI type.
+     * @return The AI type.
+     */
+    public AIType getAiType() {
+        return aiType;
     }
 
     /**
@@ -29,22 +48,17 @@ public class SinglePlayerGameSession extends GameSession {
      */
     @Override
     public void startGameSession() {
-        // Sends the start game message to the human player
-        sendStartGameMessage(humanPlayerConnection);
+        try {
+            // Sends the start game message to the human player
+            sendStartGameMessage(humanPlayerConnection);
 
-        // Sends the color to the human player
-        sendColorMessage(humanPlayerConnection, Color.RED);
+            // Sends the color to the human player
+            sendColorMessage(humanPlayerConnection, Color.RED);
 
-        // Start game relay
-        gameExecutor.submit(new SinglePlayerGameHandler(this, humanPlayerConnection, aiType));
-    }
-
-    /**
-     * Shuts down the game session.
-     */
-    @Override
-    public void shutdown() {
-        super.shutdown();
-        humanPlayerConnection.disconnect();
+            // Start game relay
+            gameExecutor.submit(new SinglePlayerGameHandler(this, humanPlayerConnection, aiType));
+        } finally {
+            shutdown();
+        }
     }
 }

@@ -1,16 +1,14 @@
 package org.connect4.server.core.session;
 
-import org.connect4.game.logic.core.Move;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.game.networking.Message;
 import org.connect4.server.core.ClientConnection;
 import org.connect4.server.core.MessageRelay;
 import org.connect4.server.core.handler.MultiPlayerGameHandler;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A class that manages a multi-player game session between two human players.
@@ -20,7 +18,6 @@ public class MultiPlayerGameSession extends GameSession {
     private final ClientConnection redPlayerConnection;
     private final ClientConnection yellowPlayerConnection;
     private final ExecutorService relayExecutor;
-    private final BlockingQueue<Message<Move>> moveMessageQueue;
 
     /**
      * Constructs a multi-player game session.
@@ -32,7 +29,23 @@ public class MultiPlayerGameSession extends GameSession {
         this.redPlayerConnection = redPlayerConnection;
         this.yellowPlayerConnection = yellowPlayerConnection;
         this.relayExecutor = Executors.newFixedThreadPool(2);
-        this.moveMessageQueue = new LinkedBlockingQueue<>();
+        this.countDownLatch = new CountDownLatch(2);
+    }
+
+    /**
+     * Gets the red player connection.
+     * @return The red player connection.
+     */
+    public ClientConnection getRedPlayerConnection() {
+        return redPlayerConnection;
+    }
+
+    /**
+     * Gets the yellow player connection.
+     * @return The yellow player connection.
+     */
+    public ClientConnection getYellowPlayerConnection() {
+        return yellowPlayerConnection;
     }
 
     /**
@@ -40,20 +53,24 @@ public class MultiPlayerGameSession extends GameSession {
      */
     @Override
     public void startGameSession() {
-        // Sends start game message to both players
-        sendStartGameMessage(redPlayerConnection);
-        sendStartGameMessage(yellowPlayerConnection);
+        try {
+            // Sends start game message to both players
+            sendStartGameMessage(redPlayerConnection);
+            sendStartGameMessage(yellowPlayerConnection);
 
-        // Sends color to both players
-        sendColorMessage(redPlayerConnection, Color.RED);
-        sendColorMessage(yellowPlayerConnection, Color.YELLOW);
+            // Sends color to both players
+            sendColorMessage(redPlayerConnection, Color.RED);
+            sendColorMessage(yellowPlayerConnection, Color.YELLOW);
 
-        // Start message relays
-        relayExecutor.submit(new MessageRelay(redPlayerConnection, yellowPlayerConnection, moveMessageQueue));
-        relayExecutor.submit(new MessageRelay(yellowPlayerConnection, redPlayerConnection, moveMessageQueue));
+            // Start text message relays
+            relayExecutor.submit(new MessageRelay(redPlayerConnection, yellowPlayerConnection));
+            relayExecutor.submit(new MessageRelay(yellowPlayerConnection, redPlayerConnection));
 
-        // Start game relay
-        gameExecutor.submit(new MultiPlayerGameHandler(this, redPlayerConnection, yellowPlayerConnection, moveMessageQueue));
+            // Start game
+            gameExecutor.submit(new MultiPlayerGameHandler(this, redPlayerConnection, yellowPlayerConnection));
+        } finally {
+            shutdown();
+        }
     }
 
     /**
@@ -62,14 +79,19 @@ public class MultiPlayerGameSession extends GameSession {
     @Override
     public void shutdown() {
         try {
+            // Calls the shutdown method of the super class
             super.shutdown();
-            if (!relayExecutor.isShutdown()) {
-                relayExecutor.shutdownNow();
+
+            // Shutdown the relay executor
+            if (relayExecutor != null && !relayExecutor.isShutdown()) {
+                relayExecutor.shutdown();
+
+                if (!relayExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    relayExecutor.shutdownNow();
+                }
             }
-            redPlayerConnection.disconnect();
-            yellowPlayerConnection.disconnect();
         } catch (Exception e) {
-            logger.severe("Error during shutdown: " + e.getMessage());
+            logger.severe("Failed to shutdown the multi-player game session: " + e.getMessage());
         }
     }
 }

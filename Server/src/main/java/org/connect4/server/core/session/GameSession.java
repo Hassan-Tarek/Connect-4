@@ -4,13 +4,14 @@ import org.connect4.game.logic.core.Move;
 import org.connect4.game.logic.enums.Color;
 import org.connect4.game.networking.Message;
 import org.connect4.game.networking.MessageType;
-import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
 import org.connect4.server.core.ClientConnection;
 import org.connect4.server.logging.ServerLogger;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A class that manages a game session.
@@ -21,6 +22,8 @@ public abstract class GameSession implements Runnable {
 
     protected final ExecutorService gameExecutor;
 
+    protected CountDownLatch countDownLatch;
+
     /**
      * Constructs a game session.
      */
@@ -29,12 +32,20 @@ public abstract class GameSession implements Runnable {
     }
 
     /**
+     * Gets the countdown latch.
+     * @return The countdown latch.
+     */
+    public CountDownLatch getCountDownLatch() {
+        return countDownLatch;
+    }
+
+    /**
      * Starts the game session.
      */
     @Override
     public void run() {
         startGameSession();
-    };
+    }
 
     /**
      * Starts the game session between two players.
@@ -50,7 +61,20 @@ public abstract class GameSession implements Runnable {
             Message<Void> startGameMessage = new Message<>(MessageType.START_GAME, null);
             playerConnection.sendMessage(startGameMessage);
         } catch (SendMessageFailureException e) {
-            logger.severe("Failed to send start game messages: " + e.getMessage());
+            logger.severe("Failed to send start game message: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends the stop game message to the specified  player's socket.
+     * @param playerConnection The player connection to which the message will be sent.
+     */
+    public void sendStopGameMessage(ClientConnection playerConnection) {
+        try {
+            Message<Void> stopGameMessage = new Message<>(MessageType.GAME_STOPPED, null);
+            playerConnection.sendMessage(stopGameMessage);
+        } catch (SendMessageFailureException e) {
+            logger.severe("Failed to send stop game message: " + e.getMessage());
         }
     }
 
@@ -70,7 +94,7 @@ public abstract class GameSession implements Runnable {
 
     /**
      * Sends the game-over message to the specified player's socket.
-     * @param playerConnection The player's socket to which the winnerColor will be sent.
+     * @param playerConnection The player connection to which the game-over message will be sent.
      * @param winnerColor The color of the winner.
      */
     public void sendGameOverMessage(ClientConnection playerConnection, Color winnerColor) {
@@ -79,6 +103,19 @@ public abstract class GameSession implements Runnable {
             playerConnection.sendMessage(gameOverMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send game over message: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends the play-again message to the specified player's socket.
+     * @param playerConnection The player connection to which the play-again message will be sent.
+     */
+    public void sendPlayAgainMessage(ClientConnection playerConnection) {
+        try {
+            Message<Void> playAgainMessage = new Message<>(MessageType.PLAY_AGAIN, null);
+            playerConnection.sendMessage(playAgainMessage);
+        } catch (SendMessageFailureException e) {
+            logger.severe("Failed to play again message: " + e.getMessage());
         }
     }
 
@@ -97,16 +134,31 @@ public abstract class GameSession implements Runnable {
     }
 
     /**
+     * Sends player-turn message to the specified player's socket.
+     * @param playerConnection The player connection to which the player-turn message will be sent.
+     * @param currentPlayerColor The color of the current player.
+     */
+    public void sendPlayerTurnMessage(ClientConnection playerConnection, Color currentPlayerColor) {
+        try {
+            Message<Color> playerTurnMessage = new Message<>(MessageType.PLAYER_TURN, currentPlayerColor);
+            playerConnection.sendMessage(playerTurnMessage);
+        } catch (SendMessageFailureException e) {
+            logger.severe("Failed to send player turn message: " + e.getMessage());
+        }
+    }
+
+    /**
      * Gets the move from the specified player's socket.
      * @param playerConnection The player connection from which the move will be received.
      * @return The received move.
      */
-    @SuppressWarnings("unchecked")
     public Move getMove(ClientConnection playerConnection) {
         try {
-            Message<Move> moveMessage = (Message<Move>) playerConnection.receiveMessage();
-            return moveMessage.getPayload();
-        } catch (ReceiveMessageFailureException e) {
+            if (!playerConnection.getMoveMessageQueue().isEmpty()) {
+                Message<Move> moveMessage = playerConnection.getMoveMessageQueue().take();
+                return moveMessage.getPayload();
+            }
+        } catch (InterruptedException e) {
             logger.severe("Failed to receive move message from player: " + e.getMessage());
         }
         return null;
@@ -117,11 +169,15 @@ public abstract class GameSession implements Runnable {
      */
     public void shutdown() {
         try {
-            if (!gameExecutor.isShutdown()) {
-                gameExecutor.shutdownNow();
+            if (gameExecutor != null && !gameExecutor.isShutdown()) {
+                gameExecutor.shutdown();
+
+                if (!gameExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                    gameExecutor.shutdownNow();
+                }
             }
         } catch (Exception e) {
-            logger.severe("Error during shutdown: " + e.getMessage());
+            logger.severe("Failed to shutdown the game session: " + e.getMessage());
         }
     }
 }
