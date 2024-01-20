@@ -1,9 +1,12 @@
 package org.connect4.server.core;
 
 import org.connect4.game.ai.enums.AIType;
-import org.connect4.game.networking.Message;
-import org.connect4.game.networking.MessageType;
+import org.connect4.game.networking.messaging.Message;
+import org.connect4.game.networking.messaging.ServerMessageType;
+import org.connect4.game.networking.exceptions.SendMessageFailureException;
+import org.connect4.server.core.network.ClientConnection;
 import org.connect4.server.core.session.GameSession;
+import org.connect4.server.core.session.GameSessionType;
 import org.connect4.server.core.session.MultiPlayerGameSession;
 import org.connect4.server.core.session.SinglePlayerGameSession;
 import org.connect4.server.exceptions.ServerStartFailureException;
@@ -150,43 +153,73 @@ public class ServerManager implements Runnable {
      * Handles the play-again request from the specified client connection.
      * @param clientConnection The client connection that sent the play-again request.
      */
-    public void handlePlayAgainRequest(ClientConnection clientConnection) {
-        logger.info("Received play again request from client: " + clientConnection);
+    public void handleRematchResponse(ClientConnection clientConnection) {
+        logger.info("Received rematch response from client: " + clientConnection);
 
         GameSession gameSession = clientConnectionGameSessionMap.get(clientConnection);
         gameSession.getCountDownLatch().countDown();
         try {
             if (gameSession.getCountDownLatch().await(30, TimeUnit.SECONDS)) {
-                if (gameSession instanceof MultiPlayerGameSession) {
+                if (gameSession.getType() == GameSessionType.MULTI_PLAYER_GAME_SESSION) {
                     startMultiPlayerGameSession(((MultiPlayerGameSession) gameSession).getRedPlayerConnection(),
                             ((MultiPlayerGameSession) gameSession).getYellowPlayerConnection());
-                    multiPlayerGameSessions.remove(gameSession);
-                } else if (gameSession instanceof SinglePlayerGameSession) {
+                } else if (gameSession.getType() == GameSessionType.SINGLE_PLAYER_GAME_SESSION) {
                     startSinglePlayerGameSession(((SinglePlayerGameSession) gameSession).getHumanPlayerConnection(),
                             ((SinglePlayerGameSession) gameSession).getAiType());
-                    singlePlayerGameSessions.remove(gameSession);
                 }
             } else {
-                logger.info("Timeout occurred: One or both players did not respond to the play again request.");
-                stopGameSession(gameSession);
+                logger.info("Timeout occurred: One or both players did not respond to the rematch request.");
             }
+            removeGameSession(gameSession);
         } catch (InterruptedException e) {
             logger.severe("Interrupted while waiting for players to respond: " + e.getMessage());
         }
     }
 
     /**
-     * Handles the client disconnection request.
-     * @param clientConnection The client connection
+     * Handles the leave game session request.
+     * @param clientConnection The client connection.
      */
-    public void handleClientDisconnection(ClientConnection clientConnection) {
-        clientConnection.disconnect();
+    public void handleLeaveGameSessionRequest(ClientConnection clientConnection) {
         GameSession gameSession = clientConnectionGameSessionMap.get(clientConnection);
-        stopGameSession(gameSession);
-        allAvailableClientConnections.remove(clientConnection);
-        waitingClientConnections.remove(clientConnection);
+        if (gameSession != null) {
+            gameSession.shutdown();
+            removeGameSession(gameSession);
 
-        logger.info("Client with address: %s has been disconnected.".formatted(clientConnection.getClientSocket().getRemoteSocketAddress()));
+            if (gameSession.getType() == GameSessionType.MULTI_PLAYER_GAME_SESSION) {
+                addClientToWaitingList(((MultiPlayerGameSession) gameSession).getRedPlayerConnection());
+                addClientToWaitingList(((MultiPlayerGameSession) gameSession).getYellowPlayerConnection());
+            } else if (gameSession.getType() == GameSessionType.SINGLE_PLAYER_GAME_SESSION) {
+                addClientToWaitingList(((SinglePlayerGameSession) gameSession).getHumanPlayerConnection());
+            }
+        }
+    }
+
+    /**
+     * Handles the client disconnect request.
+     * @param clientConnection The client connection.
+     */
+    public void handleClientDisconnectRequest(ClientConnection clientConnection) {
+        GameSession gameSession = clientConnectionGameSessionMap.get(clientConnection);
+        if (gameSession != null) {
+            gameSession.shutdown();
+            removeGameSession(gameSession);
+            allAvailableClientConnections.remove(clientConnection);
+
+            if (gameSession.getType() == GameSessionType.MULTI_PLAYER_GAME_SESSION) {
+                ClientConnection opponentPlayerConnection = ((MultiPlayerGameSession) gameSession).getOpponentPlayerConnection(clientConnection);
+                addClientToWaitingList(opponentPlayerConnection);
+            }
+
+            logger.info("Client with address: %s has been disconnected.".formatted(clientConnection.getClientSocket().getRemoteSocketAddress()));
+        }
+
+        try {
+            clientConnection.sendMessage(new Message<>(ServerMessageType.DISCONNECT_COMPLETED, null));
+        } catch (SendMessageFailureException e) {
+            logger.severe("Failed to send disconnect completed message to the client: " + e.getMessage());
+        }
+        clientConnection.disconnect();
     }
 
     /**
@@ -207,7 +240,7 @@ public class ServerManager implements Runnable {
         if (running.compareAndSet(true, false)) {
             try {
                 for (ClientConnection clientConnection : allAvailableClientConnections) {
-                    clientConnection.sendMessage(new Message<>(MessageType.SERVER_STOPPED, null));
+                    clientConnection.sendMessage(new Message<>(ServerMessageType.SERVER_STOPPED, null));
                     clientConnection.disconnect();
                 }
 
@@ -222,7 +255,7 @@ public class ServerManager implements Runnable {
                 if (executorService != null && !executorService.isShutdown()) {
                     executorService.shutdown();
 
-                    if (executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                    if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
                         executorService.shutdownNow();
                     }
                 }
@@ -297,44 +330,19 @@ public class ServerManager implements Runnable {
     }
 
     /**
-     * Stops the specified game session.
-     * @param gameSession The game session to be stopped.
+     * Removes the specified game session from game sessions list.
+     * @param gameSession The game session to be removed.
      */
-    private void stopGameSession(GameSession gameSession) {
+    private void removeGameSession(GameSession gameSession) {
         if (gameSession != null) {
-            logger.info("Stopping a game session.");
-
-            if (gameSession instanceof MultiPlayerGameSession) {
-                stopMultiPlayerGameSession((MultiPlayerGameSession) gameSession);
-            } else if (gameSession instanceof SinglePlayerGameSession) {
-                stopSinglePlayerGameSession((SinglePlayerGameSession) gameSession);
+            if (gameSession.getType() == GameSessionType.MULTI_PLAYER_GAME_SESSION) {
+                multiPlayerGameSessions.remove(gameSession);
+                logger.info("Multi-Player game session has been removed from multi-player game sessions list.");
+            } else if (gameSession.getType() == GameSessionType.SINGLE_PLAYER_GAME_SESSION) {
+                singlePlayerGameSessions.remove(gameSession);
+                logger.info("Single-Player game session has been removed from single-player game sessions list.");
             }
         }
-    }
-
-    /**
-     * Stops the specified multi-player game session.
-     * @param multiPlayerGameSession The specified multi-player game session to be stopped.
-     */
-    private void stopMultiPlayerGameSession(MultiPlayerGameSession multiPlayerGameSession) {
-        multiPlayerGameSession.sendStopGameMessage(multiPlayerGameSession.getRedPlayerConnection());
-        multiPlayerGameSession.sendStopGameMessage(multiPlayerGameSession.getYellowPlayerConnection());
-        multiPlayerGameSession.shutdown();
-
-        // Removes the game session from multi-player game sessions list
-        multiPlayerGameSessions.remove(multiPlayerGameSession);
-    }
-
-    /**
-     * Stops the specified single-player game session.
-     * @param singlePlayerGameSession The specified single-player game session to be stopped.
-     */
-    private void stopSinglePlayerGameSession(SinglePlayerGameSession singlePlayerGameSession) {
-        singlePlayerGameSession.sendStopGameMessage(singlePlayerGameSession.getHumanPlayerConnection());
-        singlePlayerGameSession.shutdown();
-
-        // Removes the game session from single-player game sessions list
-        singlePlayerGameSessions.remove(singlePlayerGameSession);
     }
 
     /**

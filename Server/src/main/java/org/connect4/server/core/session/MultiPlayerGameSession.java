@@ -1,8 +1,8 @@
 package org.connect4.server.core.session;
 
 import org.connect4.game.logic.enums.Color;
-import org.connect4.server.core.ClientConnection;
-import org.connect4.server.core.MessageRelay;
+import org.connect4.server.core.network.ClientConnection;
+import org.connect4.server.core.network.MessageRelay;
 import org.connect4.server.core.handler.MultiPlayerGameHandler;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +25,7 @@ public class MultiPlayerGameSession extends GameSession {
      * @param yellowPlayerConnection The yellow player connection.
      */
     public MultiPlayerGameSession(ClientConnection redPlayerConnection, ClientConnection yellowPlayerConnection) {
-        super();
+        super(GameSessionType.MULTI_PLAYER_GAME_SESSION);
         this.redPlayerConnection = redPlayerConnection;
         this.yellowPlayerConnection = yellowPlayerConnection;
         this.relayExecutor = Executors.newFixedThreadPool(2);
@@ -49,14 +49,29 @@ public class MultiPlayerGameSession extends GameSession {
     }
 
     /**
+     * Gets the opponent player connection of the specified player connection.
+     * @param playerConnection The player connection.
+     * @return The opponent player connection.
+     */
+    public ClientConnection getOpponentPlayerConnection(ClientConnection playerConnection) {
+        if (playerConnection.equals(redPlayerConnection)) {
+            return yellowPlayerConnection;
+        } else if (playerConnection.equals(yellowPlayerConnection)) {
+            return redPlayerConnection;
+        }
+
+        return null;
+    }
+
+    /**
      * Starts the game session by setting up the message relays between two players.
      */
     @Override
     public void startGameSession() {
         try {
-            // Sends start game message to both players
-            sendStartGameMessage(redPlayerConnection);
-            sendStartGameMessage(yellowPlayerConnection);
+            // Sends game started message to both players
+            sendGameStartedMessage(redPlayerConnection);
+            sendGameStartedMessage(yellowPlayerConnection);
 
             // Sends color to both players
             sendColorMessage(redPlayerConnection, Color.RED);
@@ -79,6 +94,10 @@ public class MultiPlayerGameSession extends GameSession {
     @Override
     public void shutdown() {
         try {
+            // Sends game session ended message to both players
+            sendGameSessionEndedMessage(redPlayerConnection);
+            sendGameSessionEndedMessage(yellowPlayerConnection);
+
             // Calls the shutdown method of the super class
             super.shutdown();
 
@@ -86,7 +105,7 @@ public class MultiPlayerGameSession extends GameSession {
             if (relayExecutor != null && !relayExecutor.isShutdown()) {
                 relayExecutor.shutdown();
 
-                if (!relayExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                if (!relayExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
                     relayExecutor.shutdownNow();
                 }
             }

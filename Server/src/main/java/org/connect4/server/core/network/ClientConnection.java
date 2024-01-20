@@ -1,9 +1,10 @@
-package org.connect4.server.core;
+package org.connect4.server.core.network;
 
 import org.connect4.game.logic.core.Move;
-import org.connect4.game.networking.Message;
+import org.connect4.game.networking.messaging.Message;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
+import org.connect4.server.core.ServerManager;
 import org.connect4.server.logging.ServerLogger;
 
 import java.io.EOFException;
@@ -13,7 +14,10 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A class that manages the communication between the client and the server.
@@ -23,10 +27,11 @@ public class ClientConnection implements Comparable<ClientConnection> {
     private static final ServerLogger logger = ServerLogger.getLogger();
 
     private final Socket clientSocket;
-    private final BlockingQueue<Message<Move>> moveMessageQueue;
-    private final BlockingQueue<Message<String>> textMessageQueue;
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
+    private final BlockingQueue<Message<Move>> moveMessageQueue;
+    private final BlockingQueue<Message<String>> textMessageQueue;
+    private final ExecutorService listenerExecutor;
 
     /**
      * Constructs the client connection.
@@ -35,10 +40,11 @@ public class ClientConnection implements Comparable<ClientConnection> {
      */
     public ClientConnection(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
-        this.moveMessageQueue = new LinkedBlockingQueue<>();
-        this.textMessageQueue = new LinkedBlockingQueue<>();
         this.in = new ObjectInputStream(clientSocket.getInputStream());
         this.out = new ObjectOutputStream(clientSocket.getOutputStream());
+        this.moveMessageQueue = new LinkedBlockingQueue<>();
+        this.textMessageQueue = new LinkedBlockingQueue<>();
+        this.listenerExecutor = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -70,9 +76,8 @@ public class ClientConnection implements Comparable<ClientConnection> {
      * @param serverManager The server manager.
      */
     public void startListening(ServerManager serverManager) {
-        MessageListener messageListener = new MessageListener(this, serverManager);
-        Thread messageListenerThread = new Thread(messageListener);
-        messageListenerThread.start();
+        ClientMessageListener clientMessageListener = new ClientMessageListener(this, serverManager);
+        listenerExecutor.submit(clientMessageListener);
     }
 
     /**
@@ -121,13 +126,15 @@ public class ClientConnection implements Comparable<ClientConnection> {
      */
     public void disconnect() {
         try {
-            if (clientSocket != null && !clientSocket.isClosed()) {
+            if (this.isConnected()) {
                 clientSocket.close();
+                closeStreams();
                 logger.info("Client disconnected.");
             }
-            closeStreams();
         } catch (IOException e) {
             logger.severe("Failed to close client socket: " + e.getMessage());
+        } finally {
+            shutdownListenerExecutor();
         }
     }
 
@@ -140,6 +147,23 @@ public class ClientConnection implements Comparable<ClientConnection> {
             out.close();
         } catch (IOException e) {
             logger.severe("Failed to close streams: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Shutdown the listener executor.
+     */
+    private void shutdownListenerExecutor() {
+        try {
+            if (!listenerExecutor.isShutdown()) {
+                listenerExecutor.shutdown();
+
+                if (!listenerExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    listenerExecutor.shutdownNow();
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.severe("Failed to shutdown the listener executor: " + e.getMessage());
         }
     }
 

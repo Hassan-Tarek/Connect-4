@@ -2,7 +2,7 @@ package org.connect4.server.core.session;
 
 import org.connect4.game.ai.enums.AIType;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.server.core.ClientConnection;
+import org.connect4.server.core.network.ClientConnection;
 import org.connect4.server.core.handler.SinglePlayerGameHandler;
 
 import java.util.concurrent.CountDownLatch;
@@ -21,7 +21,7 @@ public class SinglePlayerGameSession extends GameSession {
      * @param aiType The type of AI player.
      */
     public SinglePlayerGameSession(ClientConnection humanPlayerConnection, AIType aiType) {
-        super();
+        super(GameSessionType.SINGLE_PLAYER_GAME_SESSION);
         this.humanPlayerConnection = humanPlayerConnection;
         this.aiType = aiType;
         this.countDownLatch = new CountDownLatch(1);
@@ -49,8 +49,8 @@ public class SinglePlayerGameSession extends GameSession {
     @Override
     public void startGameSession() {
         try {
-            // Sends the start game message to the human player
-            sendStartGameMessage(humanPlayerConnection);
+            // Sends the game started message to the human player
+            sendGameStartedMessage(humanPlayerConnection);
 
             // Sends the color to the human player
             sendColorMessage(humanPlayerConnection, Color.RED);
@@ -60,5 +60,16 @@ public class SinglePlayerGameSession extends GameSession {
         } finally {
             shutdown();
         }
+    }
+
+    /**
+     * Shuts down the game session.
+     */
+    @Override
+    public void shutdown() {
+        // Sends game session ended message to the human player connection
+        sendGameSessionEndedMessage(humanPlayerConnection);
+
+        super.shutdown();
     }
 }

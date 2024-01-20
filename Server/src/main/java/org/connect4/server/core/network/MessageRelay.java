@@ -1,6 +1,6 @@
-package org.connect4.server.core;
+package org.connect4.server.core.network;
 
-import org.connect4.game.networking.Message;
+import org.connect4.game.networking.messaging.Message;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
 import org.connect4.server.logging.ServerLogger;
 

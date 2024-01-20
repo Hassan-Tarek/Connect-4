@@ -1,4 +1,4 @@
-package org.connect4.game.networking;
+package org.connect4.game.networking.messaging;
 
 import java.io.Serial;
 import java.io.Serializable;

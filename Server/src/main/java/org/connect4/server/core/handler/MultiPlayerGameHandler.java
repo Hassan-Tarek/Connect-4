@@ -8,7 +8,7 @@ import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.logic.exceptions.InvalidMoveException;
-import org.connect4.server.core.ClientConnection;
+import org.connect4.server.core.network.ClientConnection;
 import org.connect4.server.core.session.GameSession;
 
 /**
@@ -80,9 +80,9 @@ public class MultiPlayerGameHandler extends GameHandler {
                 gameSession.sendGameOverMessage(redPlayerConnection, winnerColor);
                 gameSession.sendGameOverMessage(yellowPlayerConnection, winnerColor);
 
-                // Sends play again message to both players
-                gameSession.sendPlayAgainMessage(redPlayerConnection);
-                gameSession.sendPlayAgainMessage(yellowPlayerConnection);
+                // Sends rematch request message to both players
+                gameSession.sendRematchRequestMessage(redPlayerConnection);
+                gameSession.sendRematchRequestMessage(yellowPlayerConnection);
             }
         } catch (InvalidMoveException e) {
             logger.severe("Invalid move: " + e.getMessage());

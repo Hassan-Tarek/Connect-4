@@ -2,10 +2,10 @@ package org.connect4.server.core.session;
 
 import org.connect4.game.logic.core.Move;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.game.networking.Message;
-import org.connect4.game.networking.MessageType;
+import org.connect4.game.networking.messaging.Message;
+import org.connect4.game.networking.messaging.ServerMessageType;
 import org.connect4.game.networking.exceptions.SendMessageFailureException;
-import org.connect4.server.core.ClientConnection;
+import org.connect4.server.core.network.ClientConnection;
 import org.connect4.server.logging.ServerLogger;
 
 import java.util.concurrent.CountDownLatch;
@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class GameSession implements Runnable {
     protected static final ServerLogger logger = ServerLogger.getLogger();
 
+    protected final GameSessionType type;
     protected final ExecutorService gameExecutor;
 
     protected CountDownLatch countDownLatch;
@@ -27,8 +28,17 @@ public abstract class GameSession implements Runnable {
     /**
      * Constructs a game session.
      */
-    public GameSession() {
+    public GameSession(GameSessionType type) {
+        this.type = type;
         this.gameExecutor = Executors.newSingleThreadExecutor();
+    }
+
+    /**
+     * Gets the type of this game session.
+     * @return The type of this game session.
+     */
+    public GameSessionType getType() {
+        return type;
     }
 
     /**
@@ -53,28 +63,28 @@ public abstract class GameSession implements Runnable {
     public abstract void startGameSession();
 
     /**
-     * Sends the start game message to the specified player's socket.
+     * Sends a game started message to the specified player's socket.
      * @param playerConnection The player connection to which the message will be sent.
      */
-    public void sendStartGameMessage(ClientConnection playerConnection) {
+    public void sendGameStartedMessage(ClientConnection playerConnection) {
         try {
-            Message<Void> startGameMessage = new Message<>(MessageType.START_GAME, null);
-            playerConnection.sendMessage(startGameMessage);
+            Message<Void> gameStartedMessage = new Message<>(ServerMessageType.GAME_STARTED, null);
+            playerConnection.sendMessage(gameStartedMessage);
         } catch (SendMessageFailureException e) {
-            logger.severe("Failed to send start game message: " + e.getMessage());
+            logger.severe("Failed to send game started message: " + e.getMessage());
         }
     }
 
     /**
-     * Sends the stop game message to the specified  player's socket.
+     * Sends a game session ended message to the specified  player's socket.
      * @param playerConnection The player connection to which the message will be sent.
      */
-    public void sendStopGameMessage(ClientConnection playerConnection) {
+    public void sendGameSessionEndedMessage(ClientConnection playerConnection) {
         try {
-            Message<Void> stopGameMessage = new Message<>(MessageType.GAME_STOPPED, null);
-            playerConnection.sendMessage(stopGameMessage);
+            Message<Void> gameStoppedMessage = new Message<>(ServerMessageType.GAME_SESSION_ENDED, null);
+            playerConnection.sendMessage(gameStoppedMessage);
         } catch (SendMessageFailureException e) {
-            logger.severe("Failed to send stop game message: " + e.getMessage());
+            logger.severe("Failed to send game stopped message: " + e.getMessage());
         }
     }
 
@@ -85,7 +95,7 @@ public abstract class GameSession implements Runnable {
      */
     public void sendColorMessage(ClientConnection playerConnection, Color color) {
         try {
-            Message<Color> colorMessage = new Message<>(MessageType.COLOR, color);
+            Message<Color> colorMessage = new Message<>(ServerMessageType.COLOR, color);
             playerConnection.sendMessage(colorMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send color message: " + e.getMessage());
@@ -99,7 +109,7 @@ public abstract class GameSession implements Runnable {
      */
     public void sendGameOverMessage(ClientConnection playerConnection, Color winnerColor) {
         try {
-            Message<Color> gameOverMessage = new Message<>(MessageType.GAME_OVER, winnerColor);
+            Message<Color> gameOverMessage = new Message<>(ServerMessageType.GAME_OVER, winnerColor);
             playerConnection.sendMessage(gameOverMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send game over message: " + e.getMessage());
@@ -107,12 +117,12 @@ public abstract class GameSession implements Runnable {
     }
 
     /**
-     * Sends the play-again message to the specified player's socket.
-     * @param playerConnection The player connection to which the play-again message will be sent.
+     * Sends a rematch request message to the specified player's socket.
+     * @param playerConnection The player connection to which the rematch request message will be sent.
      */
-    public void sendPlayAgainMessage(ClientConnection playerConnection) {
+    public void sendRematchRequestMessage(ClientConnection playerConnection) {
         try {
-            Message<Void> playAgainMessage = new Message<>(MessageType.PLAY_AGAIN, null);
+            Message<Void> playAgainMessage = new Message<>(ServerMessageType.REMATCH_REQUEST, null);
             playerConnection.sendMessage(playAgainMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to play again message: " + e.getMessage());
@@ -126,7 +136,7 @@ public abstract class GameSession implements Runnable {
      */
     public void sendMoveMessage(ClientConnection playerConnection, Move move) {
         try {
-            Message<Move> moveMessage = new Message<>(MessageType.MOVE, move);
+            Message<Move> moveMessage = new Message<>(ServerMessageType.MOVE, move);
             playerConnection.sendMessage(moveMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send move message: " + e.getMessage());
@@ -140,7 +150,7 @@ public abstract class GameSession implements Runnable {
      */
     public void sendPlayerTurnMessage(ClientConnection playerConnection, Color currentPlayerColor) {
         try {
-            Message<Color> playerTurnMessage = new Message<>(MessageType.PLAYER_TURN, currentPlayerColor);
+            Message<Color> playerTurnMessage = new Message<>(ServerMessageType.PLAYER_TURN, currentPlayerColor);
             playerConnection.sendMessage(playerTurnMessage);
         } catch (SendMessageFailureException e) {
             logger.severe("Failed to send player turn message: " + e.getMessage());
@@ -172,7 +182,7 @@ public abstract class GameSession implements Runnable {
             if (gameExecutor != null && !gameExecutor.isShutdown()) {
                 gameExecutor.shutdown();
 
-                if (!gameExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                if (!gameExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
                     gameExecutor.shutdownNow();
                 }
             }

@@ -1,12 +1,14 @@
 package org.connect4.client.core;
 
 import org.connect4.game.logic.core.Move;
-import org.connect4.game.networking.Message;
+import org.connect4.game.networking.messaging.Message;
+import org.connect4.game.networking.messaging.ServerMessageType;
 
 public class MessageHandler {
     @SuppressWarnings("unchecked")
     public static <T> void handleMessage(Message<T> message) {
-        switch (message.getType()) {
+        ServerMessageType serverMessageType = message.getType();
+        switch (serverMessageType) {
             case MOVE -> handleMoveMessage((Message<Move>) message);
             case TEXT -> handleTextMessage((Message<String>) message);
             default -> System.err.println("ERROR: Could not process the message.");

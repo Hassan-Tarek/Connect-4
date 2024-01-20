@@ -11,7 +11,7 @@ import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.logic.exceptions.InvalidMoveException;
-import org.connect4.server.core.ClientConnection;
+import org.connect4.server.core.network.ClientConnection;
 import org.connect4.server.core.session.GameSession;
 
 /**
@@ -76,8 +76,8 @@ public class SinglePlayerGameHandler extends GameHandler {
                     // Sends the color of the winner to the human player connection
                     gameSession.sendGameOverMessage(humanPlayerConnection, winnerColor);
 
-                    // Sends play again message to the human player connection
-                    gameSession.sendPlayAgainMessage(humanPlayerConnection);
+                    // Sends rematch request message to the human player connection
+                    gameSession.sendRematchRequestMessage(humanPlayerConnection);
                 }
             }
         } catch (InvalidMoveException e) {
