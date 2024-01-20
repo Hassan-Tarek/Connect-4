@@ -18,6 +18,10 @@ public enum ServerMessageType implements MessageType, Serializable {
     DISCONNECT_COMPLETED,
     SERVER_STOPPED;
 
+    /**
+     * Gets the name of the enum constant.
+     * @return The name of the enum constant.
+     */
     @Override
     public String getName() {
         return this.name();

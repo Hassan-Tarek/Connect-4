@@ -15,6 +15,10 @@ public enum ClientMessageType implements MessageType, Serializable {
     LEAVE_GAME_SESSION_REQUEST,
     DISCONNECT_REQUEST;
 
+    /**
+     * Gets the name of the enum constant.
+     * @return The name of the enum constant.
+     */
     public String getName() {
         return this.name();
     }
