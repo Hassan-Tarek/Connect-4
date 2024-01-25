@@ -1,10 +1,19 @@
 package org.connect4.server.core.session;
 
+import org.connect4.game.ai.AIFactory;
 import org.connect4.game.ai.enums.AIType;
+import org.connect4.game.logic.core.Board;
+import org.connect4.game.logic.core.Game;
+import org.connect4.game.logic.core.Player;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.server.core.network.ClientConnection;
+import org.connect4.game.logic.enums.GameType;
+import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.server.core.handler.SinglePlayerGameHandler;
+import org.connect4.server.core.network.ClientConnection;
+import org.connect4.server.core.network.MessageDispatcher;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -13,63 +22,44 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SinglePlayerGameSession extends GameSession {
     private final ClientConnection humanPlayerConnection;
-    private final AIType aiType;
 
     /**
      * Constructs a single-player game session.
      * @param humanPlayerConnection The human player connection.
      * @param aiType The type of AI player.
+     * @param messageDispatcher The message dispatcher.
      */
-    public SinglePlayerGameSession(ClientConnection humanPlayerConnection, AIType aiType) {
-        super(GameSessionType.SINGLE_PLAYER_GAME_SESSION);
+    public SinglePlayerGameSession(ClientConnection humanPlayerConnection, AIType aiType, MessageDispatcher messageDispatcher) {
+        super(GameSessionType.SINGLE_PLAYER_GAME_SESSION, messageDispatcher);
         this.humanPlayerConnection = humanPlayerConnection;
-        this.aiType = aiType;
         this.countDownLatch = new CountDownLatch(1);
+
+        Board board = new Board();
+        Player humanPlayer = new Player(Color.RED, PlayerType.HUMAN);
+        Player aiPlayer = AIFactory.getAIPlayer(board, aiType);
+        this.game = new Game(board, humanPlayer, aiPlayer, GameType.HUMAN_VS_COMPUTER);
     }
 
     /**
-     * Gets the human player connection.
-     * @return The human player connection.
+     * Gets the list of clients.
+     * @return The list of clients.
      */
-    public ClientConnection getHumanPlayerConnection() {
-        return humanPlayerConnection;
-    }
-
-    /**
-     * Gets the AI type.
-     * @return The AI type.
-     */
-    public AIType getAiType() {
-        return aiType;
+    @Override
+    public List<ClientConnection> getClients() {
+        return Collections.singletonList(humanPlayerConnection);
     }
 
     /**
      * Starts the game session between a human player and an AI.
      */
     @Override
-    public void startGameSession() {
-        try {
-            // Sends the game started message to the human player
-            sendGameStartedMessage(humanPlayerConnection);
+    public void run() {
+        super.run();
 
-            // Sends the color to the human player
-            sendColorMessage(humanPlayerConnection, Color.RED);
+        // Sends the assigned color to the human player
+        messageDispatcher.sendAssignedColor(humanPlayerConnection, Color.RED);
 
-            // Start game relay
-            gameExecutor.submit(new SinglePlayerGameHandler(this, humanPlayerConnection, aiType));
-        } finally {
-            shutdown();
-        }
-    }
-
-    /**
-     * Shuts down the game session.
-     */
-    @Override
-    public void shutdown() {
-        // Sends game session ended message to the human player connection
-        sendGameSessionEndedMessage(humanPlayerConnection);
-
-        super.shutdown();
+        // Start game relay
+        gameExecutor.submit(new SinglePlayerGameHandler(this, humanPlayerConnection));
     }
 }

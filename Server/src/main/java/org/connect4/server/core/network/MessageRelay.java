@@ -1,7 +1,7 @@
 package org.connect4.server.core.network;
 
 import org.connect4.game.networking.messaging.Message;
-import org.connect4.game.networking.exceptions.SendMessageFailureException;
+import org.connect4.server.core.session.GameSession;
 import org.connect4.server.logging.ServerLogger;
 
 /**
@@ -9,19 +9,23 @@ import org.connect4.server.logging.ServerLogger;
  * @author Hassan
  */
 public class MessageRelay implements Runnable {
-    private static final ServerLogger logger = ServerLogger.getLogger();
+    private static final ServerLogger LOGGER = ServerLogger.getLogger();
 
+    private final GameSession gameSession;
     private final ClientConnection senderConnection;
     private final ClientConnection receiverConnection;
+    private final MessageDispatcher messageDispatcher;
 
     /**
      * Constructs a new MessageRelay between the specified sender and receiver connections.
      * @param senderConnection The sender connection from which the messages are sent.
      * @param receiverConnection The receiver connection to which the message are received.
      */
-    public MessageRelay(ClientConnection senderConnection, ClientConnection receiverConnection) {
+    public MessageRelay(GameSession gameSession, ClientConnection senderConnection, ClientConnection receiverConnection) {
+        this.gameSession = gameSession;
         this.senderConnection = senderConnection;
         this.receiverConnection = receiverConnection;
+        this.messageDispatcher = new MessageDispatcher();
     }
 
     /**
@@ -29,21 +33,14 @@ public class MessageRelay implements Runnable {
      */
     @Override
     public void run() {
-        relayMessages();
-    }
-
-    /**
-     * Relays text messages between the sender and receiver.
-     */
-    private void relayMessages() {
-        while (senderConnection.isConnected() && receiverConnection.isConnected()) {
+        while (gameSession.isRunning() && senderConnection.isConnected() && receiverConnection.isConnected()) {
             try {
-                Message<String> message = senderConnection.getTextMessageQueue().take();
-                receiverConnection.sendMessage(message);
-            } catch (SendMessageFailureException e) {
-                logger.severe("Failed to send message to the receiver: " + e.getMessage());
+                if (!senderConnection.getTextMessageQueue().isEmpty()) {
+                    Message<String> message = senderConnection.getTextMessageQueue().take();
+                    messageDispatcher.sendPlayerChat(receiverConnection, message.getPayload());
+                }
             } catch (InterruptedException e) {
-                logger.severe("Failed to get message from the sender: " + e.getMessage());
+                LOGGER.severe("Failed to get message from the sender: " + e.getMessage());
             }
         }
     }

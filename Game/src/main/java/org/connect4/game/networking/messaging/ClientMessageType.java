@@ -9,7 +9,7 @@ import java.io.Serializable;
 public enum ClientMessageType implements MessageType, Serializable {
     MULTI_PLAYER_GAME_REQUEST,
     SINGLE_PLAYER_GAME_REQUEST,
-    REMATCH_RESPONSE,
+    REMATCH_REQUEST,
     MOVE,
     TEXT,
     LEAVE_GAME_SESSION_REQUEST,

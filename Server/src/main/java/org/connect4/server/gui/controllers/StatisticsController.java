@@ -53,9 +53,9 @@ public class StatisticsController {
      */
     private EventHandler<ActionEvent> updateStatisticsView() {
         return event -> {
-            int currentMultiPlayerGameSessionsSize = serverManager.getMultiPlayerGameSessions().size();
-            int currentSinglePlayerGameSessionsSize = serverManager.getSinglePlayerGameSessions().size();
-            int currentWaitingSocketsSize = serverManager.getWaitingClientConnections().size();
+            int currentMultiPlayerGameSessionsSize = serverManager.getGameSessionManager().getMultiPlayerGameSessions().size();
+            int currentSinglePlayerGameSessionsSize = serverManager.getGameSessionManager().getSinglePlayerGameSessions().size();
+            int currentWaitingSocketsSize = serverManager.getClientManager().getWaitingClients().size();
 
             if (statisticsView.getPieChartData().isEmpty()) {
                 statisticsView.getPieChartData().add(new PieChart.Data("Multi-Player Game Sessions", currentMultiPlayerGameSessionsSize));

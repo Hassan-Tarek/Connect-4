@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public class Node {
-    private static final Logger logger = AILogger.getLogger();
+    private static final Logger LOGGER = AILogger.getLogger();
 
     private final State state;
     private final NodeType nodeType;
@@ -123,7 +123,7 @@ public class Node {
     private boolean determineTerminal() {
         boolean isTerminal = state.getBoard().isFull() || WinnerChecker.hasWinner(state.getBoard());
         if (isTerminal)
-            logger.info("Reach a terminal node");
+            LOGGER.info("Reach a terminal node");
         return isTerminal;
     }
 
@@ -150,7 +150,7 @@ public class Node {
             }
         }
 
-        logger.info("This node has: " + childrenList.size() + " child nodes.");
+        LOGGER.info("This node has: " + childrenList.size() + " child nodes.");
         return childrenList;
     }
 

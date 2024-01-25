@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class Board implements Cloneable, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = GameLogger.getLogger();
+    private static final Logger LOGGER = GameLogger.getLogger();
     public static final int ROWS = 6;
     public static final int COLS = 7;
 
@@ -32,7 +32,7 @@ public class Board implements Cloneable, Serializable {
         currentRowIndex = new int[COLS];
         Arrays.fill(currentRowIndex, 0);
 
-        logger.finest("Board initialized successfully.");
+        LOGGER.finest("Board initialized successfully.");
     }
 
     /**
@@ -64,7 +64,7 @@ public class Board implements Cloneable, Serializable {
         pieces[row][column] = new Piece(position, color);
         currentRowIndex[column]++;
 
-        logger.fine("Piece added to column " + column + " at row " + row + ".");
+        LOGGER.fine("Piece added to column " + column + " at row " + row + ".");
     }
 
     /**
@@ -94,7 +94,7 @@ public class Board implements Cloneable, Serializable {
             }
         }
 
-        logger.info("The board is full.");
+        LOGGER.info("The board is full.");
         return true;
     }
 
@@ -124,6 +124,20 @@ public class Board implements Cloneable, Serializable {
      */
     private boolean isValidPosition(int row, int col) {
         return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS;
+    }
+
+    /**
+     * Resets the board.
+     */
+    public void reset() {
+        for (int row = 0; row < Board.ROWS; row++) {
+            for (int col = 0; col < Board.COLS; col++) {
+                pieces[row][col] = null;
+            }
+        }
+        Arrays.fill(currentRowIndex, 0);
+
+        LOGGER.info("Board has been reset.");
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public class WinnerChecker {
-    public static final Logger logger = GameLogger.getLogger();
+    public static final Logger LOGGER = GameLogger.getLogger();
     public static final int CONSECUTIVE_PIECES_FOR_WIN = 4;
 
     /**
@@ -25,7 +25,7 @@ public class WinnerChecker {
         boolean hasWinner =  checkRows(board) || checkColumns(board) || checkDiagonals(board);
 
         if (hasWinner) {
-            logger.info("Board has a winner.");
+            LOGGER.info("Board has a winner.");
         }
 
         return hasWinner;
@@ -178,7 +178,7 @@ public class WinnerChecker {
             Piece piece = board.getPieceAt(row, col);
 
             if (piece != null) {
-                logger.log(Level.FINE, "Piece is not null.");
+                LOGGER.log(Level.FINE, "Piece is not null.");
 
                 if (piece.getColor() == Color.RED) {
                     redPiecesCount++;
@@ -191,7 +191,7 @@ public class WinnerChecker {
         boolean hasWinner = redPiecesCount == CONSECUTIVE_PIECES_FOR_WIN
                 || yellowPiecesCount == CONSECUTIVE_PIECES_FOR_WIN;
         if (hasWinner) {
-            logger.info("Board has a winner.");
+            LOGGER.info("Board has a winner.");
         }
 
         return hasWinner;

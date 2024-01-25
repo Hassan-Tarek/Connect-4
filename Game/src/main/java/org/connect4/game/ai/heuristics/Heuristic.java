@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public class Heuristic {
-    private static final Logger logger = AILogger.getLogger();
+    private static final Logger LOGGER = AILogger.getLogger();
 
     private static final int WIN_SCORE = 1000;
     private static final int LOSE_SCORE = -1000;
@@ -48,7 +48,7 @@ public class Heuristic {
         int totalScore = 0;
         for (int row = 0; row < Board.ROWS; row++) {
             for (int col = 0; col <= Board.COLS - 4; col++) {
-                logger.finest("Evaluate score of row: " + row);
+                LOGGER.finest("Evaluate score of row: " + row);
                 totalScore += evaluateLineScore(board, row, col, 0, 1);
             }
         }
@@ -64,7 +64,7 @@ public class Heuristic {
         int totalScore = 0;
         for (int row = 0; row <= Board.ROWS; row++) {
             for (int col = 0; col < Board.COLS; col++) {
-                logger.finest("Evaluate score of column: " + col);
+                LOGGER.finest("Evaluate score of column: " + col);
                 totalScore += evaluateLineScore(board, row, col, 1, 0);
             }
         }
@@ -97,7 +97,7 @@ public class Heuristic {
 
         for (int row = 0; row <= Board.ROWS - 4; row++) {
             for (int col = 0; col <= Board.COLS - 4; col++) {
-                logger.finest("Evaluate score of left diagonal at row: " + row + " and col: " + col);
+                LOGGER.finest("Evaluate score of left diagonal at row: " + row + " and col: " + col);
                 totalScore += evaluateLineScore(board, row, col, 1, 1);
             }
         }
@@ -115,7 +115,7 @@ public class Heuristic {
 
         for (int row = 0; row <= Board.ROWS - 4; row++) {
             for (int col = Board.COLS - 1; col >= 3; col--) {
-                logger.finest("Evaluate score of right diagonal at row: " + row + " and col: " + col);
+                LOGGER.finest("Evaluate score of right diagonal at row: " + row + " and col: " + col);
                 totalScore += evaluateLineScore(board, row, col, 1, -1);
             }
         }
@@ -167,7 +167,7 @@ public class Heuristic {
         for (int row = 0; row < Board.ROWS; row++) {
             Piece piece = board.getPieceAt(row, Board.COLS / 2);
             if (piece != null && piece.getColor() == Color.RED) {
-                logger.finest("AI piece found in the center column at row: " + row);
+                LOGGER.finest("AI piece found in the center column at row: " + row);
                 totalScore += CENTER_COLUMN_SCORE;
             }
         }
@@ -203,7 +203,7 @@ public class Heuristic {
             score = -1 * ONE_IN_ROW_SCORE;
         }
 
-        logger.finest("Evaluated score: " + score);
+        LOGGER.finest("Evaluated score: " + score);
         return score;
     }
 }

@@ -24,11 +24,13 @@ import java.util.concurrent.TimeUnit;
  * @author Hassan
  */
 public class ClientConnection implements Comparable<ClientConnection> {
-    private static final ServerLogger logger = ServerLogger.getLogger();
+    private static final ServerLogger LOGGER = ServerLogger.getLogger();
 
     private final Socket clientSocket;
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
+    private final ClientMessageHandler clientMessageHandler;
+    private final ClientMessageListener clientMessageListener;
     private final BlockingQueue<Message<Move>> moveMessageQueue;
     private final BlockingQueue<Message<String>> textMessageQueue;
     private final ExecutorService listenerExecutor;
@@ -36,12 +38,15 @@ public class ClientConnection implements Comparable<ClientConnection> {
     /**
      * Constructs the client connection.
      * @param clientSocket The socket of the client.
+     * @param serverManager The server manager.
      * @throws IOException If an Input/Output error occurs when creating streams.
      */
-    public ClientConnection(Socket clientSocket) throws IOException {
+    public ClientConnection(Socket clientSocket, ServerManager serverManager) throws IOException {
         this.clientSocket = clientSocket;
         this.in = new ObjectInputStream(clientSocket.getInputStream());
         this.out = new ObjectOutputStream(clientSocket.getOutputStream());
+        this.clientMessageHandler = new ClientMessageHandler(this, serverManager);
+        this.clientMessageListener = new ClientMessageListener(this, clientMessageHandler);
         this.moveMessageQueue = new LinkedBlockingQueue<>();
         this.textMessageQueue = new LinkedBlockingQueue<>();
         this.listenerExecutor = Executors.newSingleThreadExecutor();
@@ -73,10 +78,8 @@ public class ClientConnection implements Comparable<ClientConnection> {
 
     /**
      * Starts the message listener to receive message from this client connection.
-     * @param serverManager The server manager.
      */
-    public void startListening(ServerManager serverManager) {
-        ClientMessageListener clientMessageListener = new ClientMessageListener(this, serverManager);
+    public void startMessageListener() {
         listenerExecutor.submit(clientMessageListener);
     }
 
@@ -91,7 +94,7 @@ public class ClientConnection implements Comparable<ClientConnection> {
             out.flush();
         } catch (IOException e) {
             String errorMessage = "Failed to send message to a client: " + e.getMessage();
-            logger.severe(errorMessage);
+            LOGGER.severe(errorMessage);
             throw new SendMessageFailureException(errorMessage);
         }
     }
@@ -108,7 +111,7 @@ public class ClientConnection implements Comparable<ClientConnection> {
             return null;
         } catch (ClassNotFoundException | IOException e) {
             String errorMessage = "Failed to receive message from a client: " + e.getMessage();
-            logger.severe(errorMessage);
+            LOGGER.severe(errorMessage);
             throw new ReceiveMessageFailureException(errorMessage);
         }
     }
@@ -126,15 +129,16 @@ public class ClientConnection implements Comparable<ClientConnection> {
      */
     public void disconnect() {
         try {
+            shutdownListenerExecutor();
+            clientMessageHandler.shutdown();
             if (this.isConnected()) {
                 clientSocket.close();
                 closeStreams();
-                logger.info("Client disconnected.");
             }
+
+            LOGGER.info("Client disconnected.");
         } catch (IOException e) {
-            logger.severe("Failed to close client socket: " + e.getMessage());
-        } finally {
-            shutdownListenerExecutor();
+            LOGGER.severe("Failed to close client socket: " + e.getMessage());
         }
     }
 
@@ -146,7 +150,7 @@ public class ClientConnection implements Comparable<ClientConnection> {
             in.close();
             out.close();
         } catch (IOException e) {
-            logger.severe("Failed to close streams: " + e.getMessage());
+            LOGGER.severe("Failed to close streams: " + e.getMessage());
         }
     }
 
@@ -158,12 +162,14 @@ public class ClientConnection implements Comparable<ClientConnection> {
             if (!listenerExecutor.isShutdown()) {
                 listenerExecutor.shutdown();
 
-                if (!listenerExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                if (!listenerExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
                     listenerExecutor.shutdownNow();
                 }
             }
+
+            LOGGER.info("Listener Executor shut down successfully.");
         } catch (InterruptedException e) {
-            logger.severe("Failed to shutdown the listener executor: " + e.getMessage());
+            LOGGER.severe("Failed to shutdown the listener executor: " + e.getMessage());
         }
     }
 

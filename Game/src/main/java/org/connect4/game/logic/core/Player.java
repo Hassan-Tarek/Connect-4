@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author Hassan
  */
 public class Player {
-    private static final Logger logger = GameLogger.getLogger();
+    private static final Logger LOGGER = GameLogger.getLogger();
 
     private final Color color;
     private final PlayerType playerType;
@@ -65,7 +65,7 @@ public class Player {
      * Resets the score of the player to zero.
      */
     public void resetScore() {
-        logger.fine("Player's score has been reset to zero.");
+        LOGGER.fine("Player's score has been reset to zero.");
         this.score = 0;
     }
 
@@ -73,7 +73,7 @@ public class Player {
      * Increases the player's score by one.
      */
     public void incrementScore() {
-        logger.fine("Player's score has been increased.");
+        LOGGER.fine("Player's score has been increased.");
         this.score++;
     }
 
@@ -84,10 +84,10 @@ public class Player {
      */
     public void makeMove(Move move, Board board) throws InvalidMoveException {
         try {
-            logger.fine("Player is making a move.");
+            LOGGER.fine("Player is making a move.");
             move.applyMove(this, board);
         } catch (InvalidMoveException ex) {
-            logger.warning("Invalid move. " + ex.getMessage());
+            LOGGER.warning("Invalid move. " + ex.getMessage());
             throw ex;
         }
     }
@@ -98,10 +98,10 @@ public class Player {
      * @return true if this player is the winner of the game, false otherwise.
      */
     public boolean isWinner(Game game) {
-        boolean isWin = game.getWinner() == this;
+        boolean isWin = game.getWinner().map(winner -> winner == this).orElse(false);
 
         if (isWin) {
-            logger.info("This player won the game.");
+            LOGGER.info("This player won the game.");
         }
 
         return isWin;

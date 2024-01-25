@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public class RandomChoiceAI extends AI {
-    private static final Logger logger = AILogger.getLogger();
+    private static final Logger LOGGER = AILogger.getLogger();
 
     private final Board board;
     private final Random random;
@@ -26,7 +26,7 @@ public class RandomChoiceAI extends AI {
         super(AIType.RANDOM_CHOICE_AI);
         this.board = board;
         this.random = new Random();
-        logger.finest("RandomChoiceAI player has been instantiated!");
+        LOGGER.finest("RandomChoiceAI player has been instantiated!");
     }
 
     /**
@@ -37,7 +37,7 @@ public class RandomChoiceAI extends AI {
     public Move getNextMove() {
         Move move = new Move(-1);
         if (board.isFull()) {
-            logger.warning("Board is full!");
+            LOGGER.warning("Board is full!");
             return move;
         }
 
@@ -47,7 +47,7 @@ public class RandomChoiceAI extends AI {
             move = new Move(column);
         } while (!move.isValid(board));
 
-        logger.info("Next move at column: " + column);
+        LOGGER.info("Next move at column: " + column);
         return move;
     }
 }

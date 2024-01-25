@@ -7,15 +7,17 @@ import java.io.Serializable;
  * @author Hassan
  */
 public enum ServerMessageType implements MessageType, Serializable {
+    WAITING_FOR_OPPONENT,
     GAME_STARTED,
     COLOR,
+    PLAYER_SCORES,
     MOVE,
     TEXT,
     PLAYER_TURN,
     GAME_OVER,
-    REMATCH_REQUEST,
     GAME_SESSION_ENDED,
     DISCONNECT_COMPLETED,
+    OPPONENT_DISCONNECTED,
     SERVER_STOPPED;
 
     /**

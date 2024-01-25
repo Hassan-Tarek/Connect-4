@@ -1,7 +1,7 @@
 package org.connect4.server.core.network;
 
-import org.connect4.game.networking.messaging.Message;
 import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
+import org.connect4.game.networking.messaging.Message;
 import org.connect4.server.core.ServerManager;
 import org.connect4.server.logging.ServerLogger;
 
@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author Hassan
  */
 public class ClientMessageListener implements Runnable {
-    private static final Logger logger = ServerLogger.getLogger();
+    private static final Logger LOGGER = ServerLogger.getLogger();
 
     private final ClientConnection clientConnection;
     private final ClientMessageHandler clientMessageHandler;
@@ -20,11 +20,11 @@ public class ClientMessageListener implements Runnable {
     /**
      * Constructs the MessageListener for the specified client connection.
      * @param clientConnection The client connection.
-     * @param serverManager The server manager.
+     * @param clientMessageHandler The client message handler.
      */
-    public ClientMessageListener(ClientConnection clientConnection, ServerManager serverManager) {
+    public ClientMessageListener(ClientConnection clientConnection, ClientMessageHandler clientMessageHandler) {
         this.clientConnection = clientConnection;
-        this.clientMessageHandler = new ClientMessageHandler(serverManager, clientConnection);
+        this.clientMessageHandler = clientMessageHandler;
     }
 
     /**
@@ -40,9 +40,7 @@ public class ClientMessageListener implements Runnable {
                 }
             }
         } catch (ReceiveMessageFailureException e) {
-            logger.severe("Failed to receive client message: " + e.getMessage());
-        } finally {
-            clientMessageHandler.shutdown();
+            LOGGER.severe("Failed to receive client message: " + e.getMessage());
         }
     }
 }

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public class MinimaxWithPruningAI extends MinimaxAI {
-    private static final Logger logger = AILogger.getLogger();
+    private static final Logger LOGGER = AILogger.getLogger();
 
     /**
      * Constructs a MinimaxWithPruningAI player with the specified starting game node and depth.
@@ -21,7 +21,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
      */
     public MinimaxWithPruningAI(Node node, int depth) {
         super(AIType.MINIMAX_WITH_PRUNING_AI, node, depth);
-        logger.finest("MinimaxWithPruningAI player has been instantiated!");
+        LOGGER.finest("MinimaxWithPruningAI player has been instantiated!");
     }
 
     /**
@@ -38,10 +38,10 @@ public class MinimaxWithPruningAI extends MinimaxAI {
     }
 
     private Optional<Node> minimax(Node node, int depth, int alpha, int beta) {
-        logger.finest("Entered MinimaxWithPruningAI minimax method.");
+        LOGGER.finest("Entered MinimaxWithPruningAI minimax method.");
 
         if (node.isTerminal() || depth == 0) {
-            logger.fine("Reached terminal node or maximum depth in minimax method.");
+            LOGGER.fine("Reached terminal node or maximum depth in minimax method.");
             return Optional.of(node);
         }
 
@@ -52,7 +52,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
             bestNode = minimize(node, depth, alpha, beta);
         }
 
-        logger.finest("Exiting MinimaxWithPruningAI minimax method.");
+        LOGGER.finest("Exiting MinimaxWithPruningAI minimax method.");
         return bestNode;
     }
 
@@ -65,7 +65,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
      * @return An optional containing the best move node found, or empty if no move is possible.
      */
     private Optional<Node> minimize(Node node, int depth, int alpha, int beta) {
-        logger.finest("Entered MinimaxWithPruningAI minimize method.");
+        LOGGER.finest("Entered MinimaxWithPruningAI minimize method.");
 
         int bestScore = Integer.MAX_VALUE;
         Node bestNode = null;
@@ -85,7 +85,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
             }
         }
 
-        logger.finest("Exiting MinimaxWithPruningAI minimize method.");
+        LOGGER.finest("Exiting MinimaxWithPruningAI minimize method.");
         return Optional.ofNullable(bestNode);
     }
 
@@ -98,7 +98,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
      * @return An optional containing the best move node found, or empty if no move is possible.
      */
     private Optional<Node> maximize(Node node, int depth, int alpha, int beta) {
-        logger.finest("Entered MinimaxWithPruningAI maximize method.");
+        LOGGER.finest("Entered MinimaxWithPruningAI maximize method.");
 
         int bestScore = Integer.MIN_VALUE;
         Node bestNode = null;
@@ -118,7 +118,7 @@ public class MinimaxWithPruningAI extends MinimaxAI {
             }
         }
 
-        logger.finest("Exiting MinimaxWithPruningAI maximize method.");
+        LOGGER.finest("Exiting MinimaxWithPruningAI maximize method.");
         return Optional.ofNullable(bestNode);
     }
 }

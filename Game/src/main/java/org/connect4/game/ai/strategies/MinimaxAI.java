@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  * @author hassan
  */
 public abstract class MinimaxAI extends AI {
-    private static final Logger logger = AILogger.getLogger();
+    private static final Logger LOGGER = AILogger.getLogger();
 
     private final Node node;
     private final int depth;
@@ -56,10 +56,10 @@ public abstract class MinimaxAI extends AI {
 
         if (result.isPresent()) {
             Move bestMove = result.get().getMove();
-            logger.fine("Best move found at column: " + bestMove.getColumn());
+            LOGGER.fine("Best move found at column: " + bestMove.getColumn());
             return bestMove;
         } else {
-            logger.warning("No valid move found!");
+            LOGGER.warning("No valid move found!");
             return null;
         }
     }

@@ -66,10 +66,10 @@ public class GameTest {
             yellowPlayer.makeMove(new Move(3), boards[3]);
             redPlayer.makeMove(new Move(3), boards[3]);
 
-            Assertions.assertNull(games[0].getWinner());
-            Assertions.assertEquals(redPlayer, games[1].getWinner());
-            Assertions.assertEquals(yellowPlayer, games[2].getWinner());
-            Assertions.assertEquals(redPlayer, games[3].getWinner());
+            Assertions.assertNull(games[0].getWinner().orElse(null));
+            Assertions.assertEquals(redPlayer, games[1].getWinner().orElse(null));
+            Assertions.assertEquals(yellowPlayer, games[2].getWinner().orElse(null));
+            Assertions.assertEquals(redPlayer, games[3].getWinner().orElse(null));
         }
         catch (InvalidMoveException ex) {
             Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());

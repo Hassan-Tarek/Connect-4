@@ -1,11 +1,12 @@
 package org.connect4.game.logic.core;
 
-import org.connect4.game.logic.exceptions.InvalidMoveException;
+import org.connect4.game.logging.GameLogger;
 import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.GameType;
+import org.connect4.game.logic.exceptions.InvalidMoveException;
 import org.connect4.game.logic.utils.WinnerChecker;
-import org.connect4.game.logging.GameLogger;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
  * @author Hassan
  */
 public class Game {
-    public static final Logger logger = GameLogger.getLogger();
+    public static final Logger LOGGER = GameLogger.getLogger();
 
     private final Board board;
     private final Player redPlayer;
@@ -113,7 +114,7 @@ public class Game {
      * Gets the winner of the game if it has one.
      * @return The winner of the game or `null` if there is no winner yet.
      */
-    public Player getWinner() {
+    public Optional<Player> getWinner() {
         for (int i = 0; i < Board.ROWS; i++) {
             for (int j = 0; j < Board.COLS; j++) {
                 if (board.getPieceAt(i, j) != null) {
@@ -123,14 +124,24 @@ public class Game {
                     Player rightDiagonalWinner = determineWinner(i, j, 1, -1);
 
                     if (rowWinner != null || colWinner != null || leftDiagonalWinner != null || rightDiagonalWinner != null) {
-                        logger.info("Winner is determined at row: " + i + " and col: " + j);
-                        return board.getPieceAt(i, j).getColor() == Color.RED ? redPlayer : yellowPlayer;
+                        LOGGER.info("Winner is determined at row: " + i + " and col: " + j);
+                        return Optional.of(board.getPieceAt(i, j).getColor() == Color.RED ? redPlayer : yellowPlayer);
                     }
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Resets the game.
+     */
+    public void reset() {
+        this.board.reset();
+        this.currentPlayer = redPlayer;
+
+        LOGGER.info("Game has been reset.");
     }
 
     /**
@@ -166,7 +177,7 @@ public class Game {
                 if (isWinner) {
                     Player winner = color == Color.RED ? redPlayer : yellowPlayer;
 
-                    logger.info("Winner determined: " + winner.getColor() + " Player.");
+                    LOGGER.info("Winner determined: " + winner.getColor() + " Player.");
                     return winner;
                 }
             }
@@ -183,7 +194,7 @@ public class Game {
      */
     private void switchTurn() {
         currentPlayer = currentPlayer == redPlayer ? yellowPlayer : redPlayer;
-        logger.fine("Switched turns.");
-        logger.fine("Current player: " + currentPlayer.getColor() + " Player.");
+        LOGGER.fine("Switched turns.");
+        LOGGER.fine("Current player: " + currentPlayer.getColor() + " Player.");
     }
 }
