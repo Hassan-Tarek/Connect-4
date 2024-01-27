@@ -1,27 +1,35 @@
 package org.connect4.client.core;
 
-import org.connect4.game.logic.core.Move;
 import org.connect4.game.networking.messaging.Message;
 import org.connect4.game.networking.messaging.ServerMessageType;
 
+/**
+ * A class that handles the messages received from server.
+ * @author Hassan
+ */
 public class MessageHandler {
-    @SuppressWarnings("unchecked")
-    public static <T> void handleMessage(Message<T> message) {
+    private static final ClientLogger LOGGER = ClientLogger.getLogger();
+
+    private final ClientConnection clientConnection;
+    private final MessageSender messageSender;
+
+    /**
+     * Constructs a new MessageHandler with the specified client connection, message sender.
+     * @param clientConnection The client connection.
+     * @param messageSender The message sender.
+     */
+    public MessageHandler(ClientConnection clientConnection, MessageSender messageSender) {
+        this.clientConnection = clientConnection;
+        this.messageSender = messageSender;
+    }
+
+    /**
+     * Handles an incoming message from the server.
+     * @param message The message received from the server.
+     * @param <T> The type of the message payload.
+     */
+    public <T> void handleMessage(Message<T> message) {
         ServerMessageType serverMessageType = message.getType();
-        switch (serverMessageType) {
-            case MOVE -> handleMoveMessage((Message<Move>) message);
-            case TEXT -> handleTextMessage((Message<String>) message);
-            default -> System.err.println("ERROR: Could not process the message.");
-        }
-    }
-
-    private static void handleMoveMessage(Message<Move> moveMessage) {
-        Move move = moveMessage.getPayload();
-        System.out.println("Opponent's Move at column: " + move.getColumn());
-    }
-
-    private static void handleTextMessage(Message<String> textMessage) {
-        String text = textMessage.getPayload();
-        System.out.println("Opponent's Text: " + text);
+        System.out.println("Handling messages.");
     }
 }
