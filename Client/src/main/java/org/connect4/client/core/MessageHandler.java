@@ -1,5 +1,6 @@
 package org.connect4.client.core;
 
+import org.connect4.client.logger.ClientLogger;
 import org.connect4.game.networking.messaging.Message;
 import org.connect4.game.networking.messaging.ServerMessageType;
 
@@ -29,7 +30,7 @@ public class MessageHandler {
      * @param <T> The type of the message payload.
      */
     public <T> void handleMessage(Message<T> message) {
-        ServerMessageType serverMessageType = message.getType();
+        ServerMessageType serverMessageType = (ServerMessageType) message.getType();
         System.out.println("Handling messages.");
     }
 }
