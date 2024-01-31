@@ -1,54 +1,64 @@
 package org.connect4.client;
 
-import org.connect4.client.exceptions.ServerConnectionFailureException;
-import org.connect4.client.core.ClientManager;
+import javafx.application.Application;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
+
+import org.connect4.client.core.ClientConnection;
 import org.connect4.client.core.MessageHandler;
-import org.connect4.game.logic.core.Move;
-import org.connect4.game.networking.Message;
-import org.connect4.game.networking.MessageType;
-import org.connect4.game.networking.exceptions.ReceiveMessageFailureException;
-import org.connect4.game.networking.exceptions.SendMessageFailureException;
+import org.connect4.client.core.MessageListener;
+import org.connect4.client.core.MessageSender;
+import org.connect4.client.exceptions.ServerConnectionFailureException;
+import org.connect4.client.gui.controllers.GameViewController;
+import org.connect4.client.gui.controllers.MainViewController;
+import org.connect4.client.utils.Constants;
 
-import java.util.Scanner;
+/**
+ * The entry point class for the Connect-4 Client Application.
+ * @author Hassan
+ */
+public class Client extends Application {
+    /**
+     * Starts the JavaFX application.
+     *
+     * @param stage the primary stage for the application.
+     */
+    @SuppressWarnings("BusyWait")
+    @Override
+    public void start(Stage stage) throws InterruptedException {
+        ClientConnection clientConnection = new ClientConnection(Constants.SERVER_ADDRESS, Constants.SERVER_PORT);
+        MessageSender messageSender = new MessageSender(clientConnection);
+        MainViewController mainViewController = new MainViewController(stage, messageSender);
+        GameViewController gameViewController = new GameViewController(stage, messageSender);
+        MessageHandler messageHandler = new MessageHandler(clientConnection, messageSender, mainViewController, gameViewController);
+        MessageListener messageListener = new MessageListener(clientConnection, messageHandler);
 
-public class Client {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int PORT = 4444;
+        Alert waitingToConnectToServerAlert = new Alert(Alert.AlertType.ERROR, "Waiting to connect to server.");
+        while (!clientConnection.isConnected()) {
+            try {
+                clientConnection.connectToServer();
 
-    public static void main(String[] args) {
-        try {
-            ClientManager clientManager = new ClientManager(SERVER_ADDRESS, PORT);
-
-            System.out.println("Connected to server. Start sending messages:");
-            Scanner scanner = new Scanner(System.in);
-            Thread sendThread = new Thread(() -> {
-                while (true) {
-                    int column = scanner.nextInt();
-                    Move move = new Move(column);
-                    Message<Move> message = new Message<>(MessageType.MOVE, move);
-                    try {
-                        clientManager.sendMessage(message);
-                    } catch (SendMessageFailureException e) {
-                        scanner.close();
-                        System.err.println(e.getMessage());
-                    }
+                if (clientConnection.isConnected()) {
+                    waitingToConnectToServerAlert.close();
                 }
-            });
-            sendThread.start();
-
-            Thread receiveThread = new Thread(() -> {
-                while (true) {
-                    try {
-                        Message<?> message = clientManager.getReceivedMessage();
-                        MessageHandler.handleMessage(message);
-                    } catch (ReceiveMessageFailureException e) {
-                        System.err.println(e.getMessage());
-                    }
+            } catch (ServerConnectionFailureException e) {
+                if (!waitingToConnectToServerAlert.isShowing()) {
+                    waitingToConnectToServerAlert.show();
                 }
-            });
-            receiveThread.start();
-        } catch (ServerConnectionFailureException e) {
-            System.err.println(e.getMessage());
+                Thread.sleep(5000);
+            }
         }
+
+        mainViewController.showView();
+        new Thread(messageListener).start();
+    }
+
+    /**
+     * The main entry point of the Connect-4 client application.
+     *
+     * @param args the command-line arguments.
+     */
+    public static void main(String[] args) {
+        launch();
     }
 }

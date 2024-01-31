@@ -56,7 +56,7 @@ public class GameViewController implements BaseController {
         updatePlayersStatus(0, 0);
 
         // fill the grid
-        fillGrid();
+        initializeBoard();
     }
 
     @Override
@@ -160,7 +160,7 @@ public class GameViewController implements BaseController {
         }
     }
 
-    private void fillGrid() {
+    public void initializeBoard() {
         GridPane gridPane = gameView.getGridPane();
         gridPane.getChildren().clear();
 
@@ -266,7 +266,6 @@ public class GameViewController implements BaseController {
     private void handleColumnClick(int column) {
         if (column >= 0 && column < Constants.BOARD_COLS) {
             Move move = new Move(column);
-            dropDisc(assignedColor, move.getColumn());
             messageSender.sendMoveMessage(move);
         }
     }
