@@ -34,6 +34,12 @@ public class SinglePlayerGameHandler extends GameHandler {
         if (game.getCurrentPlayer().getPlayerType() == PlayerType.HUMAN) {
             return getNextMove(humanPlayerConnection);
         } else if (game.getCurrentPlayer().getPlayerType() == PlayerType.COMPUTER) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                LOGGER.severe("AI move delay interrupted.");
+                Thread.currentThread().interrupt();
+            }
             return Optional.of(((AI) game.getYellowPlayer()).getNextMove());
         }
 
