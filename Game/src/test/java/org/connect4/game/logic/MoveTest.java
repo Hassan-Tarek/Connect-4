@@ -2,12 +2,9 @@ package org.connect4.game.logic;
 
 import org.connect4.game.logic.core.Board;
 import org.connect4.game.logic.core.Move;
-import org.connect4.game.logic.core.Player;
 import org.connect4.game.logic.enums.Color;
-import org.connect4.game.logic.enums.PlayerType;
 import org.connect4.game.logic.exceptions.FullColumnException;
 import org.connect4.game.logic.exceptions.InvalidColumnIndexException;
-import org.connect4.game.logic.exceptions.InvalidMoveException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,25 +12,12 @@ import org.junit.jupiter.api.Test;
 
 public class MoveTest {
     private Board board;
-    private Player player;
     private Move move;
 
     @BeforeEach
     public void setup() {
         board = new Board();
-        player = new Player(Color.RED, PlayerType.HUMAN);
         move = new Move(0);
-    }
-
-    @Test
-    public void testApplyMove() {
-        try {
-            move.applyMove(player, board);
-        } catch (InvalidMoveException e) {
-            Assertions.fail("Invalid Move");
-        }
-
-        Assertions.assertEquals(player.getColor(), board.getPieceAt(0, 0).getColor());
     }
 
     @Test

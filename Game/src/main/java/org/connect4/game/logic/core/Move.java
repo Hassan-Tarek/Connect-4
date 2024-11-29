@@ -1,8 +1,5 @@
 package org.connect4.game.logic.core;
 
-import org.connect4.game.logic.exceptions.FullColumnException;
-import org.connect4.game.logic.exceptions.InvalidColumnIndexException;
-import org.connect4.game.logic.exceptions.InvalidMoveException;
 import org.connect4.game.logging.GameLogger;
 
 import java.io.Serial;
@@ -27,25 +24,6 @@ public class Move implements Serializable {
      */
     public Move(int column) {
         this.column = column;
-    }
-
-    /**
-     * Applies the move on the board.
-     * @param player The player who will make the move.
-     * @param board The board in which the move will be performed.
-     * @throws InvalidMoveException if the move is not valid.
-     */
-    public void applyMove(Player player, Board board) throws InvalidMoveException {
-        if (!isValid(board)) {
-            throw new InvalidMoveException("Invalid move.");
-        }
-
-        try {
-            board.addPiece(column, player.getColor());
-        } catch (InvalidColumnIndexException | FullColumnException e) {
-            logger.log(Level.SEVERE, "Invalid move: " + e.getMessage());
-            throw new InvalidMoveException("Invalid move: " + e.getMessage());
-        }
     }
 
     /**

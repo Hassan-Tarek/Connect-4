@@ -35,7 +35,7 @@ public class MinimaxWithoutPruningAI extends MinimaxAI {
         LOGGER.finest("Entered MinimaxWithoutPruningAI minimax method.");
 
         if (node.isTerminal() || depth == 0) {
-            LOGGER.fine("Reached terminal node or maximum depth in minimax method.");
+            LOGGER.info("Reached terminal node or maximum depth in minimax method.");
             return Optional.of(node);
         }
 

@@ -2,12 +2,11 @@ package org.connect4.game.ai.utils;
 
 import org.connect4.game.ai.enums.NodeType;
 import org.connect4.game.ai.heuristics.Heuristic;
+import org.connect4.game.logging.AILogger;
 import org.connect4.game.logic.core.Board;
 import org.connect4.game.logic.core.Move;
-import org.connect4.game.logic.exceptions.FullColumnException;
-import org.connect4.game.logic.exceptions.InvalidColumnIndexException;
+import org.connect4.game.logic.exceptions.InvalidMoveException;
 import org.connect4.game.logic.utils.WinnerChecker;
-import org.connect4.game.logging.AILogger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,8 +24,9 @@ public class Node {
     private final State state;
     private final NodeType nodeType;
     private final Move move;
-    private int score;
     private final boolean isTerminal;
+    private final WinnerChecker winnerChecker;
+    private int score;
 
     /**
      * Constructs a new node with the given state, node type, and column index.
@@ -38,8 +38,9 @@ public class Node {
         this.state = state;
         this.nodeType = nodeType;
         this.move = move;
-        this.score = Heuristic.evaluate(state.getBoard());
         this.isTerminal = determineTerminal();
+        this.winnerChecker = new WinnerChecker(state.getBoard());
+        this.score = Heuristic.evaluate(state.getBoard());
     }
 
     /**
@@ -67,6 +68,14 @@ public class Node {
     }
 
     /**
+     * Checks if this node is a terminal node.
+     * @return true if the node is terminal, false otherwise.
+     */
+    public boolean isTerminal() {
+        return isTerminal;
+    }
+
+    /**
      * Gets the score of this node.
      * @return The score of this node.
      */
@@ -80,14 +89,6 @@ public class Node {
      */
     public void setScore(int score) {
         this.score = score;
-    }
-
-    /**
-     * Checks if this node is a terminal node.
-     * @return true if the node is terminal, false otherwise.
-     */
-    public boolean isTerminal() {
-        return isTerminal;
     }
 
     /**
@@ -121,7 +122,7 @@ public class Node {
      * @return true if the node is terminal, false otherwise.
      */
     private boolean determineTerminal() {
-        boolean isTerminal = state.getBoard().isFull() || WinnerChecker.hasWinner(state.getBoard());
+        boolean isTerminal = state.getBoard().isFull() || winnerChecker.hasWinner();
         if (isTerminal)
             LOGGER.info("Reach a terminal node");
         return isTerminal;
@@ -142,8 +143,8 @@ public class Node {
             if (newMove.isValid(childState.getBoard())) {
                 try {
                     childState.getBoard().addPiece(i, childState.getPlayerColor());
-                } catch (InvalidColumnIndexException | FullColumnException e) {
-                    throw new RuntimeException(e);
+                } catch (InvalidMoveException e) {
+                    LOGGER.severe("Invalid move: " + e.getMessage());
                 }
                 Node child = new Node(childState, childNodeType, newMove);
                 childrenList.add(child);
@@ -242,7 +243,7 @@ public class Node {
             try {
                 out.write((prefix + (isLeaf ? "└─ " : "├─ ") + message + '\n').getBytes());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LOGGER.severe("Failed to write to output stream: " + e.getMessage());
             }
 
             for (int i = 0; i < children.size(); i++) {

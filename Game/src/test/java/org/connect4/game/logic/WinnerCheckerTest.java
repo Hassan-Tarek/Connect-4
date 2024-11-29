@@ -1,10 +1,11 @@
 package org.connect4.game.logic;
 
+import org.connect4.game.ai.AIFactory;
+import org.connect4.game.ai.enums.AIType;
 import org.connect4.game.logic.core.Board;
 import org.connect4.game.logic.core.Game;
 import org.connect4.game.logic.core.Move;
 import org.connect4.game.logic.core.Player;
-import org.connect4.game.logic.exceptions.InvalidMoveException;
 import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.GameType;
 import org.connect4.game.logic.enums.PlayerType;
@@ -15,56 +16,45 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class WinnerCheckerTest {
-    private Board[] boards;
-    private Player redPlayer;
-    private Player yellowPlayer;
-    private Game[] games;
+    private Game game;
+    private WinnerChecker winnerChecker;
 
     @BeforeEach
     public void setup() {
-        boards = new Board[4];
-        for (int i = 0; i < boards.length; i++) {
-            boards[i] = new Board();
-        }
-        redPlayer = new Player(Color.RED, PlayerType.HUMAN);
-        yellowPlayer = new Player(Color.YELLOW, PlayerType.HUMAN);
-        games = new Game[4];
-        for (int i = 0; i < games.length; i++) {
-            games[i] = new Game(boards[i], redPlayer, yellowPlayer, GameType.HUMAN_VS_HUMAN);
-        }
+        Board board = new Board();
+        Player humanPlayer = new Player(Color.RED, PlayerType.HUMAN);
+        Player aiPlayer = AIFactory.getAIPlayer(board, AIType.RANDOM_CHOICE_AI);
+        winnerChecker = new WinnerChecker(board);
+        game = new Game(board, humanPlayer, aiPlayer, GameType.HUMAN_VS_COMPUTER);
     }
 
     @Test
     public void testHasWinner() {
-        try {
-            redPlayer.makeMove(new Move(1), games[1].getBoard());
-            redPlayer.makeMove(new Move(1), games[1].getBoard());
-            redPlayer.makeMove(new Move(1), games[1].getBoard());
-            redPlayer.makeMove(new Move(1), games[1].getBoard());
+        Assertions.assertFalse(winnerChecker.hasWinner());
 
-            yellowPlayer.makeMove(new Move(0), games[2].getBoard());
-            yellowPlayer.makeMove(new Move(1), games[2].getBoard());
-            yellowPlayer.makeMove(new Move(2), games[2].getBoard());
-            yellowPlayer.makeMove(new Move(3), games[2].getBoard());
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
 
-            redPlayer.makeMove(new Move(1), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(2), games[3].getBoard());
-            redPlayer.makeMove(new Move(2), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(3), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(3), games[3].getBoard());
-            redPlayer.makeMove(new Move(3), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
-            yellowPlayer.makeMove(new Move(4), games[3].getBoard());
-            redPlayer.makeMove(new Move(4), games[3].getBoard());
+        Assertions.assertTrue(winnerChecker.hasWinner());
+    }
 
-            Assertions.assertFalse(WinnerChecker.hasWinner(boards[0]));
-            Assertions.assertTrue(WinnerChecker.hasWinner(boards[1]));
-            Assertions.assertTrue(WinnerChecker.hasWinner(boards[2]));
-            Assertions.assertTrue(WinnerChecker.hasWinner(boards[3]));
-        }
-        catch (InvalidMoveException ex) {
-            Assertions.fail("Unexpected InvalidMoveException: " + ex.getMessage());
-        }
+    @Test
+    public void testDetermineWinner() {
+        Assertions.assertEquals(winnerChecker.determineWinner(), Color.NONE);
+
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
+        game.performCurrentPlayerMove(new Move(1));
+        game.performCurrentPlayerMove(new Move(0));
+
+        Assertions.assertEquals(winnerChecker.determineWinner(), Color.RED);
     }
 }

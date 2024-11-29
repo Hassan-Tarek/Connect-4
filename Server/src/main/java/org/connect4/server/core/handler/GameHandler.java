@@ -86,13 +86,9 @@ public abstract class GameHandler implements Runnable {
      * @param move The valid move to execute.
      */
     private void executeMove(Move move) {
-        try {
-            messageDispatcher.broadcastPlayerMove(gameSession.getClients(), move);
-            game.performCurrentPlayerMove(move);
-            messageDispatcher.broadcastPlayerTurn(gameSession.getClients(), game.getCurrentPlayer().getColor());
-        } catch (InvalidMoveException e) {
-            LOGGER.severe("Invalid move: " + e.getMessage());
-        }
+        messageDispatcher.broadcastPlayerMove(gameSession.getClients(), move);
+        game.performCurrentPlayerMove(move);
+        messageDispatcher.broadcastPlayerTurn(gameSession.getClients(), game.getCurrentPlayer().getColor());
     }
 
     /**

@@ -1,11 +1,9 @@
 package org.connect4.game.logic.utils;
 
 import org.connect4.game.logic.core.Board;
-import org.connect4.game.logic.core.Piece;
 import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logging.GameLogger;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -16,13 +14,23 @@ public class WinnerChecker {
     public static final Logger LOGGER = GameLogger.getLogger();
     public static final int CONSECUTIVE_PIECES_FOR_WIN = 4;
 
+    private final Board board;
+
+    /**
+     * Constructs a WinnerChecker for the given board.
+     * @param board The game board to check for a winner.
+     */
+    public WinnerChecker(Board board) {
+        this.board = board;
+    }
+
     /**
      * Checks whether the board has a winner.
-     * @param board The board to check.
      * @return true if the board has a winner, false otherwise.
      */
-    public static boolean hasWinner(Board board) {
-        boolean hasWinner =  checkRows(board) || checkColumns(board) || checkDiagonals(board);
+    public boolean hasWinner() {
+        Color winnerColor = determineWinner();
+        boolean hasWinner = winnerColor != Color.NONE;
 
         if (hasWinner) {
             LOGGER.info("Board has a winner.");
@@ -32,168 +40,47 @@ public class WinnerChecker {
     }
 
     /**
-     * Checks if any row of the board has a winner.
-     * @param board The board to check.
-     * @return true if any row of the board has a winner, false otherwise.
+     * Determines the winner if there is one.
+     * @return The winning player's color, or Color.NONE if there is no winner.
      */
-    private static boolean checkRows(Board board) {
-        for (int i = 0; i < Board.ROWS; i++) {
-            if (isRowWinner(board, i)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks if any column of the board has a winner.
-     * @param board The board to check.
-     * @return true if any column of the board has a winner, false otherwise.
-     */
-    private static boolean checkColumns(Board board) {
-        for (int i = 0; i < Board.COLS; i++) {
-            if (isColWinner(board, i)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks if any diagonal of the board has a winner.
-     * @param board The board to check.
-     * @return true if any diagonal of the board has a winner, false otherwise.
-     */
-    private static boolean checkDiagonals(Board board) {
+    public Color determineWinner() {
         for (int i = 0; i < Board.ROWS; i++) {
             for (int j = 0; j < Board.COLS; j++) {
-                if (isDiagonalWinner(board, i, j)) {
-                    return true;
+                if (board.getPieceAt(i, j) != null) {
+                    if (checkDirection(i, 0, 0, 1) || checkDirection(0, j, 1, 0)
+                            || checkDirection(i, j, 1, 1) || checkDirection(i, j, 1, -1)) {
+                        LOGGER.info("Winner is determined at row: " + i + " and col: " + j);
+                        return board.getPieceAt(i, j).getColor();
+                    }
                 }
             }
         }
 
-        return false;
+        return Color.NONE;
     }
 
     /**
-     * Checks if a row has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param rowIndex The index of the row to check.
-     * @return true if the row has a winning sequence, false otherwise.
+     * Determines the winner of the game if it has one.
+     * @param rowIndex The starting row index.
+     * @param colIndex The starting column index.
+     * @param rowOffset The row offset for iterating through consecutive pieces.
+     * @param colOffset The column offset for iterating through consecutive pieces.
+     * @return The color of winning player or `null` if there is no winner.
      */
-    private static boolean isRowWinner(Board board, int rowIndex) {
-        for (int col = 0; col <= Board.COLS - 4; col++) {
-            if (isLineWinner(board, rowIndex, col, 0, 1)) {
-                return true;
+    private boolean checkDirection(int rowIndex, int colIndex, int rowOffset, int colOffset) {
+        Color color = board.getPieceAt(rowIndex, colIndex).getColor();
+
+        for (int k = 0; k < WinnerChecker.CONSECUTIVE_PIECES_FOR_WIN; k++) {
+            int x = rowIndex + rowOffset * k;
+            int y = colIndex + colOffset * k;
+
+            if (!board.isInBound(x, y) || board.getPieceAt(x, y) == null
+                    || board.getPieceAt(x, y).getColor() != color) {
+                return false;
             }
         }
 
-        return false;
-    }
-
-    /**
-     * Checks if a column has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param colIndex The index of the column to check.
-     * @return true if the column has a winning sequence, false otherwise.
-     */
-    private static boolean isColWinner(Board board, int colIndex) {
-        for (int row = 0; row <= Board.ROWS - 4; row++) {
-            if (isLineWinner(board, row, colIndex, 1, 0)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks if a diagonal has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param rowIndex The starting row index of the diagonal.
-     * @param colIndex The starting column index of the diagonal.
-     * @return true if the diagonal has a winning sequence, false otherwise.
-     */
-    private static boolean isDiagonalWinner(Board board, int rowIndex, int colIndex) {
-        return isDiagonalWinnerLeftToRight(board, rowIndex, colIndex) ||
-                isDiagonalWinnerRightToLeft(board, rowIndex, colIndex);
-    }
-
-    /**
-     * Checks if a diagonal (top-left to bottom-right) has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param rowIndex The starting row index of the diagonal.
-     * @param colIndex The starting column index of the diagonal.
-     * @return true if the diagonal has a winning sequence, false otherwise.
-     */
-    private static boolean isDiagonalWinnerLeftToRight(Board board, int rowIndex, int colIndex) {
-        for (int row = rowIndex; row <= Board.ROWS - 4; row++) {
-            for (int col = colIndex; col <= Board.COLS - 4; col++) {
-                if (isLineWinner(board, row, col, 1, 1)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks if a diagonal (top-right to bottom-left) has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param rowIndex The starting row index of the diagonal.
-     * @param colIndex The starting column index of the diagonal.
-     * @return true if the diagonal has a winning sequence, false otherwise.
-     */
-    private static boolean isDiagonalWinnerRightToLeft(Board board, int rowIndex, int colIndex) {
-        for (int row = rowIndex; row <= Board.ROWS - 4; row++) {
-            for (int col = colIndex; col >= 3; col--) {
-                if (isLineWinner(board, row, col, 1, -1)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether a line has a winning sequence of consecutive pieces.
-     * @param board The board to check.
-     * @param rowIndex The starting row index of the line.
-     * @param colIndex The starting column index of the line.
-     * @param rowOffset The offset for moving along the row.
-     * @param colOffset The offset for moving along the column.
-     * @return true if the line has a winning sequence, false otherwise.
-     */
-    private static boolean isLineWinner(Board board, int rowIndex, int colIndex, int rowOffset, int colOffset) {
-        int redPiecesCount = 0;
-        int yellowPiecesCount = 0;
-        for (int k = 0; k < CONSECUTIVE_PIECES_FOR_WIN; k++) {
-            int row = rowIndex + k * rowOffset;
-            int col = colIndex + k * colOffset;
-            Piece piece = board.getPieceAt(row, col);
-
-            if (piece != null) {
-                LOGGER.log(Level.FINE, "Piece is not null.");
-
-                if (piece.getColor() == Color.RED) {
-                    redPiecesCount++;
-                } else {
-                    yellowPiecesCount++;
-                }
-            }
-        }
-
-        boolean hasWinner = redPiecesCount == CONSECUTIVE_PIECES_FOR_WIN
-                || yellowPiecesCount == CONSECUTIVE_PIECES_FOR_WIN;
-        if (hasWinner) {
-            LOGGER.info("Board has a winner.");
-        }
-
-        return hasWinner;
+        LOGGER.info("Winner determined: " + color + " Player.");
+        return true;
     }
 }

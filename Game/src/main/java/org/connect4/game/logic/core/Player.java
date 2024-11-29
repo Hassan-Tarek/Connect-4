@@ -1,9 +1,8 @@
 package org.connect4.game.logic.core;
 
-import org.connect4.game.logic.exceptions.InvalidMoveException;
+import org.connect4.game.logging.GameLogger;
 import org.connect4.game.logic.enums.Color;
 import org.connect4.game.logic.enums.PlayerType;
-import org.connect4.game.logging.GameLogger;
 
 import java.util.logging.Logger;
 
@@ -75,21 +74,6 @@ public class Player {
     public void incrementScore() {
         LOGGER.fine("Player's score has been increased.");
         this.score++;
-    }
-
-    /**
-     * Makes a move on the specified column index on the specified board.
-     * @param move The move which this player will make.
-     * @throws InvalidMoveException if the move is invalid.
-     */
-    public void makeMove(Move move, Board board) throws InvalidMoveException {
-        try {
-            LOGGER.fine("Player is making a move.");
-            move.applyMove(this, board);
-        } catch (InvalidMoveException ex) {
-            LOGGER.warning("Invalid move. " + ex.getMessage());
-            throw ex;
-        }
     }
 
     /**

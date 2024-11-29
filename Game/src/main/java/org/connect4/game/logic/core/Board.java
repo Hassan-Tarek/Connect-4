@@ -74,7 +74,7 @@ public class Board implements Cloneable, Serializable {
      * @return The piece at the specified position, or null if there is no piece.
      */
     public Piece getPieceAt(int row, int col) {
-        if (isValidPosition(row, col)) {
+        if (isInBound(row, col)) {
             return pieces[row][col];
         }
 
@@ -117,12 +117,12 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     * Checks whether a position on the board is valid.
+     * Checks whether a position on the board is in bound.
      * @param row The row index.
      * @param col The column index.
      * @return true if the position is valid, false otherwise.
      */
-    private boolean isValidPosition(int row, int col) {
+    public boolean isInBound(int row, int col) {
         return row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS;
     }
 
